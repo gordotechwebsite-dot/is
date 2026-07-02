@@ -105,7 +105,7 @@ export default function Catalogo() {
                 onClick={() => window.open(`${WHATSAPP_LINK}?text=Hola!%20Me%20interesa%20el%20${encodeURIComponent(product.name)}%20(${product.condition})`, '_blank')}>
                 <div className="relative bg-gray-50 p-6 aspect-square flex items-center justify-center overflow-hidden">
                   <img src={product.image} alt={product.name}
-                    className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-500" />
+                    className="w-full h-full object-contain rounded-xl group-hover:scale-105 transition-transform duration-500" />
                   {product.badge && (
                     <span className="absolute top-4 left-4 bg-purple-700 text-white text-xs font-semibold px-3 py-1 rounded-full">
                       {product.badge}
