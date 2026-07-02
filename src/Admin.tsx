@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Trash2, Edit, Plus, LogOut, Save, X, Upload } from 'lucide-react'
 
-const API_URL = import.meta.env.VITE_API_URL || ''
+const API_URL = import.meta.env.VITE_API_URL || 'https://isphone-api.vercel.app'
 
 type Product = {
   id: number
@@ -106,7 +106,7 @@ function Admin() {
     setFormPrice(product.price_range)
     setFormBadge(product.badge || '')
     setFormImage(null)
-    setFormImagePreview(product.image.startsWith('http') ? product.image : `${API_URL}${product.image}`)
+    setFormImagePreview(product.image.startsWith('http') ? product.image : product.image)
     setShowForm(true)
   }
 
@@ -418,7 +418,7 @@ function Admin() {
               <div key={product.id} className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden group">
                 <div className="aspect-square bg-gray-800 p-4 relative">
                   <img
-                    src={product.image.startsWith('http') ? product.image : `${API_URL}${product.image}`}
+                    src={product.image.startsWith('http') ? product.image : product.image}
                     alt={product.name}
                     className="w-full h-full object-contain"
                   />
