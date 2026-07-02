@@ -1,5 +1,22 @@
 import { useState, useEffect, useRef } from 'react'
-import { Phone, MessageCircle, MapPin, Truck, ArrowRight, Star, Shield, RefreshCw, Smartphone, ChevronDown, Menu, X, Instagram, Send } from 'lucide-react'
+import { Phone, MapPin, Truck, ArrowRight, Star, Shield, RefreshCw, Smartphone, ChevronDown, Menu, X, Instagram, Send } from 'lucide-react'
+
+// Official WhatsApp logo SVG
+function WhatsAppIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 175.216 175.552" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="wa-gradient" x1="85.915" x2="86.535" y1="32.567" y2="137.092" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#57d163" />
+          <stop offset="1" stopColor="#23b33a" />
+        </linearGradient>
+      </defs>
+      <path d="M87.184 25.227c-33.733 0-61.166 27.423-61.178 61.13a60.98 60.98 0 0 0 9.349 32.535l1.455 2.312-6.179 22.559 23.146-6.069 2.235 1.324a60.95 60.95 0 0 0 31.29 8.554c33.736 0 61.178-27.426 61.178-61.165-.006-16.348-6.365-31.724-17.901-43.282a60.84 60.84 0 0 0-43.395-17.898" fill="url(#wa-gradient)" />
+      <path d="M87.184 25.227c-33.733 0-61.166 27.423-61.178 61.13a60.98 60.98 0 0 0 9.349 32.535l1.455 2.312-6.179 22.559 23.146-6.069 2.235 1.324a60.95 60.95 0 0 0 31.29 8.554c33.736 0 61.178-27.426 61.178-61.165-.006-16.348-6.365-31.724-17.901-43.282a60.84 60.84 0 0 0-43.395-17.898" fill="url(#wa-gradient)" />
+      <path fill="#fff" d="M68.772 55.603c-1.378-3.061-2.828-3.123-4.137-3.176l-3.524-.043c-1.226 0-3.218.46-4.902 2.3s-6.435 6.287-6.435 15.332 6.588 17.785 7.506 19.013 12.718 20.381 31.405 27.75c15.529 6.124 18.689 4.906 22.061 4.6s10.877-4.447 12.408-8.74 1.532-7.971 1.073-8.74-1.685-1.226-3.525-2.146-10.877-5.367-12.562-5.981-2.91-.919-4.137.921-4.746 5.979-5.819 7.206-2.144 1.381-3.984.462-7.76-2.861-14.784-9.124c-5.465-4.873-9.154-10.891-10.228-12.73s-.114-2.835.808-3.751c.825-.824 1.838-2.147 2.759-3.22s1.224-1.84 1.836-3.065.307-2.301-.153-3.22-4.032-10.011-5.666-13.647" />
+    </svg>
+  )
+}
 
 // Scroll animation hook
 function useScrollReveal() {
@@ -50,38 +67,24 @@ type Product = {
 // Product catalog
 const products: Product[] = [
   // iPhones Nuevos
-  { id: 1, name: 'iPhone 15', brand: 'apple', condition: 'Nuevo', image: 'https://images.unsplash.com/photo-1696446702183-cbd13d78e1e7?w=400&h=500&fit=crop', storage: ['128GB', '256GB'], colors: ['Negro', 'Azul', 'Rosa'], priceRange: 'Desde $2.800.000', badge: 'Nuevo' },
-  { id: 2, name: 'iPhone 15 Pro', brand: 'apple', condition: 'Nuevo', image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=500&fit=crop', storage: ['128GB', '256GB', '512GB'], colors: ['Titanio Natural', 'Titanio Azul', 'Titanio Negro'], priceRange: 'Desde $4.200.000', badge: 'Pro' },
-  { id: 3, name: 'iPhone 15 Pro Max', brand: 'apple', condition: 'Nuevo', image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=500&fit=crop', storage: ['256GB', '512GB', '1TB'], colors: ['Titanio Natural', 'Titanio Azul', 'Titanio Negro'], priceRange: 'Desde $5.500.000', badge: 'Pro Max' },
-  { id: 4, name: 'iPhone 16', brand: 'apple', condition: 'Nuevo', image: 'https://images.unsplash.com/photo-1710023038956-3dce1ef3ac38?w=400&h=500&fit=crop', storage: ['128GB', '256GB'], colors: ['Negro', 'Blanco', 'Azul'], priceRange: 'Desde $3.400.000', badge: 'Nuevo' },
-  { id: 5, name: 'iPhone 16 Pro', brand: 'apple', condition: 'Nuevo', image: 'https://images.unsplash.com/photo-1710023038956-3dce1ef3ac38?w=400&h=500&fit=crop', storage: ['128GB', '256GB', '512GB'], colors: ['Titanio Natural', 'Titanio Desierto', 'Titanio Negro'], priceRange: 'Desde $4.800.000', badge: 'Pro' },
-  { id: 6, name: 'iPhone 16 Pro Max', brand: 'apple', condition: 'Nuevo', image: 'https://images.unsplash.com/photo-1710023038956-3dce1ef3ac38?w=400&h=500&fit=crop', storage: ['256GB', '512GB', '1TB'], colors: ['Titanio Natural', 'Titanio Desierto', 'Titanio Negro'], priceRange: 'Desde $6.200.000', badge: 'Pro Max' },
+  { id: 1, name: 'iPhone 16', brand: 'apple', condition: 'Nuevo', image: '/images/products/iphone-16-gray.png', storage: ['128GB', '256GB'], colors: ['Negro', 'Blanco', 'Azul', 'Verde', 'Morado'], priceRange: 'Desde $3.400.000', badge: 'Nuevo' },
+  { id: 2, name: 'iPhone 16', brand: 'apple', condition: 'Nuevo', image: '/images/products/iphone-16-white.png', storage: ['128GB', '256GB'], colors: ['Blanco', 'Negro', 'Azul', 'Verde', 'Morado'], priceRange: 'Desde $3.400.000', badge: 'Nuevo' },
+  { id: 3, name: 'iPhone 16', brand: 'apple', condition: 'Nuevo', image: '/images/products/iphone-16-blue.png', storage: ['128GB', '256GB'], colors: ['Azul', 'Negro', 'Blanco', 'Verde', 'Morado'], priceRange: 'Desde $3.400.000', badge: 'Nuevo' },
+  { id: 4, name: 'iPhone 16', brand: 'apple', condition: 'Nuevo', image: '/images/products/iphone-16-green.png', storage: ['128GB', '256GB'], colors: ['Verde', 'Negro', 'Blanco', 'Azul', 'Morado'], priceRange: 'Desde $3.400.000', badge: 'Nuevo' },
+  { id: 5, name: 'iPhone 16', brand: 'apple', condition: 'Nuevo', image: '/images/products/iphone-16-purple.png', storage: ['128GB', '256GB'], colors: ['Morado', 'Negro', 'Blanco', 'Azul', 'Verde'], priceRange: 'Desde $3.400.000', badge: 'Nuevo' },
+  { id: 6, name: 'iPhone 16 Pro', brand: 'apple', condition: 'Nuevo', image: '/images/products/iphone-16-dark.png', storage: ['128GB', '256GB', '512GB'], colors: ['Titanio Negro', 'Titanio Natural', 'Titanio Desierto'], priceRange: 'Desde $4.800.000', badge: 'Pro' },
 
-  // iPhones Exhibición
-  { id: 7, name: 'iPhone 13', brand: 'apple', condition: 'Exhibición', image: 'https://images.unsplash.com/photo-1632633173522-47456de71b76?w=400&h=500&fit=crop', storage: ['128GB'], colors: ['Negro', 'Blanco', 'Azul'], priceRange: 'Desde $1.400.000' },
-  { id: 8, name: 'iPhone 14', brand: 'apple', condition: 'Exhibición', image: 'https://images.unsplash.com/photo-1678685888221-cda773a3dcdb?w=400&h=500&fit=crop', storage: ['128GB', '256GB'], colors: ['Negro', 'Morado', 'Blanco'], priceRange: 'Desde $1.900.000' },
-  { id: 9, name: 'iPhone 14 Pro', brand: 'apple', condition: 'Exhibición', image: 'https://images.unsplash.com/photo-1663499482523-1c0c1bae4ce1?w=400&h=500&fit=crop', storage: ['128GB', '256GB'], colors: ['Negro', 'Dorado', 'Morado'], priceRange: 'Desde $2.600.000' },
-  { id: 10, name: 'iPhone 15', brand: 'apple', condition: 'Exhibición', image: 'https://images.unsplash.com/photo-1696446702183-cbd13d78e1e7?w=400&h=500&fit=crop', storage: ['128GB'], colors: ['Negro', 'Azul', 'Rosa'], priceRange: 'Desde $2.400.000' },
+  // iPhone SE 4
+  { id: 7, name: 'iPhone SE 4', brand: 'apple', condition: 'Nuevo', image: '/images/products/iphone-se4-white.png', storage: ['128GB', '256GB'], colors: ['Blanco', 'Azul', 'Negro', 'Rosa'], priceRange: 'Desde $2.200.000', badge: 'Nuevo' },
+  { id: 8, name: 'iPhone SE 4', brand: 'apple', condition: 'Nuevo', image: '/images/products/iphone-se4-blue.png', storage: ['128GB', '256GB'], colors: ['Azul', 'Blanco', 'Negro', 'Rosa'], priceRange: 'Desde $2.200.000', badge: 'Nuevo' },
+  { id: 9, name: 'iPhone SE 4', brand: 'apple', condition: 'Nuevo', image: '/images/products/iphone-se4-black.png', storage: ['128GB', '256GB'], colors: ['Negro', 'Blanco', 'Azul', 'Rosa'], priceRange: 'Desde $2.200.000', badge: 'Nuevo' },
+  { id: 10, name: 'iPhone SE 4', brand: 'apple', condition: 'Nuevo', image: '/images/products/iphone-se4-pink.png', storage: ['128GB', '256GB'], colors: ['Rosa', 'Blanco', 'Azul', 'Negro'], priceRange: 'Desde $2.200.000', badge: 'Nuevo' },
 
   // Samsung Nuevos
-  { id: 11, name: 'Samsung Galaxy S24', brand: 'samsung', condition: 'Nuevo', image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&h=500&fit=crop', storage: ['128GB', '256GB'], colors: ['Negro', 'Violeta', 'Crema'], priceRange: 'Desde $2.600.000', badge: 'Galaxy AI' },
-  { id: 12, name: 'Samsung Galaxy S24 Ultra', brand: 'samsung', condition: 'Nuevo', image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&h=500&fit=crop', storage: ['256GB', '512GB', '1TB'], colors: ['Titanio Gris', 'Titanio Negro', 'Titanio Violeta'], priceRange: 'Desde $4.800.000', badge: 'Ultra' },
-  { id: 13, name: 'Samsung Galaxy S25', brand: 'samsung', condition: 'Nuevo', image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&h=500&fit=crop', storage: ['128GB', '256GB'], colors: ['Azul Hielo', 'Plata', 'Negro'], priceRange: 'Desde $3.200.000', badge: 'Nuevo' },
-  { id: 14, name: 'Samsung Galaxy S25 Ultra', brand: 'samsung', condition: 'Nuevo', image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&h=500&fit=crop', storage: ['256GB', '512GB', '1TB'], colors: ['Titanio Negro', 'Titanio Gris', 'Titanio Azul'], priceRange: 'Desde $5.400.000', badge: 'Ultra' },
-  { id: 15, name: 'Samsung Galaxy A55', brand: 'samsung', condition: 'Nuevo', image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&h=500&fit=crop', storage: ['128GB', '256GB'], colors: ['Azul', 'Lila', 'Negro'], priceRange: 'Desde $1.400.000' },
-  { id: 16, name: 'Samsung Galaxy Z Flip 6', brand: 'samsung', condition: 'Nuevo', image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&h=500&fit=crop', storage: ['256GB', '512GB'], colors: ['Azul', 'Menta', 'Amarillo'], priceRange: 'Desde $4.200.000', badge: 'Plegable' },
-
-  // Samsung Exhibición
-  { id: 17, name: 'Samsung Galaxy S23', brand: 'samsung', condition: 'Exhibición', image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&h=500&fit=crop', storage: ['128GB', '256GB'], colors: ['Negro', 'Crema', 'Verde'], priceRange: 'Desde $1.600.000' },
-  { id: 18, name: 'Samsung Galaxy S23 Ultra', brand: 'samsung', condition: 'Exhibición', image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&h=500&fit=crop', storage: ['256GB', '512GB'], colors: ['Negro', 'Crema', 'Verde'], priceRange: 'Desde $2.800.000' },
-  { id: 19, name: 'Samsung Galaxy S24', brand: 'samsung', condition: 'Exhibición', image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&h=500&fit=crop', storage: ['128GB', '256GB'], colors: ['Negro', 'Violeta', 'Crema'], priceRange: 'Desde $2.200.000' },
-
-  // Xiaomi
-  { id: 20, name: 'Xiaomi 14', brand: 'xiaomi', condition: 'Nuevo', image: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&h=500&fit=crop', storage: ['256GB', '512GB'], colors: ['Negro', 'Blanco', 'Verde'], priceRange: 'Desde $2.400.000', badge: 'Leica' },
-  { id: 21, name: 'Xiaomi Redmi Note 13 Pro', brand: 'xiaomi', condition: 'Nuevo', image: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&h=500&fit=crop', storage: ['128GB', '256GB'], colors: ['Negro', 'Azul', 'Morado'], priceRange: 'Desde $950.000' },
-
-  // Motorola
-  { id: 22, name: 'Motorola Edge 50 Pro', brand: 'motorola', condition: 'Nuevo', image: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&h=500&fit=crop', storage: ['256GB'], colors: ['Negro', 'Azul'], priceRange: 'Desde $1.800.000' },
+  { id: 11, name: 'Samsung Galaxy S25', brand: 'samsung', condition: 'Nuevo', image: '/images/products/samsung-s25-gray.png', storage: ['128GB', '256GB'], colors: ['Negro', 'Azul', 'Menta', 'Plata'], priceRange: 'Desde $3.200.000', badge: 'Galaxy AI' },
+  { id: 12, name: 'Samsung Galaxy S24 Ultra', brand: 'samsung', condition: 'Nuevo', image: '/images/products/samsung-s24-ultra-gold.png', storage: ['256GB', '512GB', '1TB'], colors: ['Titanio Dorado', 'Titanio Gris', 'Titanio Negro'], priceRange: 'Desde $4.800.000', badge: 'Ultra' },
+  { id: 13, name: 'Samsung Galaxy S25', brand: 'samsung', condition: 'Nuevo', image: '/images/products/samsung-s25-blue.png', storage: ['128GB', '256GB'], colors: ['Azul', 'Negro', 'Menta', 'Plata'], priceRange: 'Desde $3.200.000', badge: 'Galaxy AI' },
+  { id: 14, name: 'Samsung Galaxy S25', brand: 'samsung', condition: 'Nuevo', image: '/images/products/samsung-s25-mint.png', storage: ['128GB', '256GB'], colors: ['Menta', 'Negro', 'Azul', 'Plata'], priceRange: 'Desde $3.200.000', badge: 'Galaxy AI' },
 ]
 
 // Testimonials
@@ -102,13 +105,38 @@ const coverageTowns = [
 type FilterBrand = 'all' | 'apple' | 'samsung' | 'xiaomi' | 'motorola'
 type FilterCondition = 'all' | 'Nuevo' | 'Exhibición'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [filterBrand, setFilterBrand] = useState<FilterBrand>('all')
   const [filterCondition, setFilterCondition] = useState<FilterCondition>('all')
   const [showAllProducts, setShowAllProducts] = useState(false)
+  const [dynamicProducts, setDynamicProducts] = useState<Product[]>([])
+  const [loaded, setLoaded] = useState(false)
 
-  const filteredProducts = products.filter(p => {
+  useEffect(() => {
+    if (API_URL) {
+      fetch(`${API_URL}/api/products`)
+        .then(res => res.json())
+        .then(data => {
+          const mapped = data.map((p: { id: number; name: string; brand: string; condition: string; image: string; storage: string[]; colors: string[]; price_range: string; badge?: string }) => ({
+            ...p,
+            priceRange: p.price_range,
+            image: p.image.startsWith('http') ? p.image : `${API_URL}${p.image}`,
+          }))
+          setDynamicProducts(mapped)
+          setLoaded(true)
+        })
+        .catch(() => setLoaded(true))
+    } else {
+      setLoaded(true)
+    }
+  }, [])
+
+  const activeProducts = loaded && dynamicProducts.length > 0 ? dynamicProducts : products
+
+  const filteredProducts = activeProducts.filter(p => {
     if (filterBrand !== 'all' && p.brand !== filterBrand) return false
     if (filterCondition !== 'all' && p.condition !== filterCondition) return false
     return true
@@ -121,9 +149,9 @@ function App() {
       {/* Navigation - Samsung style */}
       <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-md z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-20">
             <div className="flex items-center gap-2">
-              <img src="/images/isphone-logo.png" alt="iSphone" className="h-10" />
+              <img src="/images/isphone-logo.png" alt="iSphone" className="h-20 md:h-24" />
             </div>
 
             {/* Desktop nav */}
@@ -135,7 +163,7 @@ function App() {
               <a href="#contacto" className="text-sm font-medium text-gray-700 hover:text-purple-700 transition-colors">Contacto</a>
               <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
                 className="bg-purple-700 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-purple-800 transition-colors flex items-center gap-2">
-                <MessageCircle className="w-4 h-4" />
+                <WhatsAppIcon className="w-4 h-4" />
                 WhatsApp
               </a>
             </div>
@@ -192,11 +220,6 @@ function App() {
                   <a href="#productos" className="bg-white text-purple-900 px-8 py-4 rounded-full font-semibold text-center hover:bg-purple-50 transition-colors flex items-center justify-center gap-2">
                     Ver catálogo
                     <ArrowRight className="w-5 h-5" />
-                  </a>
-                  <a href={`${WHATSAPP_LINK}?text=Hola!%20Me%20interesa%20conocer%20los%20equipos%20disponibles`} target="_blank" rel="noopener noreferrer"
-                    className="border border-purple-400/50 text-white px-8 py-4 rounded-full font-semibold text-center hover:bg-purple-800/50 transition-colors flex items-center justify-center gap-2">
-                    <MessageCircle className="w-5 h-5" />
-                    Escríbenos
                   </a>
                 </div>
               </div>
@@ -542,7 +565,7 @@ function App() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a href={`${WHATSAPP_LINK}?text=Hola!%20Quiero%20información%20sobre%20equipos%20disponibles`} target="_blank" rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 bg-green-500 text-white px-8 py-4 rounded-full font-semibold hover:bg-green-600 transition-colors shadow-lg">
-                    <MessageCircle className="w-5 h-5" />
+                    <WhatsAppIcon className="w-5 h-5" />
                     Escribir por WhatsApp
                   </a>
                   <a href="tel:+573186823290"
@@ -572,7 +595,7 @@ function App() {
               <div className="space-y-2 text-sm">
                 <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Ramiriquí, Boyacá</p>
                 <p className="flex items-center gap-2"><Phone className="w-4 h-4" /> +57 318 682 3290</p>
-                <p className="flex items-center gap-2"><MessageCircle className="w-4 h-4" /> WhatsApp disponible</p>
+                <p className="flex items-center gap-2"><WhatsAppIcon className="w-4 h-4" /> WhatsApp disponible</p>
               </div>
             </div>
             <div>
@@ -582,7 +605,7 @@ function App() {
                   <Instagram className="w-5 h-5" />
                 </a>
                 <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors">
-                  <MessageCircle className="w-5 h-5" />
+                  <WhatsAppIcon className="w-5 h-5" />
                 </a>
               </div>
             </div>
@@ -595,8 +618,8 @@ function App() {
 
       {/* Floating WhatsApp button */}
       <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition-all hover:scale-110">
-        <MessageCircle className="w-7 h-7" />
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all">
+        <WhatsAppIcon className="w-14 h-14" />
       </a>
     </div>
   )
