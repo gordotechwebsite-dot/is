@@ -2,9 +2,10 @@ import hashlib
 import secrets
 import json
 import os
+import urllib.request
 from typing import Optional
 
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form, Header
+from fastapi import FastAPI, Depends, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -18,7 +19,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Use Edge Config for product storage
 EDGE_CONFIG_ID = os.environ.get("EDGE_CONFIG_ID", "ecfg_3rxw6mh0hnz1bkdm5art4amjh7h6")
 EDGE_CONFIG_TOKEN = os.environ.get("EDGE_CONFIG_TOKEN", "")
 VERCEL_TOKEN = os.environ.get("VERCEL_API_TOKEN", "")
@@ -42,15 +42,50 @@ def verify_token(authorization: Optional[str] = Header(None)):
     return TOKENS[token]
 
 
+# --- Edge Config helpers ---
+
+def _ec_load(key: str, default=None):
+    if EDGE_CONFIG_TOKEN:
+        try:
+            req = urllib.request.Request(
+                f"https://edge-config.vercel.com/{EDGE_CONFIG_ID}/item/{key}",
+                headers={"Authorization": f"Bearer {EDGE_CONFIG_TOKEN}"}
+            )
+            with urllib.request.urlopen(req) as resp:
+                return json.loads(resp.read())
+        except Exception:
+            pass
+    return default
+
+
+def _ec_save(key: str, value):
+    if not VERCEL_TOKEN:
+        return
+    data = json.dumps({"items": [{"operation": "upsert", "key": key, "value": value}]}).encode()
+    req = urllib.request.Request(
+        f"https://api.vercel.com/v1/edge-config/{EDGE_CONFIG_ID}/items?teamId={TEAM_ID}",
+        data=data,
+        headers={
+            "Authorization": f"Bearer {VERCEL_TOKEN}",
+            "Content-Type": "application/json"
+        },
+        method="PATCH"
+    )
+    try:
+        urllib.request.urlopen(req)
+    except Exception:
+        pass
+
+
+# --- Models ---
+
 class LoginRequest(BaseModel):
     username: str
     password: str
 
-
 class LoginResponse(BaseModel):
     token: str
     username: str
-
 
 class ProductResponse(BaseModel):
     id: int
@@ -64,7 +99,6 @@ class ProductResponse(BaseModel):
     badge: Optional[str] = None
     category: Optional[str] = None
 
-
 class ProductCreate(BaseModel):
     name: str
     brand: str
@@ -76,22 +110,50 @@ class ProductCreate(BaseModel):
     badge: Optional[str] = None
     category: Optional[str] = None
 
-
 class CategoryResponse(BaseModel):
     id: int
     name: str
     slug: str
     cover_image: str
 
-
 class CategoryCreate(BaseModel):
     name: str
     slug: str
     cover_image: str
 
+class OfferResponse(BaseModel):
+    id: int
+    title: str
+    description: str
+    badge: Optional[str] = None
+    icon: Optional[str] = None
+    featured: bool = False
+    active: bool = True
 
-# In-memory products (loaded from edge config or defaults)
-import urllib.request
+class OfferCreate(BaseModel):
+    title: str
+    description: str
+    badge: Optional[str] = None
+    icon: Optional[str] = None
+    featured: bool = False
+    active: bool = True
+
+class SiteContent(BaseModel):
+    hero_subtitle: str = "Evolución en tus manos"
+    hero_title_1: str = "Tu próximo"
+    hero_title_2: str = "smartphone"
+    hero_title_3: str = "te espera"
+    hero_description: str = "Equipos nuevos y de exhibición. iPhone y Android al mejor precio en Boyacá. Envíos y contra entrega."
+    hero_image: str = "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=500&h=700&fit=crop"
+    hero_cta_text: str = "Ver catálogo"
+    cta_title: str = "¿Listo para actualizar?"
+    cta_description: str = "Escríbenos por WhatsApp y te asesoramos con el equipo perfecto para ti"
+    cta_button_text: str = "Escribir por WhatsApp"
+    banner_text: str = "OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000"
+    banner_active: bool = True
+
+
+# --- Defaults ---
 
 INITIAL_PRODUCTS = [
     {"id": 1, "name": "iPhone 16", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-16-gray.png", "storage": ["128GB", "256GB"], "colors": ["Negro", "Blanco", "Azul", "Verde", "Morado"], "price_range": "Desde $3.400.000", "badge": "Nuevo"},
@@ -110,41 +172,16 @@ INITIAL_PRODUCTS = [
     {"id": 14, "name": "Samsung Galaxy S25", "brand": "samsung", "condition": "Nuevo", "image": "/images/products/samsung-s25-mint.png", "storage": ["128GB", "256GB"], "colors": ["Menta", "Negro", "Azul", "Plata"], "price_range": "Desde $3.200.000", "badge": "Galaxy AI"},
 ]
 
+INITIAL_OFFERS = [
+    {"id": 1, "title": "Regalo primera compra", "description": "Compras mayores a $250.000 reciben un regalo sorpresa. Válido para clientes nuevos.", "badge": "🎁 PROMOCIÓN ACTIVA", "icon": "gift", "featured": True, "active": True},
+    {"id": 2, "title": "Trade-In con descuento extra", "description": "Trae tu equipo anterior y recibe un descuento adicional sobre el valor de Trade-In.", "icon": "percent", "featured": False, "active": True},
+    {"id": 3, "title": "Equipos de exhibición", "description": "Equipos como nuevos con hasta 30% de descuento. Garantía incluida en todos.", "icon": "tag", "featured": False, "active": True},
+]
 
-def _load_products() -> list[dict]:
-    """Load products from Edge Config or return defaults."""
-    if EDGE_CONFIG_TOKEN:
-        try:
-            req = urllib.request.Request(
-                f"https://edge-config.vercel.com/{EDGE_CONFIG_ID}/item/products",
-                headers={"Authorization": f"Bearer {EDGE_CONFIG_TOKEN}"}
-            )
-            with urllib.request.urlopen(req) as resp:
-                return json.loads(resp.read())
-        except Exception:
-            pass
-    return INITIAL_PRODUCTS
+DEFAULT_SITE_CONTENT = SiteContent().model_dump()
 
 
-def _save_products(products: list[dict]):
-    """Save products to Edge Config."""
-    if not VERCEL_TOKEN:
-        return
-    data = json.dumps({"items": [{"operation": "upsert", "key": "products", "value": products}]}).encode()
-    req = urllib.request.Request(
-        f"https://api.vercel.com/v1/edge-config/{EDGE_CONFIG_ID}/items?teamId={TEAM_ID}",
-        data=data,
-        headers={
-            "Authorization": f"Bearer {VERCEL_TOKEN}",
-            "Content-Type": "application/json"
-        },
-        method="PATCH"
-    )
-    try:
-        urllib.request.urlopen(req)
-    except Exception:
-        pass
-
+# --- Auth ---
 
 @app.post("/api/login", response_model=LoginResponse)
 def login(data: LoginRequest):
@@ -154,7 +191,6 @@ def login(data: LoginRequest):
     TOKENS[token] = data.username
     return LoginResponse(token=token, username=data.username)
 
-
 @app.post("/api/logout")
 def logout(authorization: Optional[str] = Header(None)):
     if authorization and authorization.startswith("Bearer "):
@@ -163,107 +199,113 @@ def logout(authorization: Optional[str] = Header(None)):
     return {"ok": True}
 
 
+# --- Products ---
+
 @app.get("/api/products", response_model=list[ProductResponse])
 def get_products():
-    return _load_products()
-
+    return _ec_load("products", INITIAL_PRODUCTS)
 
 @app.post("/api/admin/products", response_model=ProductResponse)
 def create_product(product: ProductCreate, _username: str = Depends(verify_token)):
-    products = _load_products()
+    products = _ec_load("products", INITIAL_PRODUCTS)
     new_id = max((p["id"] for p in products), default=0) + 1
     new_product = {"id": new_id, **product.model_dump()}
     products.append(new_product)
-    _save_products(products)
+    _ec_save("products", products)
     return new_product
-
 
 @app.put("/api/admin/products/{product_id}", response_model=ProductResponse)
 def update_product(product_id: int, product: ProductCreate, _username: str = Depends(verify_token)):
-    products = _load_products()
+    products = _ec_load("products", INITIAL_PRODUCTS)
     for i, p in enumerate(products):
         if p["id"] == product_id:
             products[i] = {"id": product_id, **product.model_dump()}
-            _save_products(products)
+            _ec_save("products", products)
             return products[i]
     raise HTTPException(status_code=404, detail="Producto no encontrado")
 
-
 @app.delete("/api/admin/products/{product_id}")
 def delete_product(product_id: int, _username: str = Depends(verify_token)):
-    products = _load_products()
+    products = _ec_load("products", INITIAL_PRODUCTS)
     products = [p for p in products if p["id"] != product_id]
-    _save_products(products)
+    _ec_save("products", products)
     return {"ok": True}
 
 
 # --- Categories ---
 
-INITIAL_CATEGORIES: list[dict] = []
-
-
-def _load_categories() -> list[dict]:
-    if EDGE_CONFIG_TOKEN:
-        try:
-            req = urllib.request.Request(
-                f"https://edge-config.vercel.com/{EDGE_CONFIG_ID}/item/categories",
-                headers={"Authorization": f"Bearer {EDGE_CONFIG_TOKEN}"}
-            )
-            with urllib.request.urlopen(req) as resp:
-                return json.loads(resp.read())
-        except Exception:
-            pass
-    return INITIAL_CATEGORIES
-
-
-def _save_categories(categories: list[dict]):
-    if not VERCEL_TOKEN:
-        return
-    data = json.dumps({"items": [{"operation": "upsert", "key": "categories", "value": categories}]}).encode()
-    req = urllib.request.Request(
-        f"https://api.vercel.com/v1/edge-config/{EDGE_CONFIG_ID}/items?teamId={TEAM_ID}",
-        data=data,
-        headers={
-            "Authorization": f"Bearer {VERCEL_TOKEN}",
-            "Content-Type": "application/json"
-        },
-        method="PATCH"
-    )
-    try:
-        urllib.request.urlopen(req)
-    except Exception:
-        pass
-
-
 @app.get("/api/categories", response_model=list[CategoryResponse])
 def get_categories():
-    return _load_categories()
-
+    return _ec_load("categories", [])
 
 @app.post("/api/admin/categories", response_model=CategoryResponse)
 def create_category(category: CategoryCreate, _username: str = Depends(verify_token)):
-    categories = _load_categories()
+    categories = _ec_load("categories", [])
     new_id = max((c["id"] for c in categories), default=0) + 1
     new_cat = {"id": new_id, **category.model_dump()}
     categories.append(new_cat)
-    _save_categories(categories)
+    _ec_save("categories", categories)
     return new_cat
-
 
 @app.put("/api/admin/categories/{category_id}", response_model=CategoryResponse)
 def update_category(category_id: int, category: CategoryCreate, _username: str = Depends(verify_token)):
-    categories = _load_categories()
+    categories = _ec_load("categories", [])
     for i, c in enumerate(categories):
         if c["id"] == category_id:
             categories[i] = {"id": category_id, **category.model_dump()}
-            _save_categories(categories)
+            _ec_save("categories", categories)
             return categories[i]
     raise HTTPException(status_code=404, detail="Categoría no encontrada")
 
-
 @app.delete("/api/admin/categories/{category_id}")
 def delete_category(category_id: int, _username: str = Depends(verify_token)):
-    categories = _load_categories()
+    categories = _ec_load("categories", [])
     categories = [c for c in categories if c["id"] != category_id]
-    _save_categories(categories)
+    _ec_save("categories", categories)
     return {"ok": True}
+
+
+# --- Offers ---
+
+@app.get("/api/offers", response_model=list[OfferResponse])
+def get_offers():
+    return _ec_load("offers", INITIAL_OFFERS)
+
+@app.post("/api/admin/offers", response_model=OfferResponse)
+def create_offer(offer: OfferCreate, _username: str = Depends(verify_token)):
+    offers = _ec_load("offers", INITIAL_OFFERS)
+    new_id = max((o["id"] for o in offers), default=0) + 1
+    new_offer = {"id": new_id, **offer.model_dump()}
+    offers.append(new_offer)
+    _ec_save("offers", offers)
+    return new_offer
+
+@app.put("/api/admin/offers/{offer_id}", response_model=OfferResponse)
+def update_offer(offer_id: int, offer: OfferCreate, _username: str = Depends(verify_token)):
+    offers = _ec_load("offers", INITIAL_OFFERS)
+    for i, o in enumerate(offers):
+        if o["id"] == offer_id:
+            offers[i] = {"id": offer_id, **offer.model_dump()}
+            _ec_save("offers", offers)
+            return offers[i]
+    raise HTTPException(status_code=404, detail="Oferta no encontrada")
+
+@app.delete("/api/admin/offers/{offer_id}")
+def delete_offer(offer_id: int, _username: str = Depends(verify_token)):
+    offers = _ec_load("offers", INITIAL_OFFERS)
+    offers = [o for o in offers if o["id"] != offer_id]
+    _ec_save("offers", offers)
+    return {"ok": True}
+
+
+# --- Site Content ---
+
+@app.get("/api/site-content")
+def get_site_content():
+    return _ec_load("site_content", DEFAULT_SITE_CONTENT)
+
+@app.put("/api/admin/site-content")
+def update_site_content(content: SiteContent, _username: str = Depends(verify_token)):
+    data = content.model_dump()
+    _ec_save("site_content", data)
+    return data

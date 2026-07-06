@@ -1,12 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Phone, MapPin, Menu, X, Instagram, Search, Zap } from 'lucide-react'
-import { WhatsAppIcon, WHATSAPP_LINK } from './shared'
+import { WhatsAppIcon, WHATSAPP_LINK, API_URL } from './shared'
 
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [bannerText, setBannerText] = useState('OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000')
+  const [bannerActive, setBannerActive] = useState(true)
   const location = useLocation()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/site-content`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.banner_text) setBannerText(data.banner_text)
+        if (data.banner_active !== undefined) setBannerActive(data.banner_active)
+      })
+      .catch(() => {})
+  }, [])
 
   const navLinks = [
     { to: '/', label: 'Inicio' },
@@ -159,14 +171,16 @@ export default function Layout() {
       </div>
 
       {/* Mobile promo banner - scrolling text */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black text-white overflow-hidden">
-        <div className="animate-marquee whitespace-nowrap py-2 text-xs font-semibold tracking-wide">
-          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
-          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
-          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
-          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
+      {bannerActive && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black text-white overflow-hidden">
+          <div className="animate-marquee whitespace-nowrap py-2 text-xs font-semibold tracking-wide">
+            <span className="mx-8">🎁 {bannerText}</span>
+            <span className="mx-8">🎁 {bannerText}</span>
+            <span className="mx-8">🎁 {bannerText}</span>
+            <span className="mx-8">🎁 {bannerText}</span>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Floating WhatsApp button */}
       <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
