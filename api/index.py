@@ -1,5 +1,5 @@
 import hashlib
-import secrets
+import hmac
 import json
 import os
 import urllib.request
@@ -24,22 +24,27 @@ EDGE_CONFIG_TOKEN = os.environ.get("EDGE_CONFIG_TOKEN", "")
 VERCEL_TOKEN = os.environ.get("VERCEL_API_TOKEN", "")
 TEAM_ID = os.environ.get("VERCEL_TEAM_ID", "team_jahFcvSlgMeKJ8O1FuGI3llO")
 
-TOKENS: dict[str, str] = {}
 ADMIN_USER = "admin"
 ADMIN_PASS_HASH = hashlib.sha256("isphone2026".encode()).hexdigest()
+TOKEN_SECRET = os.environ.get("TOKEN_SECRET", "isphone-admin-secret-2026")
 
 
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
 
 
+def _make_token(username: str) -> str:
+    return hmac.new(TOKEN_SECRET.encode(), username.encode(), hashlib.sha256).hexdigest()
+
+
 def verify_token(authorization: Optional[str] = Header(None)):
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="No autorizado")
     token = authorization.replace("Bearer ", "")
-    if token not in TOKENS:
+    expected = _make_token(ADMIN_USER)
+    if not hmac.compare_digest(token, expected):
         raise HTTPException(status_code=401, detail="Token inválido")
-    return TOKENS[token]
+    return ADMIN_USER
 
 
 # --- Edge Config helpers ---
@@ -187,15 +192,11 @@ DEFAULT_SITE_CONTENT = SiteContent().model_dump()
 def login(data: LoginRequest):
     if data.username != ADMIN_USER or hash_password(data.password) != ADMIN_PASS_HASH:
         raise HTTPException(status_code=401, detail="Credenciales incorrectas")
-    token = secrets.token_hex(32)
-    TOKENS[token] = data.username
+    token = _make_token(data.username)
     return LoginResponse(token=token, username=data.username)
 
 @app.post("/api/logout")
 def logout(authorization: Optional[str] = Header(None)):
-    if authorization and authorization.startswith("Bearer "):
-        token = authorization.replace("Bearer ", "")
-        TOKENS.pop(token, None)
     return {"ok": True}
 
 
