@@ -133,6 +133,9 @@ export default function Layout() {
           </div>
           <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-500">
             <p>&copy; {new Date().getFullYear()} iSphone. Todos los derechos reservados.</p>
+            <Link to="/admin" className="inline-block mt-3 text-gray-600 hover:text-purple-400 transition-colors text-xs">
+              Login
+            </Link>
           </div>
         </div>
       </footer>
