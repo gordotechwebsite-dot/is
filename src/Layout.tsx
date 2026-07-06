@@ -1,12 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Phone, MapPin, Menu, X, Instagram, Search, Zap } from 'lucide-react'
-import { WhatsAppIcon, WHATSAPP_LINK } from './shared'
+import { WhatsAppIcon, WHATSAPP_LINK, API_URL } from './shared'
 
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [bannerText, setBannerText] = useState('OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000')
+  const [bannerActive, setBannerActive] = useState(true)
   const location = useLocation()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/site-content`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.banner_text) setBannerText(data.banner_text)
+        if (data.banner_active !== undefined) setBannerActive(data.banner_active)
+      })
+      .catch(() => {})
+  }, [])
 
   const navLinks = [
     { to: '/', label: 'Inicio' },
@@ -48,7 +60,7 @@ export default function Layout() {
 
             {/* Mobile: logo centered, larger */}
             <Link to="/" className="md:hidden flex items-center justify-center w-full">
-              <img src="/images/isphone-logo.png" alt="iSphone" className="h-16" />
+              <img src="/images/isphone-logo.png" alt="iSphone" className="h-32" />
             </Link>
 
             {/* Mobile spacer for floating island */}
@@ -133,37 +145,46 @@ export default function Layout() {
           </div>
           <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-500">
             <p>&copy; {new Date().getFullYear()} iSphone. Todos los derechos reservados.</p>
+            <Link to="/admin" className="inline-block mt-3 text-gray-600 hover:text-purple-400 transition-colors text-xs">
+              Login
+            </Link>
           </div>
         </div>
       </footer>
 
       {/* Mobile floating island - right side */}
       <div className="md:hidden fixed right-4 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
-        <div className="bg-gray-900/90 backdrop-blur-md rounded-full py-3 px-2 flex flex-col items-center gap-4 shadow-xl">
+        <div className="bg-white/20 backdrop-blur-xl rounded-full py-3 px-2 flex flex-col items-center gap-4 shadow-xl border border-white/30">
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="w-10 h-10 flex items-center justify-center text-white">
+            className="w-10 h-10 flex items-center justify-center text-gray-800">
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
           <button onClick={() => { navigate('/catalogo'); setMobileMenuOpen(false) }}
-            className="w-10 h-10 flex items-center justify-center text-white">
+            className="w-10 h-10 flex items-center justify-center text-gray-800">
             <Search className="w-5 h-5" />
           </button>
           <button onClick={() => { navigate('/ofertas'); setMobileMenuOpen(false) }}
-            className="w-10 h-10 flex items-center justify-center text-yellow-400">
+            className="w-10 h-10 flex items-center justify-center text-gray-800">
             <Zap className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      {/* Mobile promo banner - scrolling text */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black text-white overflow-hidden">
-        <div className="animate-marquee whitespace-nowrap py-2 text-xs font-semibold tracking-wide">
-          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
-          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
-          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
-          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
+      {/* Mobile promo banner - seamless infinite scrolling */}
+      {bannerActive && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black text-white overflow-hidden">
+          <div className="animate-marquee inline-flex whitespace-nowrap py-2 text-xs font-semibold tracking-wide">
+            <span className="mx-8">🎁 {bannerText}</span>
+            <span className="mx-8">🎁 {bannerText}</span>
+            <span className="mx-8">🎁 {bannerText}</span>
+            <span className="mx-8">🎁 {bannerText}</span>
+            <span className="mx-8">🎁 {bannerText}</span>
+            <span className="mx-8">🎁 {bannerText}</span>
+            <span className="mx-8">🎁 {bannerText}</span>
+            <span className="mx-8">🎁 {bannerText}</span>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Floating WhatsApp button */}
       <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"

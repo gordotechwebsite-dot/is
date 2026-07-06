@@ -57,6 +57,14 @@ export type Product = {
   colors: string[]
   priceRange: string
   badge?: string
+  category?: string
+}
+
+export type Category = {
+  id: number
+  name: string
+  slug: string
+  cover_image: string
 }
 
 export const testimonials = [
