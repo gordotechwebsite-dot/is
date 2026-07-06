@@ -238,7 +238,7 @@ def delete_product(product_id: int, _username: str = Depends(verify_token)):
 # --- Categories ---
 
 INITIAL_CATEGORIES = [
-    {"id": 1, "name": "iPhone", "slug": "iphone", "cover_image": "https://images.unsplash.com/photo-1591337676887-a217a6c6eafc?w=600&h=600&fit=crop", "position": 1},
+    {"id": 1, "name": "iPhone", "slug": "iphone", "cover_image": "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=600&h=600&fit=crop", "position": 1},
     {"id": 2, "name": "Android", "slug": "android", "cover_image": "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&h=600&fit=crop", "position": 2},
     {"id": 3, "name": "Accesorios", "slug": "accesorios", "cover_image": "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=600&h=600&fit=crop", "position": 3},
     {"id": 4, "name": "Ofertas", "slug": "ofertas", "cover_image": "https://images.unsplash.com/photo-1607083206968-13611e3d76db?w=600&h=600&fit=crop", "position": 4},
