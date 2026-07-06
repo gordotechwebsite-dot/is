@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Link, Outlet, useLocation } from 'react-router-dom'
-import { Phone, MapPin, Menu, X, Instagram } from 'lucide-react'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Phone, MapPin, Menu, X, Instagram, Search, Zap } from 'lucide-react'
 import { WhatsAppIcon, WHATSAPP_LINK } from './shared'
 
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
 
   const navLinks = [
     { to: '/', label: 'Inicio' },
@@ -21,8 +22,9 @@ export default function Layout() {
       <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-md z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
-            <Link to="/" className="flex items-center gap-2">
-              <img src="/images/isphone-logo.png" alt="iSphone" className="h-20 md:h-24" />
+            {/* Desktop: logo left */}
+            <Link to="/" className="hidden md:flex items-center gap-2">
+              <img src="/images/isphone-logo.png" alt="iSphone" className="h-24" />
             </Link>
 
             {/* Desktop nav */}
@@ -44,10 +46,13 @@ export default function Layout() {
               </a>
             </div>
 
-            {/* Mobile menu button */}
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2">
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            {/* Mobile: logo centered, larger */}
+            <Link to="/" className="md:hidden flex items-center justify-center w-full">
+              <img src="/images/isphone-logo.png" alt="iSphone" className="h-16" />
+            </Link>
+
+            {/* Mobile spacer for floating island */}
+            <div className="md:hidden w-10" />
           </div>
         </div>
 
@@ -132,6 +137,24 @@ export default function Layout() {
         </div>
       </footer>
 
+      {/* Mobile floating island - right side */}
+      <div className="md:hidden fixed right-4 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
+        <div className="bg-gray-900/90 backdrop-blur-md rounded-full py-3 px-2 flex flex-col items-center gap-4 shadow-xl">
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="w-10 h-10 flex items-center justify-center text-white">
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+          <button onClick={() => { navigate('/catalogo'); setMobileMenuOpen(false) }}
+            className="w-10 h-10 flex items-center justify-center text-white">
+            <Search className="w-5 h-5" />
+          </button>
+          <button onClick={() => { navigate('/ofertas'); setMobileMenuOpen(false) }}
+            className="w-10 h-10 flex items-center justify-center text-yellow-400">
+            <Zap className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
       {/* Mobile promo banner - scrolling text */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black text-white overflow-hidden">
         <div className="animate-marquee whitespace-nowrap py-2 text-xs font-semibold tracking-wide">
@@ -144,7 +167,7 @@ export default function Layout() {
 
       {/* Floating WhatsApp button */}
       <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
-        className="fixed bottom-10 md:bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all">
+        className="fixed bottom-10 md:bottom-6 left-6 md:right-6 md:left-auto z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all">
         <WhatsAppIcon className="w-14 h-14" />
       </a>
     </div>
