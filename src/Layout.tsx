@@ -155,9 +155,13 @@ export default function Layout() {
         </div>
       </div>
 
-      {/* Mobile promo banner - scrolling text */}
+      {/* Mobile promo banner - seamless infinite scrolling */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black text-white overflow-hidden">
-        <div className="animate-marquee whitespace-nowrap py-2 text-xs font-semibold tracking-wide">
+        <div className="animate-marquee inline-flex whitespace-nowrap py-2 text-xs font-semibold tracking-wide">
+          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
+          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
+          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
+          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
           <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
           <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
           <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
