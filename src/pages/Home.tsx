@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
-import { ScrollReveal, WhatsAppIcon, WHATSAPP_LINK, API_URL } from '../shared'
+import { ScrollReveal, WhatsAppIcon, WHATSAPP_LINK, API_URL, Category } from '../shared'
 
 type SiteContent = {
   hero_subtitle: string; hero_title_1: string; hero_title_2: string; hero_title_3: string
@@ -24,11 +24,16 @@ const defaults: SiteContent = {
 
 export default function Home() {
   const [content, setContent] = useState<SiteContent>(defaults)
+  const [categories, setCategories] = useState<Category[]>([])
 
   useEffect(() => {
     fetch(`${API_URL}/api/site-content`)
       .then(r => r.json())
       .then(data => setContent({ ...defaults, ...data }))
+      .catch(() => {})
+    fetch(`${API_URL}/api/categories`)
+      .then(r => r.json())
+      .then(data => setCategories(data))
       .catch(() => {})
   }, [])
 
@@ -73,6 +78,38 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Categories grid - Samsung style */}
+      {categories.length > 0 && (
+        <section className="py-16 lg:py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ScrollReveal>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">Explora por categoría</h2>
+            </ScrollReveal>
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {categories.map((cat, i) => (
+                <ScrollReveal key={cat.id} delay={i * 0.05}>
+                  <Link
+                    to={cat.slug === 'ofertas' ? '/ofertas' : `/categoria/${cat.slug}`}
+                    className="group block"
+                  >
+                    <div className="relative rounded-2xl overflow-hidden aspect-square bg-gradient-to-br from-purple-100 via-pink-50 to-orange-100">
+                      <img
+                        src={cat.cover_image}
+                        alt={cat.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                    <h3 className="mt-3 text-base sm:text-lg font-bold text-gray-900 group-hover:text-purple-700 transition-colors">
+                      {cat.name}
+                    </h3>
+                  </Link>
+                </ScrollReveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="py-20 lg:py-28">
