@@ -65,6 +65,7 @@ export type Category = {
   name: string
   slug: string
   cover_image: string
+  position: number
 }
 
 export const testimonials = [

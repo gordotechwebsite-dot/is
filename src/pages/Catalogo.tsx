@@ -78,21 +78,22 @@ export default function Catalogo() {
         {categories.length > 0 && (
           <ScrollReveal delay={0.05}>
             <div className="mb-14">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Categorías</h2>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Explora por categoría</h2>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {categories.map((cat, i) => (
                   <ScrollReveal key={cat.id} delay={i * 0.05}>
                     <Link
-                      to={`/categoria/${cat.slug}`}
-                      className="group relative block rounded-2xl overflow-hidden aspect-square bg-gradient-to-br from-purple-100 to-pink-100"
+                      to={cat.slug === 'ofertas' ? '/ofertas' : `/categoria/${cat.slug}`}
+                      className="group block"
                     >
-                      <img
-                        src={cat.cover_image}
-                        alt={cat.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                      <h3 className="absolute bottom-4 left-4 text-lg sm:text-xl font-bold text-white">
+                      <div className="relative rounded-2xl overflow-hidden aspect-square bg-gradient-to-br from-purple-100 via-pink-50 to-orange-100">
+                        <img
+                          src={cat.cover_image}
+                          alt={cat.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      <h3 className="mt-3 text-base sm:text-lg font-bold text-gray-900 group-hover:text-purple-700 transition-colors">
                         {cat.name}
                       </h3>
                     </Link>

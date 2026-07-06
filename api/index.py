@@ -120,11 +120,13 @@ class CategoryResponse(BaseModel):
     name: str
     slug: str
     cover_image: str
+    position: int = 0
 
 class CategoryCreate(BaseModel):
     name: str
     slug: str
     cover_image: str
+    position: int = 0
 
 class OfferResponse(BaseModel):
     id: int
@@ -235,13 +237,23 @@ def delete_product(product_id: int, _username: str = Depends(verify_token)):
 
 # --- Categories ---
 
+INITIAL_CATEGORIES = [
+    {"id": 1, "name": "iPhone", "slug": "iphone", "cover_image": "https://images.unsplash.com/photo-1695048065319-0006894fb0f3?w=600&h=600&fit=crop", "position": 1},
+    {"id": 2, "name": "Android", "slug": "android", "cover_image": "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&h=600&fit=crop", "position": 2},
+    {"id": 3, "name": "Accesorios", "slug": "accesorios", "cover_image": "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=600&h=600&fit=crop", "position": 3},
+    {"id": 4, "name": "Ofertas", "slug": "ofertas", "cover_image": "https://images.unsplash.com/photo-1607083206968-13611e3d76db?w=600&h=600&fit=crop", "position": 4},
+    {"id": 5, "name": "iPads", "slug": "ipads", "cover_image": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=600&h=600&fit=crop", "position": 5},
+    {"id": 6, "name": "MacBooks", "slug": "macbooks", "cover_image": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&h=600&fit=crop", "position": 6},
+]
+
 @app.get("/api/categories", response_model=list[CategoryResponse])
 def get_categories():
-    return _ec_load("categories", [])
+    cats = _ec_load("categories", INITIAL_CATEGORIES)
+    return sorted(cats, key=lambda c: c.get("position", 0))
 
 @app.post("/api/admin/categories", response_model=CategoryResponse)
 def create_category(category: CategoryCreate, _username: str = Depends(verify_token)):
-    categories = _ec_load("categories", [])
+    categories = _ec_load("categories", INITIAL_CATEGORIES)
     new_id = max((c["id"] for c in categories), default=0) + 1
     new_cat = {"id": new_id, **category.model_dump()}
     categories.append(new_cat)
@@ -250,7 +262,7 @@ def create_category(category: CategoryCreate, _username: str = Depends(verify_to
 
 @app.put("/api/admin/categories/{category_id}", response_model=CategoryResponse)
 def update_category(category_id: int, category: CategoryCreate, _username: str = Depends(verify_token)):
-    categories = _ec_load("categories", [])
+    categories = _ec_load("categories", INITIAL_CATEGORIES)
     for i, c in enumerate(categories):
         if c["id"] == category_id:
             categories[i] = {"id": category_id, **category.model_dump()}
@@ -260,7 +272,7 @@ def update_category(category_id: int, category: CategoryCreate, _username: str =
 
 @app.delete("/api/admin/categories/{category_id}")
 def delete_category(category_id: int, _username: str = Depends(verify_token)):
-    categories = _ec_load("categories", [])
+    categories = _ec_load("categories", INITIAL_CATEGORIES)
     categories = [c for c in categories if c["id"] != category_id]
     _ec_save("categories", categories)
     return {"ok": True}

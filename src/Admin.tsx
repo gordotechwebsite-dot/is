@@ -7,7 +7,7 @@ type Product = {
   id: number; name: string; brand: string; condition: string; image: string
   storage: string[]; colors: string[]; price_range: string; badge: string | null; category: string | null
 }
-type Category = { id: number; name: string; slug: string; cover_image: string }
+type Category = { id: number; name: string; slug: string; cover_image: string; position: number }
 type Offer = {
   id: number; title: string; description: string; badge: string | null
   icon: string | null; featured: boolean; active: boolean
@@ -54,6 +54,7 @@ function Admin() {
   const [catName, setCatName] = useState('')
   const [catSlug, setCatSlug] = useState('')
   const [catCoverImage, setCatCoverImage] = useState('')
+  const [catPosition, setCatPosition] = useState(0)
 
   // Offer form
   const [editingOffer, setEditingOffer] = useState<Offer | null>(null)
@@ -148,15 +149,15 @@ function Admin() {
   }
 
   // --- Categories ---
-  const resetCatForm = () => { setCatName(''); setCatSlug(''); setCatCoverImage(''); setEditingCat(null); setShowCatForm(false) }
+  const resetCatForm = () => { setCatName(''); setCatSlug(''); setCatCoverImage(''); setCatPosition(0); setEditingCat(null); setShowCatForm(false) }
 
   const openEditCat = (c: Category) => {
-    setEditingCat(c); setCatName(c.name); setCatSlug(c.slug); setCatCoverImage(c.cover_image); setShowCatForm(true)
+    setEditingCat(c); setCatName(c.name); setCatSlug(c.slug); setCatCoverImage(c.cover_image); setCatPosition(c.position || 0); setShowCatForm(true)
   }
 
   const saveCat = async (e: React.FormEvent) => {
     e.preventDefault(); setLoading(true)
-    const body = { name: catName, slug: catSlug, cover_image: catCoverImage }
+    const body = { name: catName, slug: catSlug, cover_image: catCoverImage, position: catPosition }
     const url = editingCat ? `${API_URL}/api/admin/categories/${editingCat.id}` : `${API_URL}/api/admin/categories`
     const method = editingCat ? 'PUT' : 'POST'
     const res = await fetch(url, { method, headers: headers(), body: JSON.stringify(body) })
@@ -441,6 +442,11 @@ function Admin() {
                   <Input label="Nombre" value={catName} onChange={v => { setCatName(v); if (!editingCat) setCatSlug(v.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')) }} placeholder="Smartphones" required />
                   <Input label="Slug (URL)" value={catSlug} onChange={setCatSlug} placeholder="smartphones" required />
                   <Input label="URL de imagen de portada" value={catCoverImage} onChange={setCatCoverImage} placeholder="https://ejemplo.com/imagen.jpg" required />
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">Posición (orden en catálogo)</label>
+                    <input type="number" min={0} value={catPosition} onChange={e => setCatPosition(Number(e.target.value))}
+                      className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
+                  </div>
                   {catCoverImage && (
                     <div className="rounded-lg overflow-hidden bg-gray-800 aspect-video">
                       <img src={catCoverImage} alt="Preview" className="w-full h-full object-cover" />
@@ -478,7 +484,10 @@ function Admin() {
                     </div>
                     <div className="p-3">
                       <p className="text-xs text-gray-400">/{c.slug}</p>
-                      <p className="text-xs text-gray-500 mt-1">{products.filter(p => p.category === c.slug).length} productos</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <p className="text-xs text-gray-500">{products.filter(p => p.category === c.slug).length} productos</p>
+                        <p className="text-xs text-gray-500">Pos: {c.position || 0}</p>
+                      </div>
                     </div>
                   </div>
                 ))}
