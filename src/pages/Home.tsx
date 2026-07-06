@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Shield, Truck, RefreshCw, Star } from 'lucide-react'
-import { ScrollReveal, WhatsAppIcon, WHATSAPP_LINK, testimonials } from '../shared'
+import { ScrollReveal, WhatsAppIcon, WHATSAPP_LINK } from '../shared'
 
 export default function Home() {
   return (
@@ -65,43 +65,6 @@ export default function Home() {
               <Star className="w-5 h-5 text-purple-700" />
               <span className="text-sm font-medium text-gray-700">100% originales</span>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-20 lg:py-28 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollReveal>
-            <div className="text-center mb-12">
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-                Lo que dicen nuestros clientes
-              </h2>
-            </div>
-          </ScrollReveal>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {testimonials.map((t, i) => (
-              <ScrollReveal key={i} delay={i * 0.1}>
-                <div className="bg-white rounded-2xl p-6 border border-gray-100 h-full">
-                  <div className="flex gap-1 mb-4">
-                    {Array.from({ length: t.rating }).map((_, j) => (
-                      <Star key={j} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">"{t.text}"</p>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-purple-700">{t.name[0]}</span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">{t.name}</p>
-                      <p className="text-xs text-gray-400">{t.city}</p>
-                    </div>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
           </div>
         </div>
       </section>
