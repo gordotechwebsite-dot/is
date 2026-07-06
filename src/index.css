@@ -115,3 +115,13 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #6B21A8;
 }
+
+/* Marquee scrolling animation */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 15s linear infinite;
+}

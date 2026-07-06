@@ -113,9 +113,19 @@ export default function Layout() {
         </div>
       </footer>
 
+      {/* Mobile promo banner - scrolling text */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-purple-700 text-white overflow-hidden">
+        <div className="animate-marquee whitespace-nowrap py-2 text-xs font-semibold tracking-wide">
+          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
+          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
+          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
+          <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
+        </div>
+      </div>
+
       {/* Floating WhatsApp button */}
       <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all">
+        className="fixed bottom-10 md:bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all">
         <WhatsAppIcon className="w-14 h-14" />
       </a>
     </div>
