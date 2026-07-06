@@ -2,6 +2,7 @@ import hashlib
 import hmac
 import json
 import os
+import urllib.error
 import urllib.request
 from typing import Optional
 
@@ -65,7 +66,7 @@ def _ec_load(key: str, default=None):
 
 def _ec_save(key: str, value):
     if not VERCEL_TOKEN:
-        return
+        raise HTTPException(status_code=500, detail="No se pudo guardar: token no configurado")
     data = json.dumps({"items": [{"operation": "upsert", "key": key, "value": value}]}).encode()
     req = urllib.request.Request(
         f"https://api.vercel.com/v1/edge-config/{EDGE_CONFIG_ID}/items?teamId={TEAM_ID}",
@@ -77,9 +78,13 @@ def _ec_save(key: str, value):
         method="PATCH"
     )
     try:
-        urllib.request.urlopen(req)
-    except Exception:
-        pass
+        with urllib.request.urlopen(req) as resp:
+            result = json.loads(resp.read())
+            if result.get("status") != "ok":
+                raise HTTPException(status_code=500, detail=f"Error al guardar: {result}")
+    except urllib.error.HTTPError as e:
+        body = e.read().decode()
+        raise HTTPException(status_code=500, detail=f"Error al guardar ({e.code}): {body}")
 
 
 # --- Models ---

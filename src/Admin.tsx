@@ -163,7 +163,10 @@ function Admin() {
     const res = await fetch(url, { method, headers: headers(), body: JSON.stringify(body) })
     if (res.status === 401) { handleLogout(); return }
     if (res.ok) { await fetchAll(); resetCatForm(); flash('Categoría guardada') }
-    else flash('Error al guardar')
+    else {
+      const err = await res.json().catch(() => null)
+      flash(err?.detail || 'Error al guardar — la imagen puede ser muy grande')
+    }
     setLoading(false)
   }
 
@@ -246,7 +249,7 @@ function Admin() {
     { key: 'settings', label: 'Configuración', icon: <Settings className="w-5 h-5" /> },
   ]
 
-  const compressImage = (file: File, maxSize = 600): Promise<string> => {
+  const compressImage = (file: File, maxSize = 400): Promise<string> => {
     return new Promise((resolve) => {
       const reader = new FileReader()
       reader.onload = (e) => {
@@ -259,7 +262,7 @@ function Admin() {
           canvas.width = w; canvas.height = h
           const ctx = canvas.getContext('2d')!
           ctx.drawImage(img, 0, 0, w, h)
-          resolve(canvas.toDataURL('image/jpeg', 0.75))
+          resolve(canvas.toDataURL('image/jpeg', 0.6))
         }
         img.src = e.target?.result as string
       }
