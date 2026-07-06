@@ -48,7 +48,7 @@ export default function Layout() {
 
             {/* Mobile: logo centered, larger */}
             <Link to="/" className="md:hidden flex items-center justify-center w-full">
-              <img src="/images/isphone-logo.png" alt="iSphone" className="h-16" />
+              <img src="/images/isphone-logo.png" alt="iSphone" className="h-32" />
             </Link>
 
             {/* Mobile spacer for floating island */}
@@ -139,17 +139,17 @@ export default function Layout() {
 
       {/* Mobile floating island - right side */}
       <div className="md:hidden fixed right-4 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
-        <div className="bg-gray-900/90 backdrop-blur-md rounded-full py-3 px-2 flex flex-col items-center gap-4 shadow-xl">
+        <div className="bg-white/20 backdrop-blur-xl rounded-full py-3 px-2 flex flex-col items-center gap-4 shadow-xl border border-white/30">
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="w-10 h-10 flex items-center justify-center text-white">
+            className="w-10 h-10 flex items-center justify-center text-gray-800">
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
           <button onClick={() => { navigate('/catalogo'); setMobileMenuOpen(false) }}
-            className="w-10 h-10 flex items-center justify-center text-white">
+            className="w-10 h-10 flex items-center justify-center text-gray-800">
             <Search className="w-5 h-5" />
           </button>
           <button onClick={() => { navigate('/ofertas'); setMobileMenuOpen(false) }}
-            className="w-10 h-10 flex items-center justify-center text-yellow-400">
+            className="w-10 h-10 flex items-center justify-center text-gray-800">
             <Zap className="w-5 h-5" />
           </button>
         </div>
