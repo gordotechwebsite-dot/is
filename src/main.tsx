@@ -8,6 +8,7 @@ import TradeIn from './pages/TradeIn.tsx'
 import Envios from './pages/Envios.tsx'
 import Ofertas from './pages/Ofertas.tsx'
 import Contacto from './pages/Contacto.tsx'
+import CategoriaDetail from './pages/CategoriaDetail.tsx'
 import Admin from './Admin.tsx'
 import './index.css'
 
@@ -22,6 +23,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/envios" element={<Envios />} />
           <Route path="/ofertas" element={<Ofertas />} />
           <Route path="/contacto" element={<Contacto />} />
+          <Route path="/categoria/:slug" element={<CategoriaDetail />} />
         </Route>
         <Route path="/admin" element={<Admin />} />
       </Routes>

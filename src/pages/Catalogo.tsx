@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { ArrowRight, ChevronDown, Smartphone } from 'lucide-react'
-import { ScrollReveal, WHATSAPP_LINK, API_URL, Product } from '../shared'
+import { Link } from 'react-router-dom'
+import { ScrollReveal, WHATSAPP_LINK, API_URL, Product, Category } from '../shared'
 
 const fallbackProducts: Product[] = [
   { id: 1, name: 'iPhone 16', brand: 'apple', condition: 'Nuevo', image: '/images/products/iphone-16-gray.png', storage: ['128GB', '256GB'], colors: ['Negro', 'Blanco', 'Azul', 'Verde', 'Morado'], priceRange: 'Desde $3.400.000', badge: 'Nuevo' },
@@ -27,13 +28,14 @@ export default function Catalogo() {
   const [filterCondition, setFilterCondition] = useState<FilterCondition>('all')
   const [showAll, setShowAll] = useState(false)
   const [products, setProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     fetch(`${API_URL}/api/products`)
       .then(res => res.json())
       .then(data => {
-        const mapped = data.map((p: { id: number; name: string; brand: string; condition: string; image: string; storage: string[]; colors: string[]; price_range: string; badge?: string }) => ({
+        const mapped = data.map((p: { id: number; name: string; brand: string; condition: string; image: string; storage: string[]; colors: string[]; price_range: string; badge?: string; category?: string }) => ({
           ...p,
           priceRange: p.price_range,
         }))
@@ -41,6 +43,11 @@ export default function Catalogo() {
         setLoaded(true)
       })
       .catch(() => setLoaded(true))
+
+    fetch(`${API_URL}/api/categories`)
+      .then(res => res.json())
+      .then(data => setCategories(data))
+      .catch(() => {})
   }, [])
 
   const activeProducts = loaded && products.length > 0 ? products : fallbackProducts
@@ -66,6 +73,35 @@ export default function Catalogo() {
             </p>
           </div>
         </ScrollReveal>
+
+        {/* Categories grid - Samsung style */}
+        {categories.length > 0 && (
+          <ScrollReveal delay={0.05}>
+            <div className="mb-14">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Categorías</h2>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {categories.map((cat, i) => (
+                  <ScrollReveal key={cat.id} delay={i * 0.05}>
+                    <Link
+                      to={`/categoria/${cat.slug}`}
+                      className="group relative block rounded-2xl overflow-hidden aspect-square bg-gradient-to-br from-purple-100 to-pink-100"
+                    >
+                      <img
+                        src={cat.cover_image}
+                        alt={cat.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                      <h3 className="absolute bottom-4 left-4 text-lg sm:text-xl font-bold text-white">
+                        {cat.name}
+                      </h3>
+                    </Link>
+                  </ScrollReveal>
+                ))}
+              </div>
+            </div>
+          </ScrollReveal>
+        )}
 
         {/* Filters */}
         <ScrollReveal delay={0.1}>

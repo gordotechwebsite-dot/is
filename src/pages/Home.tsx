@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Shield, Truck, RefreshCw, Star } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { ScrollReveal, WhatsAppIcon, WHATSAPP_LINK } from '../shared'
 
 export default function Home() {
@@ -40,30 +40,6 @@ export default function Home() {
                 <img src="https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=500&h=700&fit=crop"
                   alt="Smartphones" className="relative rounded-[2rem] w-80 object-cover shadow-2xl" />
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Value props strip */}
-      <section className="bg-gray-50 py-6 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="flex items-center gap-3 justify-center py-3">
-              <Shield className="w-5 h-5 text-purple-700" />
-              <span className="text-sm font-medium text-gray-700">Garantía incluida</span>
-            </div>
-            <div className="flex items-center gap-3 justify-center py-3">
-              <Truck className="w-5 h-5 text-purple-700" />
-              <span className="text-sm font-medium text-gray-700">Contra entrega</span>
-            </div>
-            <div className="flex items-center gap-3 justify-center py-3">
-              <RefreshCw className="w-5 h-5 text-purple-700" />
-              <span className="text-sm font-medium text-gray-700">Trade-In disponible</span>
-            </div>
-            <div className="flex items-center gap-3 justify-center py-3">
-              <Star className="w-5 h-5 text-purple-700" />
-              <span className="text-sm font-medium text-gray-700">100% originales</span>
             </div>
           </div>
         </div>
