@@ -11,7 +11,7 @@ export default function Layout() {
     { to: '/', label: 'Inicio' },
     { to: '/catalogo', label: 'Catálogo' },
     { to: '/trade-in', label: 'Trade-In' },
-    { to: '/envios', label: 'Envíos' },
+    { to: '/ofertas', label: 'Ofertas' },
     { to: '/contacto', label: 'Contacto' },
   ]
 
@@ -63,10 +63,6 @@ export default function Layout() {
                   {link.label}
                 </Link>
               ))}
-              <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
-                className="block bg-purple-700 text-white px-5 py-3 rounded-full text-center font-medium">
-                WhatsApp
-              </a>
             </div>
           </div>
         )}
