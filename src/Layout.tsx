@@ -114,7 +114,7 @@ export default function Layout() {
       </footer>
 
       {/* Mobile promo banner - scrolling text */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-purple-700 text-white overflow-hidden">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black text-white overflow-hidden">
         <div className="animate-marquee whitespace-nowrap py-2 text-xs font-semibold tracking-wide">
           <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
           <span className="mx-8">🎁 OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000</span>
