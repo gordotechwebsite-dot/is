@@ -12,6 +12,13 @@ import CategoriaDetail from './pages/CategoriaDetail.tsx'
 import Admin from './Admin.tsx'
 import './index.css'
 
+const loader = document.getElementById('loader')
+if (loader) {
+  loader.style.transition = 'opacity 0.4s ease'
+  loader.style.opacity = '0'
+  setTimeout(() => loader.remove(), 400)
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
