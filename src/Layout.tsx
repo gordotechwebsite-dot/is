@@ -188,7 +188,7 @@ export default function Layout() {
 
       {/* Floating WhatsApp button */}
       <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
-        className="fixed bottom-10 md:bottom-6 left-6 md:right-6 md:left-auto z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all">
+        className="fixed bottom-10 md:bottom-6 right-6 z-50 hover:scale-110 transition-all">
         <WhatsAppIcon className="w-14 h-14" />
       </a>
     </div>
