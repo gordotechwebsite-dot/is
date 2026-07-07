@@ -255,9 +255,11 @@ export default function Layout() {
                 {searchResults.length > 0 && (
                   <div className="divide-y divide-gray-50">
                     {searchResults.map(product => (
-                      <Link
+                      <a
                         key={product.id}
-                        to={product.category ? `/categoria/${product.category}` : '/catalogo'}
+                        href={`${WHATSAPP_LINK}?text=${encodeURIComponent(`Hola! Me interesa el ${product.name} (${product.condition})`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         onClick={() => setSearchOpen(false)}
                         className="flex items-center gap-4 px-5 py-3 hover:bg-purple-50 transition-colors"
                       >
@@ -269,7 +271,7 @@ export default function Layout() {
                           <p className="text-xs text-gray-500">{product.brand} · {product.condition}</p>
                           {product.priceRange && <p className="text-xs font-bold text-purple-700 mt-0.5">{product.priceRange}</p>}
                         </div>
-                      </Link>
+                      </a>
                     ))}
                   </div>
                 )}
