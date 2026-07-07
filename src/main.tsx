@@ -13,6 +13,16 @@ const Contacto = lazy(() => import('./pages/Contacto.tsx'))
 const CategoriaDetail = lazy(() => import('./pages/CategoriaDetail.tsx'))
 const Admin = lazy(() => import('./Admin.tsx'))
 
+function PageLoader() {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <img src="/images/apple-logo.webp" alt="Cargando..." className="w-16 h-16 object-contain animate-pulse-logo" />
+    </div>
+  )
+}
+
+export { PageLoader }
+
 const loader = document.getElementById('loader')
 if (loader) {
   loader.style.transition = 'opacity 0.3s ease'
@@ -23,7 +33,7 @@ if (loader) {
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <Suspense fallback={null}>
+      <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
