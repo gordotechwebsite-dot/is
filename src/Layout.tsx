@@ -61,7 +61,7 @@ export default function Layout() {
           <div className="flex items-center justify-between h-20">
             {/* Desktop: logo left */}
             <Link to="/" className="hidden md:flex items-center gap-2">
-              <img src="/images/isphone-logo.png" alt="iSphone" className="h-24" />
+              <img src="/images/isphone-logo.webp" alt="iSphone" className="h-24" />
             </Link>
 
             {/* Desktop nav */}
@@ -85,7 +85,7 @@ export default function Layout() {
 
             {/* Mobile: logo centered absolutely */}
             <Link to="/" className="md:hidden absolute left-1/2 -translate-x-1/2">
-              <img src="/images/isphone-logo.png" alt="iSphone" className="h-32" />
+              <img src="/images/isphone-logo.webp" alt="iSphone" className="h-32" />
             </Link>
           </div>
         </div>
@@ -140,7 +140,7 @@ export default function Layout() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             <div>
-              <img src="/images/isphone-logo.png" alt="iSphone" className="h-10 mb-4 brightness-0 invert" />
+              <img src="/images/isphone-logo.webp" alt="iSphone" className="h-10 mb-4 brightness-0 invert" />
               <p className="text-sm text-gray-500 leading-relaxed">
                 Evolución en tus manos. Equipos nuevos y de exhibición con garantía en Boyacá, Colombia.
               </p>
