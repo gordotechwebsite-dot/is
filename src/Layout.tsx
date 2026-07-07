@@ -257,7 +257,7 @@ export default function Layout() {
                     {searchResults.map(product => (
                       <Link
                         key={product.id}
-                        to={product.category ? `/categoria/${product.category}` : '/catalogo'}
+                        to={`/producto/${product.id}`}
                         onClick={() => setSearchOpen(false)}
                         className="flex items-center gap-4 px-5 py-3 hover:bg-purple-50 transition-colors"
                       >

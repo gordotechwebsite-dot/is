@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Smartphone } from 'lucide-react'
-import { ScrollReveal, WHATSAPP_LINK, API_URL, Product, Category } from '../shared'
+import { ScrollReveal, API_URL, Product, Category } from '../shared'
 
 export default function CategoriaDetail() {
   const { slug } = useParams<{ slug: string }>()
@@ -82,14 +82,9 @@ export default function CategoriaDetail() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {products.map((product, i) => (
               <ScrollReveal key={product.id} delay={i * 0.05}>
-                <div
-                  className="group bg-white rounded-2xl border border-gray-100 overflow-hidden card-hover cursor-pointer"
-                  onClick={() =>
-                    window.open(
-                      `${WHATSAPP_LINK}?text=Hola!%20Me%20interesa%20el%20${encodeURIComponent(product.name)}%20(${product.condition})`,
-                      '_blank'
-                    )
-                  }
+                <Link
+                  to={`/producto/${product.id}`}
+                  className="group bg-white rounded-2xl border border-gray-100 overflow-hidden card-hover cursor-pointer block"
                 >
                   <div className="relative bg-gray-50 p-6 aspect-square flex items-center justify-center overflow-hidden">
                     <img
@@ -125,11 +120,11 @@ export default function CategoriaDetail() {
                     <div className="flex items-center justify-between">
                       <span className="text-purple-700 font-bold">{product.priceRange}</span>
                       <span className="text-xs text-gray-400 flex items-center gap-1">
-                        Consultar <ArrowRight className="w-3 h-3" />
+                        Ver detalle <ArrowRight className="w-3 h-3" />
                       </span>
                     </div>
                   </div>
-                </div>
+                </Link>
               </ScrollReveal>
             ))}
           </div>
