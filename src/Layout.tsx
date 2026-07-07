@@ -58,13 +58,10 @@ export default function Layout() {
               </a>
             </div>
 
-            {/* Mobile: logo centered, larger */}
-            <Link to="/" className="md:hidden flex items-center justify-center w-full">
+            {/* Mobile: logo centered absolutely */}
+            <Link to="/" className="md:hidden absolute left-1/2 -translate-x-1/2">
               <img src="/images/isphone-logo.png" alt="iSphone" className="h-32" />
             </Link>
-
-            {/* Mobile spacer for floating island */}
-            <div className="md:hidden w-10" />
           </div>
         </div>
 
