@@ -273,12 +273,7 @@ export default function Layout() {
                     ))}
                   </div>
                 )}
-                {!searchQuery.trim() && (
-                  <div className="px-5 py-8 text-center">
-                    <Search className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                    <p className="text-gray-400 text-sm">Escribe para buscar equipos</p>
-                  </div>
-                )}
+
               </div>
             </div>
           </div>
