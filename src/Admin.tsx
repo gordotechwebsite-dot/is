@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
-import { Trash2, Edit, Plus, LogOut, Save, X, FolderOpen, Package, Home, Zap, Settings, ChevronLeft, Eye } from 'lucide-react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { Trash2, Edit, Plus, LogOut, Save, X, FolderOpen, Package, Home, Zap, Settings, ChevronLeft, Eye, Upload, Image } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://isphone-api.vercel.app'
 
@@ -163,7 +163,10 @@ function Admin() {
     const res = await fetch(url, { method, headers: headers(), body: JSON.stringify(body) })
     if (res.status === 401) { handleLogout(); return }
     if (res.ok) { await fetchAll(); resetCatForm(); flash('Categoría guardada') }
-    else flash('Error al guardar')
+    else {
+      const err = await res.json().catch(() => null)
+      flash(err?.detail || 'Error al guardar — la imagen puede ser muy grande')
+    }
     setLoading(false)
   }
 
@@ -245,6 +248,76 @@ function Admin() {
     { key: 'landing', label: 'Página principal', icon: <Home className="w-5 h-5" /> },
     { key: 'settings', label: 'Configuración', icon: <Settings className="w-5 h-5" /> },
   ]
+
+  const compressImage = (file: File, maxSize = 400): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const img = document.createElement('img')
+        img.onload = () => {
+          const canvas = document.createElement('canvas')
+          let w = img.width, h = img.height
+          if (w > h) { if (w > maxSize) { h = Math.round(h * maxSize / w); w = maxSize } }
+          else { if (h > maxSize) { w = Math.round(w * maxSize / h); h = maxSize } }
+          canvas.width = w; canvas.height = h
+          const ctx = canvas.getContext('2d')!
+          ctx.drawImage(img, 0, 0, w, h)
+          resolve(canvas.toDataURL('image/jpeg', 0.6))
+        }
+        img.src = e.target?.result as string
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const ImageUpload = ({ value, onChange, label = 'Imagen' }: { value: string; onChange: (v: string) => void; label?: string }) => {
+    const fileRef = useRef<HTMLInputElement>(null)
+    const [uploading, setUploading] = useState(false)
+
+    const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0]
+      if (!file) return
+      setUploading(true)
+      const dataUrl = await compressImage(file)
+      onChange(dataUrl)
+      setUploading(false)
+    }
+
+    return (
+      <div>
+        <label className="block text-sm text-gray-400 mb-1">{label}</label>
+        <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
+        {value ? (
+          <div className="relative rounded-lg overflow-hidden bg-gray-800 aspect-video">
+            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+              <button type="button" onClick={() => fileRef.current?.click()}
+                className="bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-600 flex items-center gap-2">
+                <Upload className="w-4 h-4" /> Cambiar
+              </button>
+              <button type="button" onClick={() => onChange('')}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-500 flex items-center gap-2">
+                <Trash2 className="w-4 h-4" /> Quitar
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button type="button" onClick={() => fileRef.current?.click()}
+            className="w-full border-2 border-dashed border-gray-700 rounded-lg py-8 flex flex-col items-center gap-2 text-gray-500 hover:border-purple-500 hover:text-purple-400 transition-colors">
+            {uploading ? (
+              <span className="text-sm">Comprimiendo...</span>
+            ) : (
+              <>
+                <Image className="w-8 h-8" />
+                <span className="text-sm font-medium">Subir imagen</span>
+                <span className="text-xs">JPG, PNG — se comprime automáticamente</span>
+              </>
+            )}
+          </button>
+        )}
+      </div>
+    )
+  }
 
   const Modal = ({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) => (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto">
@@ -342,12 +415,7 @@ function Admin() {
             {showForm && (
               <Modal title={editing ? 'Editar producto' : 'Nuevo producto'} onClose={resetProductForm}>
                 <form onSubmit={saveProduct} className="space-y-4">
-                  <Input label="URL de imagen" value={formImage} onChange={setFormImage} placeholder="/images/products/..." required />
-                  {formImage && (
-                    <div className="bg-gray-800 rounded-lg p-2 flex justify-center">
-                      <img src={formImage} alt="Preview" className="h-24 object-contain" />
-                    </div>
-                  )}
+                  <ImageUpload value={formImage} onChange={setFormImage} label="Imagen del producto" />
                   <Input label="Nombre" value={formName} onChange={setFormName} placeholder="iPhone 16 Pro" required />
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -441,17 +509,12 @@ function Admin() {
                 <form onSubmit={saveCat} className="space-y-4">
                   <Input label="Nombre" value={catName} onChange={v => { setCatName(v); if (!editingCat) setCatSlug(v.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')) }} placeholder="Smartphones" required />
                   <Input label="Slug (URL)" value={catSlug} onChange={setCatSlug} placeholder="smartphones" required />
-                  <Input label="URL de imagen de portada" value={catCoverImage} onChange={setCatCoverImage} placeholder="https://ejemplo.com/imagen.jpg" required />
+                  <ImageUpload value={catCoverImage} onChange={setCatCoverImage} label="Imagen de portada" />
                   <div>
                     <label className="block text-sm text-gray-400 mb-1">Posición (orden en catálogo)</label>
                     <input type="number" min={0} value={catPosition} onChange={e => setCatPosition(Number(e.target.value))}
                       className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
                   </div>
-                  {catCoverImage && (
-                    <div className="rounded-lg overflow-hidden bg-gray-800 aspect-video">
-                      <img src={catCoverImage} alt="Preview" className="w-full h-full object-cover" />
-                    </div>
-                  )}
                   <div className="flex gap-3 pt-2">
                     <button type="submit" disabled={loading}
                       className="flex-1 flex items-center justify-center gap-2 bg-purple-700 text-white py-3 rounded-xl font-semibold hover:bg-purple-600 disabled:opacity-50">

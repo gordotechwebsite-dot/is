@@ -1,12 +1,15 @@
+import base64
 import hashlib
 import hmac
 import json
 import os
+import urllib.error
 import urllib.request
 from typing import Optional
 
-from fastapi import FastAPI, Depends, HTTPException, Header
+from fastapi import FastAPI, Depends, HTTPException, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -65,7 +68,7 @@ def _ec_load(key: str, default=None):
 
 def _ec_save(key: str, value):
     if not VERCEL_TOKEN:
-        return
+        raise HTTPException(status_code=500, detail="No se pudo guardar: token no configurado")
     data = json.dumps({"items": [{"operation": "upsert", "key": key, "value": value}]}).encode()
     req = urllib.request.Request(
         f"https://api.vercel.com/v1/edge-config/{EDGE_CONFIG_ID}/items?teamId={TEAM_ID}",
@@ -77,9 +80,33 @@ def _ec_save(key: str, value):
         method="PATCH"
     )
     try:
-        urllib.request.urlopen(req)
-    except Exception:
-        pass
+        with urllib.request.urlopen(req) as resp:
+            result = json.loads(resp.read())
+            if result.get("status") != "ok":
+                raise HTTPException(status_code=500, detail=f"Error al guardar: {result}")
+    except urllib.error.HTTPError as e:
+        body = e.read().decode()
+        raise HTTPException(status_code=500, detail=f"Error al guardar ({e.code}): {body}")
+
+
+def _save_image_if_base64(image_value: str, key: str, request: Request) -> str:
+    if image_value.startswith("data:image"):
+        _ec_save(key, image_value)
+        base_url = str(request.base_url).rstrip("/")
+        return f"{base_url}/api/images/{key}"
+    return image_value
+
+
+@app.get("/api/images/{key}")
+def get_image(key: str):
+    data_url = _ec_load(key)
+    if not data_url or not isinstance(data_url, str) or not data_url.startswith("data:"):
+        raise HTTPException(status_code=404, detail="Imagen no encontrada")
+    header, b64data = data_url.split(",", 1)
+    content_type = header.split(":")[1].split(";")[0]
+    image_bytes = base64.b64decode(b64data)
+    return Response(content=image_bytes, media_type=content_type,
+                    headers={"Cache-Control": "public, max-age=31536000, immutable"})
 
 
 # --- Models ---
@@ -209,20 +236,24 @@ def get_products():
     return _ec_load("products", INITIAL_PRODUCTS)
 
 @app.post("/api/admin/products", response_model=ProductResponse)
-def create_product(product: ProductCreate, _username: str = Depends(verify_token)):
+def create_product(product: ProductCreate, request: Request, _username: str = Depends(verify_token)):
     products = _ec_load("products", INITIAL_PRODUCTS)
     new_id = max((p["id"] for p in products), default=0) + 1
-    new_product = {"id": new_id, **product.model_dump()}
+    prod_data = product.model_dump()
+    prod_data["image"] = _save_image_if_base64(prod_data["image"], f"prod_img_{new_id}", request)
+    new_product = {"id": new_id, **prod_data}
     products.append(new_product)
     _ec_save("products", products)
     return new_product
 
 @app.put("/api/admin/products/{product_id}", response_model=ProductResponse)
-def update_product(product_id: int, product: ProductCreate, _username: str = Depends(verify_token)):
+def update_product(product_id: int, product: ProductCreate, request: Request, _username: str = Depends(verify_token)):
     products = _ec_load("products", INITIAL_PRODUCTS)
     for i, p in enumerate(products):
         if p["id"] == product_id:
-            products[i] = {"id": product_id, **product.model_dump()}
+            prod_data = product.model_dump()
+            prod_data["image"] = _save_image_if_base64(prod_data["image"], f"prod_img_{product_id}", request)
+            products[i] = {"id": product_id, **prod_data}
             _ec_save("products", products)
             return products[i]
     raise HTTPException(status_code=404, detail="Producto no encontrado")
@@ -252,20 +283,24 @@ def get_categories():
     return sorted(cats, key=lambda c: c.get("position", 0))
 
 @app.post("/api/admin/categories", response_model=CategoryResponse)
-def create_category(category: CategoryCreate, _username: str = Depends(verify_token)):
+def create_category(category: CategoryCreate, request: Request, _username: str = Depends(verify_token)):
     categories = _ec_load("categories", INITIAL_CATEGORIES)
     new_id = max((c["id"] for c in categories), default=0) + 1
-    new_cat = {"id": new_id, **category.model_dump()}
+    cat_data = category.model_dump()
+    cat_data["cover_image"] = _save_image_if_base64(cat_data["cover_image"], f"cat_img_{new_id}", request)
+    new_cat = {"id": new_id, **cat_data}
     categories.append(new_cat)
     _ec_save("categories", categories)
     return new_cat
 
 @app.put("/api/admin/categories/{category_id}", response_model=CategoryResponse)
-def update_category(category_id: int, category: CategoryCreate, _username: str = Depends(verify_token)):
+def update_category(category_id: int, category: CategoryCreate, request: Request, _username: str = Depends(verify_token)):
     categories = _ec_load("categories", INITIAL_CATEGORIES)
     for i, c in enumerate(categories):
         if c["id"] == category_id:
-            categories[i] = {"id": category_id, **category.model_dump()}
+            cat_data = category.model_dump()
+            cat_data["cover_image"] = _save_image_if_base64(cat_data["cover_image"], f"cat_img_{category_id}", request)
+            categories[i] = {"id": category_id, **cat_data}
             _ec_save("categories", categories)
             return categories[i]
     raise HTTPException(status_code=404, detail="Categoría no encontrada")
