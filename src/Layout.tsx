@@ -1,14 +1,39 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Phone, MapPin, Menu, X, Instagram, Search, Zap } from 'lucide-react'
-import { WhatsAppIcon, WHATSAPP_LINK, API_URL } from './shared'
+import { WhatsAppIcon, WHATSAPP_LINK, API_URL, Product } from './shared'
 
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [bannerText, setBannerText] = useState('OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000')
   const [bannerActive, setBannerActive] = useState(true)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<Product[]>([])
+  const [allProducts, setAllProducts] = useState<Product[]>([])
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const location = useLocation()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (searchOpen && searchInputRef.current) searchInputRef.current.focus()
+  }, [searchOpen])
+
+  useEffect(() => {
+    if (searchOpen && allProducts.length === 0) {
+      fetch(`${API_URL}/api/products`).then(r => r.json()).then(setAllProducts).catch(() => {})
+    }
+  }, [searchOpen])
+
+  useEffect(() => {
+    if (!searchQuery.trim()) { setSearchResults([]); return }
+    const q = searchQuery.toLowerCase()
+    setSearchResults(allProducts.filter(p =>
+      p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q)
+    ))
+  }, [searchQuery, allProducts])
+
+  useEffect(() => { setSearchOpen(false); setSearchQuery('') }, [location])
 
   useEffect(() => {
     fetch(`${API_URL}/api/site-content`)
@@ -156,7 +181,7 @@ export default function Layout() {
             className="w-10 h-10 flex items-center justify-center text-gray-800">
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
-          <button onClick={() => { navigate('/catalogo'); setMobileMenuOpen(false) }}
+          <button onClick={() => { setSearchOpen(true); setMobileMenuOpen(false) }}
             className="w-10 h-10 flex items-center justify-center text-gray-800">
             <Search className="w-5 h-5" />
           </button>
@@ -188,6 +213,71 @@ export default function Layout() {
         className="fixed bottom-10 md:bottom-6 right-6 z-50 hover:scale-110 transition-all">
         <WhatsAppIcon className="w-14 h-14" />
       </a>
+
+      {/* Search overlay */}
+      {searchOpen && (
+        <div className="fixed inset-0 z-[100] flex flex-col">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSearchOpen(false)} />
+          {/* Search panel */}
+          <div className="relative mt-0 w-full max-w-2xl mx-auto flex flex-col max-h-full">
+            {/* Search header */}
+            <div className="bg-white rounded-b-2xl shadow-2xl overflow-hidden">
+              <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
+                <Search className="w-5 h-5 text-purple-600 shrink-0" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  placeholder="Buscar productos..."
+                  className="flex-1 text-lg outline-none bg-transparent placeholder:text-gray-400"
+                  autoComplete="off"
+                />
+                <button onClick={() => setSearchOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+
+              {/* Results */}
+              <div className="max-h-[70vh] overflow-y-auto">
+                {searchQuery.trim() && searchResults.length === 0 && (
+                  <div className="px-5 py-10 text-center">
+                    <p className="text-gray-400 text-sm">No se encontraron resultados para "<span className="text-gray-600 font-medium">{searchQuery}</span>"</p>
+                  </div>
+                )}
+                {searchResults.length > 0 && (
+                  <div className="divide-y divide-gray-50">
+                    {searchResults.map(product => (
+                      <Link
+                        key={product.id}
+                        to={product.category ? `/categoria/${product.category}` : '/catalogo'}
+                        onClick={() => setSearchOpen(false)}
+                        className="flex items-center gap-4 px-5 py-3 hover:bg-purple-50 transition-colors"
+                      >
+                        <div className="w-14 h-14 rounded-xl bg-gray-100 overflow-hidden shrink-0">
+                          <img src={product.image} alt={product.name} className="w-full h-full object-contain" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-900 truncate">{product.name}</p>
+                          <p className="text-xs text-gray-500">{product.brand} · {product.condition}</p>
+                          {product.priceRange && <p className="text-xs font-bold text-purple-700 mt-0.5">{product.priceRange}</p>}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                {!searchQuery.trim() && (
+                  <div className="px-5 py-8 text-center">
+                    <Search className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+                    <p className="text-gray-400 text-sm">Escribe para buscar equipos</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
