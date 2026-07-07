@@ -15,21 +15,10 @@ export default function Catalogo() {
   return (
     <section className="py-12 lg:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <ScrollReveal>
-          <div className="text-center mb-12">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Nuestros Equipos
-            </h1>
-            <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-              Nuevos y de exhibición — todos con garantía y al mejor precio de la región
-            </p>
-          </div>
-        </ScrollReveal>
-
         {/* Categories grid - Samsung style */}
         {categories.length > 0 && (
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Explora por categoría</h2>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-8 text-center">Explora por categoría</h2>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {categories.map((cat, i) => (
                 <ScrollReveal key={cat.id} delay={i * 0.05}>
