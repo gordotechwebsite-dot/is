@@ -30,7 +30,7 @@ export default function CategoriaDetail() {
   if (!loaded) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-purple-700 border-t-transparent rounded-full animate-spin" />
+        <img src="/images/apple-logo.webp" alt="Cargando..." className="w-16 h-16 object-contain animate-pulse-logo" />
       </div>
     )
   }
