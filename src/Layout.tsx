@@ -21,7 +21,13 @@ export default function Layout() {
 
   useEffect(() => {
     if (searchOpen && allProducts.length === 0) {
-      fetch(`${API_URL}/api/products`).then(r => r.json()).then(setAllProducts).catch(() => {})
+      fetch(`${API_URL}/api/products`).then(r => r.json()).then((data: Product[]) => {
+        setAllProducts(data.map(p => ({
+          ...p,
+          priceRange: (p as unknown as Record<string, string>).price_range || p.priceRange || '',
+          image: p.image && !p.image.startsWith('http') ? `${API_URL}${p.image}` : p.image,
+        })))
+      }).catch(() => {})
     }
   }, [searchOpen])
 
