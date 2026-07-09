@@ -190,20 +190,20 @@ class SiteContent(BaseModel):
 # --- Defaults ---
 
 INITIAL_PRODUCTS = [
-    {"id": 1, "name": "iPhone 16", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-16-gray.png", "storage": ["128GB", "256GB"], "colors": ["Negro", "Blanco", "Azul", "Verde", "Morado"], "price_range": "Desde $3.400.000", "badge": "Nuevo"},
-    {"id": 2, "name": "iPhone 16", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-16-white.png", "storage": ["128GB", "256GB"], "colors": ["Blanco", "Negro", "Azul", "Verde", "Morado"], "price_range": "Desde $3.400.000", "badge": "Nuevo"},
-    {"id": 3, "name": "iPhone 16", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-16-blue.png", "storage": ["128GB", "256GB"], "colors": ["Azul", "Negro", "Blanco", "Verde", "Morado"], "price_range": "Desde $3.400.000", "badge": "Nuevo"},
-    {"id": 4, "name": "iPhone 16", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-16-green.png", "storage": ["128GB", "256GB"], "colors": ["Verde", "Negro", "Blanco", "Azul", "Morado"], "price_range": "Desde $3.400.000", "badge": "Nuevo"},
-    {"id": 5, "name": "iPhone 16", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-16-purple.png", "storage": ["128GB", "256GB"], "colors": ["Morado", "Negro", "Blanco", "Azul", "Verde"], "price_range": "Desde $3.400.000", "badge": "Nuevo"},
-    {"id": 6, "name": "iPhone 16 Pro", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-16-dark.png", "storage": ["128GB", "256GB", "512GB"], "colors": ["Titanio Negro", "Titanio Natural", "Titanio Desierto"], "price_range": "Desde $4.800.000", "badge": "Pro"},
-    {"id": 7, "name": "iPhone SE 4", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-se4-white.png", "storage": ["128GB", "256GB"], "colors": ["Blanco", "Azul", "Negro", "Rosa"], "price_range": "Desde $2.200.000", "badge": "Nuevo"},
-    {"id": 8, "name": "iPhone SE 4", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-se4-blue.png", "storage": ["128GB", "256GB"], "colors": ["Azul", "Blanco", "Negro", "Rosa"], "price_range": "Desde $2.200.000", "badge": "Nuevo"},
-    {"id": 9, "name": "iPhone SE 4", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-se4-black.png", "storage": ["128GB", "256GB"], "colors": ["Negro", "Blanco", "Azul", "Rosa"], "price_range": "Desde $2.200.000", "badge": "Nuevo"},
-    {"id": 10, "name": "iPhone SE 4", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-se4-pink.png", "storage": ["128GB", "256GB"], "colors": ["Rosa", "Blanco", "Azul", "Negro"], "price_range": "Desde $2.200.000", "badge": "Nuevo"},
-    {"id": 11, "name": "Samsung Galaxy S25", "brand": "samsung", "condition": "Nuevo", "image": "/images/products/samsung-s25-gray.png", "storage": ["128GB", "256GB"], "colors": ["Negro", "Azul", "Menta", "Plata"], "price_range": "Desde $3.200.000", "badge": "Galaxy AI"},
-    {"id": 12, "name": "Samsung Galaxy S24 Ultra", "brand": "samsung", "condition": "Nuevo", "image": "/images/products/samsung-s24-ultra-gold.png", "storage": ["256GB", "512GB", "1TB"], "colors": ["Titanio Dorado", "Titanio Gris", "Titanio Negro"], "price_range": "Desde $4.800.000", "badge": "Ultra"},
-    {"id": 13, "name": "Samsung Galaxy S25", "brand": "samsung", "condition": "Nuevo", "image": "/images/products/samsung-s25-blue.png", "storage": ["128GB", "256GB"], "colors": ["Azul", "Negro", "Menta", "Plata"], "price_range": "Desde $3.200.000", "badge": "Galaxy AI"},
-    {"id": 14, "name": "Samsung Galaxy S25", "brand": "samsung", "condition": "Nuevo", "image": "/images/products/samsung-s25-mint.png", "storage": ["128GB", "256GB"], "colors": ["Menta", "Negro", "Azul", "Plata"], "price_range": "Desde $3.200.000", "badge": "Galaxy AI"},
+    {"id": 1, "name": "iPhone 16", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-16-gray.webp", "storage": ["128GB", "256GB"], "colors": ["Negro", "Blanco", "Azul", "Verde", "Morado"], "price_range": "Desde $3.400.000", "badge": "Nuevo"},
+    {"id": 2, "name": "iPhone 16", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-16-white.webp", "storage": ["128GB", "256GB"], "colors": ["Blanco", "Negro", "Azul", "Verde", "Morado"], "price_range": "Desde $3.400.000", "badge": "Nuevo"},
+    {"id": 3, "name": "iPhone 16", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-16-blue.webp", "storage": ["128GB", "256GB"], "colors": ["Azul", "Negro", "Blanco", "Verde", "Morado"], "price_range": "Desde $3.400.000", "badge": "Nuevo"},
+    {"id": 4, "name": "iPhone 16", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-16-green.webp", "storage": ["128GB", "256GB"], "colors": ["Verde", "Negro", "Blanco", "Azul", "Morado"], "price_range": "Desde $3.400.000", "badge": "Nuevo"},
+    {"id": 5, "name": "iPhone 16", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-16-purple.webp", "storage": ["128GB", "256GB"], "colors": ["Morado", "Negro", "Blanco", "Azul", "Verde"], "price_range": "Desde $3.400.000", "badge": "Nuevo"},
+    {"id": 6, "name": "iPhone 16 Pro", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-16-dark.webp", "storage": ["128GB", "256GB", "512GB"], "colors": ["Titanio Negro", "Titanio Natural", "Titanio Desierto"], "price_range": "Desde $4.800.000", "badge": "Pro"},
+    {"id": 7, "name": "iPhone SE 4", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-se4-white.webp", "storage": ["128GB", "256GB"], "colors": ["Blanco", "Azul", "Negro", "Rosa"], "price_range": "Desde $2.200.000", "badge": "Nuevo"},
+    {"id": 8, "name": "iPhone SE 4", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-se4-blue.webp", "storage": ["128GB", "256GB"], "colors": ["Azul", "Blanco", "Negro", "Rosa"], "price_range": "Desde $2.200.000", "badge": "Nuevo"},
+    {"id": 9, "name": "iPhone SE 4", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-se4-black.webp", "storage": ["128GB", "256GB"], "colors": ["Negro", "Blanco", "Azul", "Rosa"], "price_range": "Desde $2.200.000", "badge": "Nuevo"},
+    {"id": 10, "name": "iPhone SE 4", "brand": "apple", "condition": "Nuevo", "image": "/images/products/iphone-se4-pink.webp", "storage": ["128GB", "256GB"], "colors": ["Rosa", "Blanco", "Azul", "Negro"], "price_range": "Desde $2.200.000", "badge": "Nuevo"},
+    {"id": 11, "name": "Samsung Galaxy S25", "brand": "samsung", "condition": "Nuevo", "image": "/images/products/samsung-s25-gray.webp", "storage": ["128GB", "256GB"], "colors": ["Negro", "Azul", "Menta", "Plata"], "price_range": "Desde $3.200.000", "badge": "Galaxy AI"},
+    {"id": 12, "name": "Samsung Galaxy S24 Ultra", "brand": "samsung", "condition": "Nuevo", "image": "/images/products/samsung-s24-ultra-gold.webp", "storage": ["256GB", "512GB", "1TB"], "colors": ["Titanio Dorado", "Titanio Gris", "Titanio Negro"], "price_range": "Desde $4.800.000", "badge": "Ultra"},
+    {"id": 13, "name": "Samsung Galaxy S25", "brand": "samsung", "condition": "Nuevo", "image": "/images/products/samsung-s25-blue.webp", "storage": ["128GB", "256GB"], "colors": ["Azul", "Negro", "Menta", "Plata"], "price_range": "Desde $3.200.000", "badge": "Galaxy AI"},
+    {"id": 14, "name": "Samsung Galaxy S25", "brand": "samsung", "condition": "Nuevo", "image": "/images/products/samsung-s25-mint.webp", "storage": ["128GB", "256GB"], "colors": ["Menta", "Negro", "Azul", "Plata"], "price_range": "Desde $3.200.000", "badge": "Galaxy AI"},
 ]
 
 INITIAL_OFFERS = [
@@ -233,7 +233,11 @@ def logout(authorization: Optional[str] = Header(None)):
 
 @app.get("/api/products", response_model=list[ProductResponse])
 def get_products():
-    return _ec_load("products", INITIAL_PRODUCTS)
+    products = _ec_load("products", INITIAL_PRODUCTS)
+    for p in products:
+        if p.get("image", "").endswith(".png") and p["image"].startswith("/images/"):
+            p["image"] = p["image"][:-4] + ".webp"
+    return products
 
 @app.post("/api/admin/products", response_model=ProductResponse)
 def create_product(product: ProductCreate, request: Request, _username: str = Depends(verify_token)):

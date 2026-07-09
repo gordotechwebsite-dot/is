@@ -17,7 +17,7 @@ export default function ProductoDetail() {
           setProduct({
             ...found,
             priceRange: (found as unknown as Record<string, string>).price_range || found.priceRange || '',
-            image: found.image && !found.image.startsWith('http') ? `${API_URL}${found.image}` : found.image,
+            image: found.image && found.image.startsWith('/api/') ? `${API_URL}${found.image}` : found.image,
           })
         }
         setLoaded(true)
