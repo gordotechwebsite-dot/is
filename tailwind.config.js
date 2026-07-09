@@ -24,6 +24,10 @@ export default {
           purple: '#6B21A8',
           'purple-dark': '#4C1D95',
           'purple-light': '#A855F7',
+        },
+        pearl: {
+          DEFAULT: '#f6f4f1',
+          dark: '#ece8e2',
         }
       },
       fontFamily: {

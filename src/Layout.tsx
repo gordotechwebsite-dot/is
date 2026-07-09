@@ -60,9 +60,9 @@ export default function Layout() {
   ]
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-pearl flex flex-col">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-md z-50 border-b border-gray-100">
+      <nav className="fixed top-0 w-full bg-pearl/95 backdrop-blur-md z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Desktop: logo left */}
@@ -98,7 +98,7 @@ export default function Layout() {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-100 animate-fade-in">
+          <div className="md:hidden bg-pearl border-t border-gray-100 animate-fade-in">
             <div className="px-4 py-4 space-y-3">
               {navLinks.map(link => (
                 <Link key={link.to} to={link.to} onClick={() => setMobileMenuOpen(false)}
