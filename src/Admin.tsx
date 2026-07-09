@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Trash2, Edit, Plus, LogOut, Save, X, FolderOpen, Package, Home, Zap, Settings, ChevronLeft, Eye, Upload, Image, GalleryHorizontalEnd } from 'lucide-react'
+import { Trash2, Edit, Plus, LogOut, Save, X, FolderOpen, Package, Home, Zap, Settings, ChevronLeft, Eye, Upload, Image, GalleryHorizontalEnd, Menu } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://isphone-api.vercel.app'
 
@@ -36,6 +36,7 @@ function Admin() {
   const [loading, setLoading] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Product form
   const [editing, setEditing] = useState<Product | null>(null)
@@ -392,18 +393,33 @@ function Admin() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex">
+    <div className="min-h-screen bg-gray-950 text-white">
+      {/* Mobile top bar */}
+      <header className="lg:hidden sticky top-0 z-30 flex items-center justify-between bg-gray-900 border-b border-gray-800 px-4 h-14">
+        <button onClick={() => { setMobileMenuOpen(true); setSidebarOpen(true) }} className="text-gray-300 hover:text-white -ml-2 p-2" aria-label="Abrir menú">
+          <Menu className="w-6 h-6" />
+        </button>
+        <h1 className="text-base font-bold"><span className="text-purple-400">iSphone</span> Admin</h1>
+        <a href="/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white -mr-2 p-2" aria-label="Ver sitio"><Eye className="w-5 h-5" /></a>
+      </header>
+
+      {/* Mobile drawer backdrop */}
+      {mobileMenuOpen && <div className="lg:hidden fixed inset-0 bg-black/60 z-40" onClick={() => setMobileMenuOpen(false)} />}
+
       {/* Sidebar */}
-      <aside className={`${sidebarOpen ? 'w-64' : 'w-16'} fixed left-0 top-0 h-full bg-gray-900 border-r border-gray-800 z-40 transition-all duration-200 flex flex-col`}>
+      <aside className={`fixed left-0 top-0 h-full bg-gray-900 border-r border-gray-800 z-50 flex flex-col transition-transform duration-200 w-64 ${sidebarOpen ? 'lg:w-64' : 'lg:w-16'} ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
         <div className="p-4 flex items-center justify-between border-b border-gray-800">
           {sidebarOpen && <h1 className="text-lg font-bold"><span className="text-purple-400">iSphone</span> Admin</h1>}
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-400 hover:text-white p-1">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="hidden lg:block text-gray-400 hover:text-white p-1" aria-label="Contraer menú">
             <ChevronLeft className={`w-5 h-5 transition-transform ${!sidebarOpen ? 'rotate-180' : ''}`} />
+          </button>
+          <button onClick={() => setMobileMenuOpen(false)} className="lg:hidden text-gray-400 hover:text-white p-1" aria-label="Cerrar menú">
+            <X className="w-5 h-5" />
           </button>
         </div>
         <nav className="flex-1 py-4 space-y-1 px-2">
           {sidebarItems.map(item => (
-            <button key={item.key} onClick={() => setActiveSection(item.key)}
+            <button key={item.key} onClick={() => { setActiveSection(item.key); setMobileMenuOpen(false) }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                 activeSection === item.key ? 'bg-purple-700/20 text-purple-400' : 'text-gray-400 hover:text-white hover:bg-gray-800'
               }`}>
@@ -435,7 +451,7 @@ function Admin() {
       </aside>
 
       {/* Main content */}
-      <main className={`flex-1 ${sidebarOpen ? 'ml-64' : 'ml-16'} transition-all duration-200 p-6`}>
+      <main className={`transition-all duration-200 p-4 sm:p-6 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-16'}`}>
         {/* Flash message */}
         {saveMsg && (
           <div className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-medium z-50 animate-fade-in">
@@ -446,13 +462,13 @@ function Admin() {
         {/* ====== PRODUCTS ====== */}
         {activeSection === 'products' && (
           <>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold">Productos</h2>
                 <p className="text-gray-500 text-sm mt-1">{products.length} productos en el catálogo</p>
               </div>
               <button onClick={() => { resetProductForm(); setShowForm(true) }}
-                className="flex items-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors">
+                className="flex items-center justify-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors w-full sm:w-auto">
                 <Plus className="w-4 h-4" /> Agregar
               </button>
             </div>
@@ -517,7 +533,7 @@ function Admin() {
                     <div className="aspect-square bg-gray-800 p-4 relative">
                       <img src={p.image} alt={p.name} className="w-full h-full object-contain" />
                       {p.badge && <span className="absolute top-2 left-2 bg-purple-700 text-white text-xs px-2 py-1 rounded-full">{p.badge}</span>}
-                      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-2 right-2 flex gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                         <button onClick={() => openEditProduct(p)} className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-500"><Edit className="w-4 h-4" /></button>
                         <button onClick={() => deleteProduct(p.id)} className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center hover:bg-red-500"><Trash2 className="w-4 h-4" /></button>
                       </div>
@@ -538,13 +554,13 @@ function Admin() {
         {/* ====== CATEGORIES ====== */}
         {activeSection === 'categories' && (
           <>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold">Categorías</h2>
                 <p className="text-gray-500 text-sm mt-1">Organiza tus productos en categorías con portada</p>
               </div>
               <button onClick={() => { resetCatForm(); setShowCatForm(true) }}
-                className="flex items-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors">
+                className="flex items-center justify-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors w-full sm:w-auto">
                 <Plus className="w-4 h-4" /> Nueva categoría
               </button>
             </div>
@@ -585,7 +601,7 @@ function Admin() {
                       <img src={c.cover_image} alt={c.name} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                       <h3 className="absolute bottom-3 left-4 text-lg font-bold text-white">{c.name}</h3>
-                      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-2 right-2 flex gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                         <button onClick={() => openEditCat(c)} className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-500"><Edit className="w-4 h-4" /></button>
                         <button onClick={() => deleteCat(c.id)} className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center hover:bg-red-500"><Trash2 className="w-4 h-4" /></button>
                       </div>
@@ -607,13 +623,13 @@ function Admin() {
         {/* ====== BANNERS ====== */}
         {activeSection === 'banners' && (
           <>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold">Banners del inicio</h2>
                 <p className="text-gray-500 text-sm mt-1">Imágenes del carrusel publicitario (rotan cada 7 segundos)</p>
               </div>
               <button onClick={() => { resetBannerForm(); setShowBannerForm(true) }}
-                className="flex items-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors">
+                className="flex items-center justify-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors w-full sm:w-auto">
                 <Plus className="w-4 h-4" /> Nuevo banner
               </button>
             </div>
@@ -656,7 +672,7 @@ function Admin() {
                   <div key={b.id} className={`bg-gray-900 rounded-xl border ${b.active ? 'border-gray-800' : 'border-gray-800/50 opacity-50'} overflow-hidden group`}>
                     <div className="aspect-[3/1] bg-gray-800 relative">
                       <img src={b.image} alt="Banner" className="w-full h-full object-cover" />
-                      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-2 right-2 flex gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                         <button onClick={() => openEditBanner(b)} className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-500"><Edit className="w-4 h-4" /></button>
                         <button onClick={() => deleteBanner(b.id)} className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center hover:bg-red-500"><Trash2 className="w-4 h-4" /></button>
                       </div>
@@ -676,13 +692,13 @@ function Admin() {
         {/* ====== OFFERS ====== */}
         {activeSection === 'offers' && (
           <>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold">Ofertas y Promociones</h2>
                 <p className="text-gray-500 text-sm mt-1">Administra las ofertas que aparecen en la página de Ofertas</p>
               </div>
               <button onClick={() => { resetOfferForm(); setShowOfferForm(true) }}
-                className="flex items-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors">
+                className="flex items-center justify-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors w-full sm:w-auto">
                 <Plus className="w-4 h-4" /> Nueva oferta
               </button>
             </div>
@@ -748,7 +764,7 @@ function Admin() {
                       </div>
                       <p className="text-sm text-gray-400 mt-1">{o.description}</p>
                     </div>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                    <div className="flex gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity flex-shrink-0">
                       <button onClick={() => openEditOffer(o)} className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-500"><Edit className="w-4 h-4" /></button>
                       <button onClick={() => deleteOffer(o.id)} className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center hover:bg-red-500"><Trash2 className="w-4 h-4" /></button>
                     </div>
@@ -762,13 +778,13 @@ function Admin() {
         {/* ====== LANDING PAGE ====== */}
         {activeSection === 'landing' && siteContent && (
           <>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold">Página Principal</h2>
                 <p className="text-gray-500 text-sm mt-1">Edita el contenido del hero, CTA y banner promocional</p>
               </div>
               <button onClick={saveSiteContent} disabled={loading}
-                className="flex items-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 disabled:opacity-50 transition-colors">
+                className="flex items-center justify-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 disabled:opacity-50 transition-colors w-full sm:w-auto">
                 <Save className="w-4 h-4" /> {loading ? 'Guardando...' : 'Guardar cambios'}
               </button>
             </div>
@@ -783,7 +799,7 @@ function Admin() {
                     <input value={siteContent.hero_subtitle} onChange={e => setSiteContent({ ...siteContent, hero_subtitle: e.target.value })}
                       className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
                   </div>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                       <label className="block text-sm text-gray-400 mb-1">Título línea 1</label>
                       <input value={siteContent.hero_title_1} onChange={e => setSiteContent({ ...siteContent, hero_title_1: e.target.value })}
