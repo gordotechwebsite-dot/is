@@ -17,24 +17,18 @@ export default function Home() {
             {/* Soft glow behind phones */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] lg:w-[520px] lg:h-[520px] bg-white/70 rounded-full blur-[110px] lg:blur-[130px]" />
 
-            <div className="relative flex justify-center items-start gap-4 sm:gap-8 lg:gap-12">
-              <img
-                src="/images/products/iphone-16-dark.webp"
-                alt="iPhone"
-                className="w-28 sm:w-40 lg:w-60 drop-shadow-2xl animate-float"
-                style={{ animationDelay: '0s' } as React.CSSProperties}
-              />
+            <div className="relative w-full flex justify-around items-center px-2 sm:px-8 lg:px-16">
               <img
                 src="/images/products/iphone-16-purple.webp"
                 alt="iPhone"
-                className="w-28 sm:w-40 lg:w-60 drop-shadow-2xl animate-float"
-                style={{ animationDelay: '0.8s' } as React.CSSProperties}
+                className="w-44 sm:w-64 lg:w-[22rem] drop-shadow-2xl animate-float"
+                style={{ animationDelay: '0s' } as React.CSSProperties}
               />
               <img
                 src="/images/products/iphone-16-blue.webp"
                 alt="iPhone"
-                className="w-28 sm:w-40 lg:w-60 drop-shadow-2xl animate-float"
-                style={{ animationDelay: '1.6s' } as React.CSSProperties}
+                className="w-44 sm:w-64 lg:w-[22rem] drop-shadow-2xl animate-float"
+                style={{ animationDelay: '0.8s' } as React.CSSProperties}
               />
             </div>
           </div>
