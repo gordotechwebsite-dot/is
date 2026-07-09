@@ -89,8 +89,47 @@ def _ec_save(key: str, value):
         raise HTTPException(status_code=500, detail=f"Error al guardar ({e.code}): {body}")
 
 
+BLOB_TOKEN = os.environ.get("BLOB_READ_WRITE_TOKEN", "")
+
+_EXT_BY_TYPE = {
+    "image/jpeg": "jpg",
+    "image/jpg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/gif": "gif",
+}
+
+
+def _upload_to_blob(data_url: str, key: str) -> str:
+    header, b64data = data_url.split(",", 1)
+    content_type = header.split(":")[1].split(";")[0]
+    image_bytes = base64.b64decode(b64data)
+    ext = _EXT_BY_TYPE.get(content_type, "jpg")
+    req = urllib.request.Request(
+        f"https://blob.vercel-storage.com/{key}.{ext}",
+        data=image_bytes,
+        headers={
+            "authorization": f"Bearer {BLOB_TOKEN}",
+            "x-content-type": content_type,
+            "x-api-version": "7",
+            "x-add-random-suffix": "1",
+            "x-cache-control-max-age": "31536000",
+        },
+        method="PUT",
+    )
+    with urllib.request.urlopen(req) as resp:
+        result = json.loads(resp.read())
+    return result["url"]
+
+
 def _save_image_if_base64(image_value: str, key: str, request: Request) -> str:
     if image_value.startswith("data:image"):
+        if BLOB_TOKEN:
+            try:
+                return _upload_to_blob(image_value, key)
+            except urllib.error.HTTPError as e:
+                body = e.read().decode()
+                raise HTTPException(status_code=500, detail=f"Error al subir imagen ({e.code}): {body}")
         _ec_save(key, image_value)
         base_url = str(request.base_url).rstrip("/")
         return f"{base_url}/api/images/{key}"
