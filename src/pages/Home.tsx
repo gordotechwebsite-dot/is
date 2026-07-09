@@ -63,11 +63,33 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="hidden lg:flex justify-center animate-scale-in">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-b from-purple-500/20 to-transparent rounded-[3rem] blur-xl" />
-                <img src={content.hero_image}
-                  alt="Smartphones" className="relative rounded-[2rem] w-80 object-cover shadow-2xl" />
+            <div className="flex justify-center items-center animate-scale-in">
+              <div className="relative w-full h-[360px] sm:h-[440px] lg:h-[560px]">
+                {/* Glow behind phones */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] lg:w-[420px] lg:h-[420px] bg-purple-500/25 rounded-full blur-[100px] lg:blur-[120px]" />
+
+                {/* Back phone - left */}
+                <img
+                  src="/images/products/iphone-16-dark.webp"
+                  alt="iPhone"
+                  className="absolute left-2 sm:left-6 lg:left-0 top-10 lg:top-16 w-32 sm:w-40 lg:w-52 drop-shadow-2xl animate-float"
+                  style={{ '--rot': '-10deg', animationDelay: '0.8s' } as React.CSSProperties}
+                />
+                {/* Back phone - right */}
+                <img
+                  src="/images/products/iphone-16-blue.webp"
+                  alt="iPhone"
+                  className="absolute right-2 sm:right-6 lg:right-0 top-16 lg:top-24 w-36 sm:w-44 lg:w-56 drop-shadow-2xl animate-float"
+                  style={{ '--rot': '9deg', animationDelay: '1.6s' } as React.CSSProperties}
+                />
+                {/* Front phone - center */}
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                  <img
+                    src="/images/products/iphone-16-purple.webp"
+                    alt="iPhone"
+                    className="w-44 sm:w-56 lg:w-72 drop-shadow-2xl animate-float"
+                  />
+                </div>
               </div>
             </div>
           </div>
