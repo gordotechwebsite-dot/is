@@ -68,6 +68,14 @@ export type Category = {
   position: number
 }
 
+export type Banner = {
+  id: number
+  image: string
+  link?: string | null
+  position: number
+  active: boolean
+}
+
 export const testimonials = [
   { name: 'Carlos M.', city: 'Ramiriquí', text: 'Excelente servicio, me dieron buen precio por mi teléfono anterior y el nuevo llegó perfecto.', rating: 5 },
   { name: 'María L.', city: 'Tunja', text: 'El Trade-In fue súper fácil. Me ahorraron mucho en la actualización a mi nuevo Samsung.', rating: 5 },

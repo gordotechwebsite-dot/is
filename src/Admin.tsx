@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Trash2, Edit, Plus, LogOut, Save, X, FolderOpen, Package, Home, Zap, Settings, ChevronLeft, Eye, Upload, Image } from 'lucide-react'
+import { Trash2, Edit, Plus, LogOut, Save, X, FolderOpen, Package, Home, Zap, Settings, ChevronLeft, Eye, Upload, Image, GalleryHorizontalEnd, Menu } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://isphone-api.vercel.app'
 
@@ -8,6 +8,7 @@ type Product = {
   storage: string[]; colors: string[]; price_range: string; badge: string | null; category: string | null
 }
 type Category = { id: number; name: string; slug: string; cover_image: string; position: number }
+type Banner = { id: number; image: string; link: string | null; position: number; active: boolean }
 type Offer = {
   id: number; title: string; description: string; badge: string | null
   icon: string | null; featured: boolean; active: boolean
@@ -19,7 +20,7 @@ type SiteContent = {
   banner_text: string; banner_active: boolean
 }
 
-type Section = 'products' | 'categories' | 'landing' | 'offers' | 'settings'
+type Section = 'products' | 'categories' | 'banners' | 'landing' | 'offers' | 'settings'
 
 function Admin() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('admin_token'))
@@ -28,12 +29,14 @@ function Admin() {
   const [loginError, setLoginError] = useState('')
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [banners, setBanners] = useState<Banner[]>([])
   const [offers, setOffers] = useState<Offer[]>([])
   const [siteContent, setSiteContent] = useState<SiteContent | null>(null)
   const [activeSection, setActiveSection] = useState<Section>('products')
   const [loading, setLoading] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Product form
   const [editing, setEditing] = useState<Product | null>(null)
@@ -56,6 +59,14 @@ function Admin() {
   const [catCoverImage, setCatCoverImage] = useState('')
   const [catPosition, setCatPosition] = useState(0)
 
+  // Banner form
+  const [editingBanner, setEditingBanner] = useState<Banner | null>(null)
+  const [showBannerForm, setShowBannerForm] = useState(false)
+  const [bannerImage, setBannerImage] = useState('')
+  const [bannerLink, setBannerLink] = useState('')
+  const [bannerPosition, setBannerPosition] = useState(0)
+  const [bannerActive, setBannerActive] = useState(true)
+
   // Offer form
   const [editingOffer, setEditingOffer] = useState<Offer | null>(null)
   const [showOfferForm, setShowOfferForm] = useState(false)
@@ -72,17 +83,19 @@ function Admin() {
   }), [token])
 
   const fetchAll = useCallback(async () => {
-    const [prods, cats, offs, sc] = await Promise.all([
+    const [prods, cats, bans, offs, sc] = await Promise.all([
       fetch(`${API_URL}/api/products`).then(r => r.json()).catch(() => []),
       fetch(`${API_URL}/api/categories`).then(r => r.json()).catch(() => []),
+      fetch(`${API_URL}/api/admin/banners`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()).catch(() => []),
       fetch(`${API_URL}/api/offers`).then(r => r.json()).catch(() => []),
       fetch(`${API_URL}/api/site-content`).then(r => r.json()).catch(() => null),
     ])
     setProducts(prods)
     setCategories(cats)
+    setBanners(Array.isArray(bans) ? bans : [])
     setOffers(offs)
     setSiteContent(sc)
-  }, [])
+  }, [token])
 
   useEffect(() => { if (token) fetchAll() }, [token, fetchAll])
 
@@ -176,6 +189,38 @@ function Admin() {
     await fetchAll(); flash('Categoría eliminada')
   }
 
+  // --- Banners ---
+  const resetBannerForm = () => {
+    setBannerImage(''); setBannerLink(''); setBannerPosition(0); setBannerActive(true)
+    setEditingBanner(null); setShowBannerForm(false)
+  }
+
+  const openEditBanner = (b: Banner) => {
+    setEditingBanner(b); setBannerImage(b.image); setBannerLink(b.link || '')
+    setBannerPosition(b.position || 0); setBannerActive(b.active); setShowBannerForm(true)
+  }
+
+  const saveBanner = async (e: React.FormEvent) => {
+    e.preventDefault(); setLoading(true)
+    const body = { image: bannerImage, link: bannerLink || null, position: bannerPosition, active: bannerActive }
+    const url = editingBanner ? `${API_URL}/api/admin/banners/${editingBanner.id}` : `${API_URL}/api/admin/banners`
+    const method = editingBanner ? 'PUT' : 'POST'
+    const res = await fetch(url, { method, headers: headers(), body: JSON.stringify(body) })
+    if (res.status === 401) { handleLogout(); return }
+    if (res.ok) { await fetchAll(); resetBannerForm(); flash('Banner guardado') }
+    else {
+      const err = await res.json().catch(() => null)
+      flash(err?.detail || 'Error al guardar — la imagen puede ser muy grande')
+    }
+    setLoading(false)
+  }
+
+  const deleteBanner = async (id: number) => {
+    if (!confirm('¿Eliminar este banner?')) return
+    await fetch(`${API_URL}/api/admin/banners/${id}`, { method: 'DELETE', headers: headers() })
+    await fetchAll(); flash('Banner eliminado')
+  }
+
   // --- Offers ---
   const resetOfferForm = () => {
     setOfferTitle(''); setOfferDesc(''); setOfferBadge(''); setOfferIcon('gift')
@@ -244,6 +289,7 @@ function Admin() {
   const sidebarItems: { key: Section; label: string; icon: React.ReactNode; count?: number }[] = [
     { key: 'products', label: 'Productos', icon: <Package className="w-5 h-5" />, count: products.length },
     { key: 'categories', label: 'Categorías', icon: <FolderOpen className="w-5 h-5" />, count: categories.length },
+    { key: 'banners', label: 'Banners', icon: <GalleryHorizontalEnd className="w-5 h-5" />, count: banners.length },
     { key: 'offers', label: 'Ofertas', icon: <Zap className="w-5 h-5" />, count: offers.length },
     { key: 'landing', label: 'Página principal', icon: <Home className="w-5 h-5" /> },
     { key: 'settings', label: 'Configuración', icon: <Settings className="w-5 h-5" /> },
@@ -270,7 +316,7 @@ function Admin() {
     })
   }
 
-  const ImageUpload = ({ value, onChange, label = 'Imagen' }: { value: string; onChange: (v: string) => void; label?: string }) => {
+  const ImageUpload = ({ value, onChange, label = 'Imagen', maxSize = 400, aspect = 'aspect-video' }: { value: string; onChange: (v: string) => void; label?: string; maxSize?: number; aspect?: string }) => {
     const fileRef = useRef<HTMLInputElement>(null)
     const [uploading, setUploading] = useState(false)
 
@@ -278,7 +324,7 @@ function Admin() {
       const file = e.target.files?.[0]
       if (!file) return
       setUploading(true)
-      const dataUrl = await compressImage(file)
+      const dataUrl = await compressImage(file, maxSize)
       onChange(dataUrl)
       setUploading(false)
     }
@@ -288,7 +334,7 @@ function Admin() {
         <label className="block text-sm text-gray-400 mb-1">{label}</label>
         <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
         {value ? (
-          <div className="relative rounded-lg overflow-hidden bg-gray-800 aspect-video">
+          <div className={`relative rounded-lg overflow-hidden bg-gray-800 ${aspect}`}>
             <img src={value} alt="Preview" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
               <button type="button" onClick={() => fileRef.current?.click()}
@@ -347,18 +393,33 @@ function Admin() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex">
+    <div className="min-h-screen bg-gray-950 text-white">
+      {/* Mobile top bar */}
+      <header className="lg:hidden sticky top-0 z-30 flex items-center justify-between bg-gray-900 border-b border-gray-800 px-4 h-14">
+        <button onClick={() => { setMobileMenuOpen(true); setSidebarOpen(true) }} className="text-gray-300 hover:text-white -ml-2 p-2" aria-label="Abrir menú">
+          <Menu className="w-6 h-6" />
+        </button>
+        <h1 className="text-base font-bold"><span className="text-purple-400">iSphone</span> Admin</h1>
+        <a href="/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white -mr-2 p-2" aria-label="Ver sitio"><Eye className="w-5 h-5" /></a>
+      </header>
+
+      {/* Mobile drawer backdrop */}
+      {mobileMenuOpen && <div className="lg:hidden fixed inset-0 bg-black/60 z-40" onClick={() => setMobileMenuOpen(false)} />}
+
       {/* Sidebar */}
-      <aside className={`${sidebarOpen ? 'w-64' : 'w-16'} fixed left-0 top-0 h-full bg-gray-900 border-r border-gray-800 z-40 transition-all duration-200 flex flex-col`}>
+      <aside className={`fixed left-0 top-0 h-full bg-gray-900 border-r border-gray-800 z-50 flex flex-col transition-transform duration-200 w-64 ${sidebarOpen ? 'lg:w-64' : 'lg:w-16'} ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
         <div className="p-4 flex items-center justify-between border-b border-gray-800">
           {sidebarOpen && <h1 className="text-lg font-bold"><span className="text-purple-400">iSphone</span> Admin</h1>}
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-400 hover:text-white p-1">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="hidden lg:block text-gray-400 hover:text-white p-1" aria-label="Contraer menú">
             <ChevronLeft className={`w-5 h-5 transition-transform ${!sidebarOpen ? 'rotate-180' : ''}`} />
+          </button>
+          <button onClick={() => setMobileMenuOpen(false)} className="lg:hidden text-gray-400 hover:text-white p-1" aria-label="Cerrar menú">
+            <X className="w-5 h-5" />
           </button>
         </div>
         <nav className="flex-1 py-4 space-y-1 px-2">
           {sidebarItems.map(item => (
-            <button key={item.key} onClick={() => setActiveSection(item.key)}
+            <button key={item.key} onClick={() => { setActiveSection(item.key); setMobileMenuOpen(false) }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                 activeSection === item.key ? 'bg-purple-700/20 text-purple-400' : 'text-gray-400 hover:text-white hover:bg-gray-800'
               }`}>
@@ -390,7 +451,7 @@ function Admin() {
       </aside>
 
       {/* Main content */}
-      <main className={`flex-1 ${sidebarOpen ? 'ml-64' : 'ml-16'} transition-all duration-200 p-6`}>
+      <main className={`transition-all duration-200 p-4 sm:p-6 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-16'}`}>
         {/* Flash message */}
         {saveMsg && (
           <div className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-medium z-50 animate-fade-in">
@@ -401,13 +462,13 @@ function Admin() {
         {/* ====== PRODUCTS ====== */}
         {activeSection === 'products' && (
           <>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold">Productos</h2>
                 <p className="text-gray-500 text-sm mt-1">{products.length} productos en el catálogo</p>
               </div>
               <button onClick={() => { resetProductForm(); setShowForm(true) }}
-                className="flex items-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors">
+                className="flex items-center justify-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors w-full sm:w-auto">
                 <Plus className="w-4 h-4" /> Agregar
               </button>
             </div>
@@ -472,7 +533,7 @@ function Admin() {
                     <div className="aspect-square bg-gray-800 p-4 relative">
                       <img src={p.image} alt={p.name} className="w-full h-full object-contain" />
                       {p.badge && <span className="absolute top-2 left-2 bg-purple-700 text-white text-xs px-2 py-1 rounded-full">{p.badge}</span>}
-                      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-2 right-2 flex gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                         <button onClick={() => openEditProduct(p)} className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-500"><Edit className="w-4 h-4" /></button>
                         <button onClick={() => deleteProduct(p.id)} className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center hover:bg-red-500"><Trash2 className="w-4 h-4" /></button>
                       </div>
@@ -493,13 +554,13 @@ function Admin() {
         {/* ====== CATEGORIES ====== */}
         {activeSection === 'categories' && (
           <>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold">Categorías</h2>
                 <p className="text-gray-500 text-sm mt-1">Organiza tus productos en categorías con portada</p>
               </div>
               <button onClick={() => { resetCatForm(); setShowCatForm(true) }}
-                className="flex items-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors">
+                className="flex items-center justify-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors w-full sm:w-auto">
                 <Plus className="w-4 h-4" /> Nueva categoría
               </button>
             </div>
@@ -540,7 +601,7 @@ function Admin() {
                       <img src={c.cover_image} alt={c.name} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                       <h3 className="absolute bottom-3 left-4 text-lg font-bold text-white">{c.name}</h3>
-                      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-2 right-2 flex gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                         <button onClick={() => openEditCat(c)} className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-500"><Edit className="w-4 h-4" /></button>
                         <button onClick={() => deleteCat(c.id)} className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center hover:bg-red-500"><Trash2 className="w-4 h-4" /></button>
                       </div>
@@ -559,16 +620,85 @@ function Admin() {
           </>
         )}
 
+        {/* ====== BANNERS ====== */}
+        {activeSection === 'banners' && (
+          <>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">Banners del inicio</h2>
+                <p className="text-gray-500 text-sm mt-1">Imágenes del carrusel publicitario (rotan cada 7 segundos)</p>
+              </div>
+              <button onClick={() => { resetBannerForm(); setShowBannerForm(true) }}
+                className="flex items-center justify-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors w-full sm:w-auto">
+                <Plus className="w-4 h-4" /> Nuevo banner
+              </button>
+            </div>
+
+            {showBannerForm && (
+              <Modal title={editingBanner ? 'Editar banner' : 'Nuevo banner'} onClose={resetBannerForm}>
+                <form onSubmit={saveBanner} className="space-y-4">
+                  <ImageUpload value={bannerImage} onChange={setBannerImage} label="Imagen del banner (recomendado 1200×400)" maxSize={1000} aspect="aspect-[3/1]" />
+                  <Input label="Enlace al tocar (opcional)" value={bannerLink} onChange={setBannerLink} placeholder="/ofertas o https://..." />
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">Posición (orden en el carrusel)</label>
+                    <input type="number" min={0} value={bannerPosition} onChange={e => setBannerPosition(Number(e.target.value))}
+                      className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
+                  </div>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={bannerActive} onChange={e => setBannerActive(e.target.checked)}
+                      className="w-4 h-4 rounded bg-gray-800 border-gray-700 text-purple-600 focus:ring-purple-500" />
+                    <span className="text-sm text-gray-300">Activo (visible en el sitio)</span>
+                  </label>
+                  <div className="flex gap-3 pt-2">
+                    <button type="submit" disabled={loading}
+                      className="flex-1 flex items-center justify-center gap-2 bg-purple-700 text-white py-3 rounded-xl font-semibold hover:bg-purple-600 disabled:opacity-50">
+                      <Save className="w-4 h-4" /> {loading ? 'Guardando...' : 'Guardar'}
+                    </button>
+                    <button type="button" onClick={resetBannerForm} className="px-6 py-3 bg-gray-800 text-gray-300 rounded-xl hover:bg-gray-700">Cancelar</button>
+                  </div>
+                </form>
+              </Modal>
+            )}
+
+            {banners.length === 0 ? (
+              <div className="text-center py-20 text-gray-500">
+                <GalleryHorizontalEnd className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p className="text-lg">No hay banners</p>
+                <p className="text-sm mt-1">Agrega imágenes para el carrusel del inicio</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {banners.map(b => (
+                  <div key={b.id} className={`bg-gray-900 rounded-xl border ${b.active ? 'border-gray-800' : 'border-gray-800/50 opacity-50'} overflow-hidden group`}>
+                    <div className="aspect-[3/1] bg-gray-800 relative">
+                      <img src={b.image} alt="Banner" className="w-full h-full object-cover" />
+                      <div className="absolute top-2 right-2 flex gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => openEditBanner(b)} className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-500"><Edit className="w-4 h-4" /></button>
+                        <button onClick={() => deleteBanner(b.id)} className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center hover:bg-red-500"><Trash2 className="w-4 h-4" /></button>
+                      </div>
+                      {!b.active && <span className="absolute top-2 left-2 text-xs bg-red-500/80 text-white px-2 py-0.5 rounded-full">Inactivo</span>}
+                    </div>
+                    <div className="p-3 flex items-center justify-between">
+                      <p className="text-xs text-gray-400 truncate">{b.link || 'Sin enlace'}</p>
+                      <p className="text-xs text-gray-500 flex-shrink-0 ml-2">Pos: {b.position || 0}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
         {/* ====== OFFERS ====== */}
         {activeSection === 'offers' && (
           <>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold">Ofertas y Promociones</h2>
                 <p className="text-gray-500 text-sm mt-1">Administra las ofertas que aparecen en la página de Ofertas</p>
               </div>
               <button onClick={() => { resetOfferForm(); setShowOfferForm(true) }}
-                className="flex items-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors">
+                className="flex items-center justify-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors w-full sm:w-auto">
                 <Plus className="w-4 h-4" /> Nueva oferta
               </button>
             </div>
@@ -634,7 +764,7 @@ function Admin() {
                       </div>
                       <p className="text-sm text-gray-400 mt-1">{o.description}</p>
                     </div>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                    <div className="flex gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity flex-shrink-0">
                       <button onClick={() => openEditOffer(o)} className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-500"><Edit className="w-4 h-4" /></button>
                       <button onClick={() => deleteOffer(o.id)} className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center hover:bg-red-500"><Trash2 className="w-4 h-4" /></button>
                     </div>
@@ -648,13 +778,13 @@ function Admin() {
         {/* ====== LANDING PAGE ====== */}
         {activeSection === 'landing' && siteContent && (
           <>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold">Página Principal</h2>
                 <p className="text-gray-500 text-sm mt-1">Edita el contenido del hero, CTA y banner promocional</p>
               </div>
               <button onClick={saveSiteContent} disabled={loading}
-                className="flex items-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 disabled:opacity-50 transition-colors">
+                className="flex items-center justify-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 disabled:opacity-50 transition-colors w-full sm:w-auto">
                 <Save className="w-4 h-4" /> {loading ? 'Guardando...' : 'Guardar cambios'}
               </button>
             </div>
@@ -669,7 +799,7 @@ function Admin() {
                     <input value={siteContent.hero_subtitle} onChange={e => setSiteContent({ ...siteContent, hero_subtitle: e.target.value })}
                       className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
                   </div>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                       <label className="block text-sm text-gray-400 mb-1">Título línea 1</label>
                       <input value={siteContent.hero_title_1} onChange={e => setSiteContent({ ...siteContent, hero_title_1: e.target.value })}
