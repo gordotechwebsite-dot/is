@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Trash2, Edit, Plus, LogOut, Save, X, FolderOpen, Package, Home, Zap, Settings, ChevronLeft, Eye, Upload, Image } from 'lucide-react'
+import { Trash2, Edit, Plus, LogOut, Save, X, FolderOpen, Package, Home, Zap, Settings, ChevronLeft, Eye, Upload, Image, GalleryHorizontalEnd } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://isphone-api.vercel.app'
 
@@ -8,6 +8,7 @@ type Product = {
   storage: string[]; colors: string[]; price_range: string; badge: string | null; category: string | null
 }
 type Category = { id: number; name: string; slug: string; cover_image: string; position: number }
+type Banner = { id: number; image: string; link: string | null; position: number; active: boolean }
 type Offer = {
   id: number; title: string; description: string; badge: string | null
   icon: string | null; featured: boolean; active: boolean
@@ -19,7 +20,7 @@ type SiteContent = {
   banner_text: string; banner_active: boolean
 }
 
-type Section = 'products' | 'categories' | 'landing' | 'offers' | 'settings'
+type Section = 'products' | 'categories' | 'banners' | 'landing' | 'offers' | 'settings'
 
 function Admin() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('admin_token'))
@@ -28,6 +29,7 @@ function Admin() {
   const [loginError, setLoginError] = useState('')
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [banners, setBanners] = useState<Banner[]>([])
   const [offers, setOffers] = useState<Offer[]>([])
   const [siteContent, setSiteContent] = useState<SiteContent | null>(null)
   const [activeSection, setActiveSection] = useState<Section>('products')
@@ -56,6 +58,14 @@ function Admin() {
   const [catCoverImage, setCatCoverImage] = useState('')
   const [catPosition, setCatPosition] = useState(0)
 
+  // Banner form
+  const [editingBanner, setEditingBanner] = useState<Banner | null>(null)
+  const [showBannerForm, setShowBannerForm] = useState(false)
+  const [bannerImage, setBannerImage] = useState('')
+  const [bannerLink, setBannerLink] = useState('')
+  const [bannerPosition, setBannerPosition] = useState(0)
+  const [bannerActive, setBannerActive] = useState(true)
+
   // Offer form
   const [editingOffer, setEditingOffer] = useState<Offer | null>(null)
   const [showOfferForm, setShowOfferForm] = useState(false)
@@ -72,17 +82,19 @@ function Admin() {
   }), [token])
 
   const fetchAll = useCallback(async () => {
-    const [prods, cats, offs, sc] = await Promise.all([
+    const [prods, cats, bans, offs, sc] = await Promise.all([
       fetch(`${API_URL}/api/products`).then(r => r.json()).catch(() => []),
       fetch(`${API_URL}/api/categories`).then(r => r.json()).catch(() => []),
+      fetch(`${API_URL}/api/admin/banners`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()).catch(() => []),
       fetch(`${API_URL}/api/offers`).then(r => r.json()).catch(() => []),
       fetch(`${API_URL}/api/site-content`).then(r => r.json()).catch(() => null),
     ])
     setProducts(prods)
     setCategories(cats)
+    setBanners(Array.isArray(bans) ? bans : [])
     setOffers(offs)
     setSiteContent(sc)
-  }, [])
+  }, [token])
 
   useEffect(() => { if (token) fetchAll() }, [token, fetchAll])
 
@@ -176,6 +188,38 @@ function Admin() {
     await fetchAll(); flash('Categoría eliminada')
   }
 
+  // --- Banners ---
+  const resetBannerForm = () => {
+    setBannerImage(''); setBannerLink(''); setBannerPosition(0); setBannerActive(true)
+    setEditingBanner(null); setShowBannerForm(false)
+  }
+
+  const openEditBanner = (b: Banner) => {
+    setEditingBanner(b); setBannerImage(b.image); setBannerLink(b.link || '')
+    setBannerPosition(b.position || 0); setBannerActive(b.active); setShowBannerForm(true)
+  }
+
+  const saveBanner = async (e: React.FormEvent) => {
+    e.preventDefault(); setLoading(true)
+    const body = { image: bannerImage, link: bannerLink || null, position: bannerPosition, active: bannerActive }
+    const url = editingBanner ? `${API_URL}/api/admin/banners/${editingBanner.id}` : `${API_URL}/api/admin/banners`
+    const method = editingBanner ? 'PUT' : 'POST'
+    const res = await fetch(url, { method, headers: headers(), body: JSON.stringify(body) })
+    if (res.status === 401) { handleLogout(); return }
+    if (res.ok) { await fetchAll(); resetBannerForm(); flash('Banner guardado') }
+    else {
+      const err = await res.json().catch(() => null)
+      flash(err?.detail || 'Error al guardar — la imagen puede ser muy grande')
+    }
+    setLoading(false)
+  }
+
+  const deleteBanner = async (id: number) => {
+    if (!confirm('¿Eliminar este banner?')) return
+    await fetch(`${API_URL}/api/admin/banners/${id}`, { method: 'DELETE', headers: headers() })
+    await fetchAll(); flash('Banner eliminado')
+  }
+
   // --- Offers ---
   const resetOfferForm = () => {
     setOfferTitle(''); setOfferDesc(''); setOfferBadge(''); setOfferIcon('gift')
@@ -244,6 +288,7 @@ function Admin() {
   const sidebarItems: { key: Section; label: string; icon: React.ReactNode; count?: number }[] = [
     { key: 'products', label: 'Productos', icon: <Package className="w-5 h-5" />, count: products.length },
     { key: 'categories', label: 'Categorías', icon: <FolderOpen className="w-5 h-5" />, count: categories.length },
+    { key: 'banners', label: 'Banners', icon: <GalleryHorizontalEnd className="w-5 h-5" />, count: banners.length },
     { key: 'offers', label: 'Ofertas', icon: <Zap className="w-5 h-5" />, count: offers.length },
     { key: 'landing', label: 'Página principal', icon: <Home className="w-5 h-5" /> },
     { key: 'settings', label: 'Configuración', icon: <Settings className="w-5 h-5" /> },
@@ -270,7 +315,7 @@ function Admin() {
     })
   }
 
-  const ImageUpload = ({ value, onChange, label = 'Imagen' }: { value: string; onChange: (v: string) => void; label?: string }) => {
+  const ImageUpload = ({ value, onChange, label = 'Imagen', maxSize = 400, aspect = 'aspect-video' }: { value: string; onChange: (v: string) => void; label?: string; maxSize?: number; aspect?: string }) => {
     const fileRef = useRef<HTMLInputElement>(null)
     const [uploading, setUploading] = useState(false)
 
@@ -278,7 +323,7 @@ function Admin() {
       const file = e.target.files?.[0]
       if (!file) return
       setUploading(true)
-      const dataUrl = await compressImage(file)
+      const dataUrl = await compressImage(file, maxSize)
       onChange(dataUrl)
       setUploading(false)
     }
@@ -288,7 +333,7 @@ function Admin() {
         <label className="block text-sm text-gray-400 mb-1">{label}</label>
         <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
         {value ? (
-          <div className="relative rounded-lg overflow-hidden bg-gray-800 aspect-video">
+          <div className={`relative rounded-lg overflow-hidden bg-gray-800 ${aspect}`}>
             <img src={value} alt="Preview" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
               <button type="button" onClick={() => fileRef.current?.click()}
@@ -551,6 +596,75 @@ function Admin() {
                         <p className="text-xs text-gray-500">{products.filter(p => p.category === c.slug).length} productos</p>
                         <p className="text-xs text-gray-500">Pos: {c.position || 0}</p>
                       </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ====== BANNERS ====== */}
+        {activeSection === 'banners' && (
+          <>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">Banners del inicio</h2>
+                <p className="text-gray-500 text-sm mt-1">Imágenes del carrusel publicitario (rotan cada 7 segundos)</p>
+              </div>
+              <button onClick={() => { resetBannerForm(); setShowBannerForm(true) }}
+                className="flex items-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors">
+                <Plus className="w-4 h-4" /> Nuevo banner
+              </button>
+            </div>
+
+            {showBannerForm && (
+              <Modal title={editingBanner ? 'Editar banner' : 'Nuevo banner'} onClose={resetBannerForm}>
+                <form onSubmit={saveBanner} className="space-y-4">
+                  <ImageUpload value={bannerImage} onChange={setBannerImage} label="Imagen del banner (recomendado 1200×400)" maxSize={1000} aspect="aspect-[3/1]" />
+                  <Input label="Enlace al tocar (opcional)" value={bannerLink} onChange={setBannerLink} placeholder="/ofertas o https://..." />
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">Posición (orden en el carrusel)</label>
+                    <input type="number" min={0} value={bannerPosition} onChange={e => setBannerPosition(Number(e.target.value))}
+                      className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
+                  </div>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={bannerActive} onChange={e => setBannerActive(e.target.checked)}
+                      className="w-4 h-4 rounded bg-gray-800 border-gray-700 text-purple-600 focus:ring-purple-500" />
+                    <span className="text-sm text-gray-300">Activo (visible en el sitio)</span>
+                  </label>
+                  <div className="flex gap-3 pt-2">
+                    <button type="submit" disabled={loading}
+                      className="flex-1 flex items-center justify-center gap-2 bg-purple-700 text-white py-3 rounded-xl font-semibold hover:bg-purple-600 disabled:opacity-50">
+                      <Save className="w-4 h-4" /> {loading ? 'Guardando...' : 'Guardar'}
+                    </button>
+                    <button type="button" onClick={resetBannerForm} className="px-6 py-3 bg-gray-800 text-gray-300 rounded-xl hover:bg-gray-700">Cancelar</button>
+                  </div>
+                </form>
+              </Modal>
+            )}
+
+            {banners.length === 0 ? (
+              <div className="text-center py-20 text-gray-500">
+                <GalleryHorizontalEnd className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p className="text-lg">No hay banners</p>
+                <p className="text-sm mt-1">Agrega imágenes para el carrusel del inicio</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {banners.map(b => (
+                  <div key={b.id} className={`bg-gray-900 rounded-xl border ${b.active ? 'border-gray-800' : 'border-gray-800/50 opacity-50'} overflow-hidden group`}>
+                    <div className="aspect-[3/1] bg-gray-800 relative">
+                      <img src={b.image} alt="Banner" className="w-full h-full object-cover" />
+                      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => openEditBanner(b)} className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-500"><Edit className="w-4 h-4" /></button>
+                        <button onClick={() => deleteBanner(b.id)} className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center hover:bg-red-500"><Trash2 className="w-4 h-4" /></button>
+                      </div>
+                      {!b.active && <span className="absolute top-2 left-2 text-xs bg-red-500/80 text-white px-2 py-0.5 rounded-full">Inactivo</span>}
+                    </div>
+                    <div className="p-3 flex items-center justify-between">
+                      <p className="text-xs text-gray-400 truncate">{b.link || 'Sin enlace'}</p>
+                      <p className="text-xs text-gray-500 flex-shrink-0 ml-2">Pos: {b.position || 0}</p>
                     </div>
                   </div>
                 ))}

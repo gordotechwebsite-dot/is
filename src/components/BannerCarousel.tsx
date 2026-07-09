@@ -23,10 +23,17 @@ export default function BannerCarousel() {
     return () => { if (timer.current) clearInterval(timer.current) }
   }, [banners.length])
 
+  useEffect(() => {
+    if (!animate) {
+      const id = requestAnimationFrame(() => setAnimate(true))
+      return () => cancelAnimationFrame(id)
+    }
+  }, [animate])
+
   if (banners.length === 0) return null
 
   // Append a clone of the first slide for a seamless right-to-left loop.
-  const slides = [...banners, banners[0]]
+  const slides: Banner[] = [...banners, banners[0]!]
 
   const handleTransitionEnd = () => {
     if (index === banners.length) {
@@ -34,13 +41,6 @@ export default function BannerCarousel() {
       setIndex(0)
     }
   }
-
-  useEffect(() => {
-    if (!animate) {
-      const id = requestAnimationFrame(() => setAnimate(true))
-      return () => cancelAnimationFrame(id)
-    }
-  }, [animate])
 
   const goTo = (i: number) => {
     setAnimate(true)

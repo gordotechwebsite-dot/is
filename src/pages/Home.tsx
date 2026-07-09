@@ -1,6 +1,10 @@
+import BannerCarousel from '../components/BannerCarousel'
+
 export default function Home() {
   return (
     <>
+      <BannerCarousel />
+
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-white via-[#f6f4f1] to-[#ece8e2] min-h-[85vh] flex items-center">
         <div className="absolute inset-0">
