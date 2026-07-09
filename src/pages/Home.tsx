@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
 import { ScrollReveal, WhatsAppIcon, WHATSAPP_LINK, API_URL } from '../shared'
 
 type SiteContent = {
@@ -35,62 +33,36 @@ export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-purple-950 via-purple-900 to-indigo-950 min-h-[85vh] flex items-center">
+      <section className="relative overflow-hidden bg-gradient-to-br from-white via-[#f6f4f1] to-[#ece8e2] min-h-[85vh] flex items-center">
         <div className="absolute inset-0">
-          <div className="absolute top-20 right-20 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px]" />
-          <div className="absolute bottom-20 left-20 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[100px]" />
+          <div className="absolute top-20 right-20 w-[500px] h-[500px] bg-white/60 rounded-full blur-[120px]" />
+          <div className="absolute bottom-20 left-20 w-[400px] h-[400px] bg-[#e7e2da]/70 rounded-full blur-[100px]" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="animate-fade-in-up">
-              <p className="text-purple-300 text-sm font-semibold tracking-widest uppercase mb-4">{content.hero_subtitle}</p>
-              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight mb-6">
-                {content.hero_title_1}
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-300">
-                  {content.hero_title_2}
-                </span>
-                {content.hero_title_3}
-              </h1>
-              <p className="text-lg text-purple-200/80 max-w-md mb-8">
-                {content.hero_description}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/catalogo" className="bg-white text-purple-900 px-8 py-4 rounded-full font-semibold text-center hover:bg-purple-50 transition-colors flex items-center justify-center gap-2">
-                  {content.hero_cta_text}
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-              </div>
-            </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full">
+          <div className="relative flex justify-center items-start animate-scale-in">
+            {/* Soft glow behind phones */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] lg:w-[520px] lg:h-[520px] bg-white/70 rounded-full blur-[110px] lg:blur-[130px]" />
 
-            <div className="flex justify-center items-center animate-scale-in">
-              <div className="relative w-full h-[360px] sm:h-[440px] lg:h-[560px]">
-                {/* Glow behind phones */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] lg:w-[420px] lg:h-[420px] bg-purple-500/25 rounded-full blur-[100px] lg:blur-[120px]" />
-
-                {/* Back phone - left */}
-                <img
-                  src="/images/products/iphone-16-dark.webp"
-                  alt="iPhone"
-                  className="absolute left-2 sm:left-6 lg:left-0 top-10 lg:top-16 w-32 sm:w-40 lg:w-52 drop-shadow-2xl animate-float"
-                  style={{ '--rot': '-10deg', animationDelay: '0.8s' } as React.CSSProperties}
-                />
-                {/* Back phone - right */}
-                <img
-                  src="/images/products/iphone-16-blue.webp"
-                  alt="iPhone"
-                  className="absolute right-2 sm:right-6 lg:right-0 top-16 lg:top-24 w-36 sm:w-44 lg:w-56 drop-shadow-2xl animate-float"
-                  style={{ '--rot': '9deg', animationDelay: '1.6s' } as React.CSSProperties}
-                />
-                {/* Front phone - center */}
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-                  <img
-                    src="/images/products/iphone-16-purple.webp"
-                    alt="iPhone"
-                    className="w-44 sm:w-56 lg:w-72 drop-shadow-2xl animate-float"
-                  />
-                </div>
-              </div>
+            <div className="relative flex justify-center items-start gap-4 sm:gap-8 lg:gap-12">
+              <img
+                src="/images/products/iphone-16-dark.webp"
+                alt="iPhone"
+                className="w-28 sm:w-40 lg:w-60 drop-shadow-2xl animate-float"
+                style={{ animationDelay: '0s' } as React.CSSProperties}
+              />
+              <img
+                src="/images/products/iphone-16-purple.webp"
+                alt="iPhone"
+                className="w-28 sm:w-40 lg:w-60 drop-shadow-2xl animate-float"
+                style={{ animationDelay: '0.8s' } as React.CSSProperties}
+              />
+              <img
+                src="/images/products/iphone-16-blue.webp"
+                alt="iPhone"
+                className="w-28 sm:w-40 lg:w-60 drop-shadow-2xl animate-float"
+                style={{ animationDelay: '1.6s' } as React.CSSProperties}
+              />
             </div>
           </div>
         </div>
