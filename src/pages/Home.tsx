@@ -12,7 +12,7 @@ export default function Home() {
           <div className="absolute bottom-20 left-20 w-[400px] h-[400px] bg-[#e7e2da]/70 rounded-full blur-[100px]" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12 w-full">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 w-full">
           <div className="relative flex justify-center items-start animate-scale-in">
             {/* Soft glow behind phones */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] lg:w-[520px] lg:h-[520px] bg-white/70 rounded-full blur-[110px] lg:blur-[130px]" />
