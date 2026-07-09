@@ -172,6 +172,19 @@ class OfferCreate(BaseModel):
     featured: bool = False
     active: bool = True
 
+class BannerResponse(BaseModel):
+    id: int
+    image: str
+    link: Optional[str] = None
+    position: int = 0
+    active: bool = True
+
+class BannerCreate(BaseModel):
+    image: str
+    link: Optional[str] = None
+    position: int = 0
+    active: bool = True
+
 class SiteContent(BaseModel):
     hero_subtitle: str = "Evolución en tus manos"
     hero_title_1: str = "Tu próximo"
@@ -343,6 +356,54 @@ def delete_offer(offer_id: int, _username: str = Depends(verify_token)):
     offers = _ec_load("offers", INITIAL_OFFERS)
     offers = [o for o in offers if o["id"] != offer_id]
     _ec_save("offers", offers)
+    return {"ok": True}
+
+
+# --- Banners ---
+
+INITIAL_BANNERS = [
+    {"id": 1, "image": "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=1200&h=400&fit=crop", "link": "/catalogo", "position": 1, "active": True},
+    {"id": 2, "image": "https://images.unsplash.com/photo-1592286927505-1def25115558?w=1200&h=400&fit=crop", "link": "/ofertas", "position": 2, "active": True},
+]
+
+@app.get("/api/banners", response_model=list[BannerResponse])
+def get_banners():
+    banners = _ec_load("banners", INITIAL_BANNERS)
+    return sorted([b for b in banners if b.get("active", True)], key=lambda b: b.get("position", 0))
+
+@app.get("/api/admin/banners", response_model=list[BannerResponse])
+def get_all_banners(_username: str = Depends(verify_token)):
+    banners = _ec_load("banners", INITIAL_BANNERS)
+    return sorted(banners, key=lambda b: b.get("position", 0))
+
+@app.post("/api/admin/banners", response_model=BannerResponse)
+def create_banner(banner: BannerCreate, request: Request, _username: str = Depends(verify_token)):
+    banners = _ec_load("banners", INITIAL_BANNERS)
+    new_id = max((b["id"] for b in banners), default=0) + 1
+    banner_data = banner.model_dump()
+    banner_data["image"] = _save_image_if_base64(banner_data["image"], f"banner_img_{new_id}", request)
+    new_banner = {"id": new_id, **banner_data}
+    banners.append(new_banner)
+    _ec_save("banners", banners)
+    return new_banner
+
+@app.put("/api/admin/banners/{banner_id}", response_model=BannerResponse)
+def update_banner(banner_id: int, banner: BannerCreate, request: Request, _username: str = Depends(verify_token)):
+    banners = _ec_load("banners", INITIAL_BANNERS)
+    for i, b in enumerate(banners):
+        if b["id"] == banner_id:
+            banner_data = banner.model_dump()
+            banner_data["image"] = _save_image_if_base64(banner_data["image"], f"banner_img_{banner_id}", request)
+            banners[i] = {"id": banner_id, **banner_data}
+            _ec_save("banners", banners)
+            return banners[i]
+    raise HTTPException(status_code=404, detail="Banner no encontrado")
+
+@app.delete("/api/admin/banners/{banner_id}")
+def delete_banner(banner_id: int, _username: str = Depends(verify_token)):
+    banners = _ec_load("banners", INITIAL_BANNERS)
+    banners = [b for b in banners if b["id"] != banner_id]
+    _ec_save("banners", banners)
     return {"ok": True}
 
 
