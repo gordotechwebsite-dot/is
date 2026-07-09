@@ -11,6 +11,13 @@ const BRAND_LABELS: Record<string, string> = {
   motorola: 'Motorola',
 }
 
+function resolveImage(img: string): string {
+  if (!img) return img
+  if (img.startsWith('http')) return img
+  if (img.startsWith('/api/')) return `${API_URL}${img}`
+  return img.replace(/\.png$/i, '.webp')
+}
+
 const TRUST_ITEMS = [
   { icon: ShieldCheck, title: 'Garantía incluida', text: 'Todos nuestros equipos con garantía' },
   { icon: Truck, title: 'Contra entrega', text: 'Envíos a Ramiriquí y todo Boyacá' },
@@ -33,14 +40,19 @@ export default function Home() {
         const mapped = (Array.isArray(data) ? data : []).map(p => ({
           ...p,
           priceRange: p.price_range || p.priceRange || '',
-          image: p.image && !p.image.startsWith('http') ? `${API_URL}${p.image}` : p.image,
+          image: resolveImage(p.image),
         }))
         setProducts(mapped)
       })
       .catch(() => {})
   }, [])
 
-  const featured = products.slice(0, 4)
+  const featured = Object.values(
+    products.reduce<Record<string, Product>>((acc, p) => {
+      if (!acc[p.name]) acc[p.name] = p
+      return acc
+    }, {})
+  ).slice(0, 4)
 
   return (
     <>
