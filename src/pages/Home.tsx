@@ -160,10 +160,10 @@ export default function Home() {
                 <p className="text-gray-500 mt-2 text-sm sm:text-base">Los equipos más buscados de la semana</p>
               </div>
               <Link
-                to="/catalogo"
+                to="/destacados"
                 className="hidden sm:inline-flex items-center gap-1 text-purple-700 font-medium hover:text-purple-900 transition-colors shrink-0"
               >
-                Ver catálogo <ArrowRight className="w-4 h-4" />
+                Ver todos <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
@@ -212,10 +212,10 @@ export default function Home() {
 
             <div className="mt-8 text-center sm:hidden">
               <Link
-                to="/catalogo"
+                to="/destacados"
                 className="inline-flex items-center gap-1 text-purple-700 font-medium hover:text-purple-900 transition-colors"
               >
-                Ver todo el catálogo <ArrowRight className="w-4 h-4" />
+                Ver todos los destacados <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
