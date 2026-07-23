@@ -58,6 +58,49 @@ export default function Home() {
     <>
       <BannerCarousel />
 
+      {/* Categorías destacadas */}
+      {categories.length > 0 && (
+        <section className="py-10 lg:py-14">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-end justify-between mb-8 gap-4">
+              <div>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">Explora por categoría</h2>
+                <p className="text-gray-500 mt-2 text-sm sm:text-base">Encuentra el equipo perfecto para ti</p>
+              </div>
+              <Link
+                to="/catalogo"
+                className="hidden sm:inline-flex items-center gap-1 text-purple-700 font-medium hover:text-purple-900 transition-colors shrink-0"
+              >
+                Ver todo <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {categories.map((cat, i) => (
+                <ScrollReveal key={cat.id} delay={i * 0.05}>
+                  <Link
+                    to={cat.slug === 'ofertas' ? '/ofertas' : `/categoria/${cat.slug}`}
+                    className="group block"
+                  >
+                    <div className="relative rounded-2xl overflow-hidden aspect-square bg-gradient-to-br from-purple-100 via-pink-50 to-orange-100">
+                      <img
+                        src={cat.cover_image}
+                        alt={cat.name}
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                    <h3 className="mt-3 text-base sm:text-lg font-bold text-gray-900 group-hover:text-purple-700 transition-colors">
+                      {cat.name}
+                    </h3>
+                  </Link>
+                </ScrollReveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-white via-[#f6f4f1] to-[#ece8e2]">
         <div className="absolute inset-0">
@@ -106,49 +149,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Categorías destacadas */}
-      {categories.length > 0 && (
-        <section className="py-14 lg:py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-end justify-between mb-8 gap-4">
-              <div>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">Explora por categoría</h2>
-                <p className="text-gray-500 mt-2 text-sm sm:text-base">Encuentra el equipo perfecto para ti</p>
-              </div>
-              <Link
-                to="/catalogo"
-                className="hidden sm:inline-flex items-center gap-1 text-purple-700 font-medium hover:text-purple-900 transition-colors shrink-0"
-              >
-                Ver todo <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {categories.map((cat, i) => (
-                <ScrollReveal key={cat.id} delay={i * 0.05}>
-                  <Link
-                    to={cat.slug === 'ofertas' ? '/ofertas' : `/categoria/${cat.slug}`}
-                    className="group block"
-                  >
-                    <div className="relative rounded-2xl overflow-hidden aspect-square bg-gradient-to-br from-purple-100 via-pink-50 to-orange-100">
-                      <img
-                        src={cat.cover_image}
-                        alt={cat.name}
-                        loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    </div>
-                    <h3 className="mt-3 text-base sm:text-lg font-bold text-gray-900 group-hover:text-purple-700 transition-colors">
-                      {cat.name}
-                    </h3>
-                  </Link>
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Productos destacados */}
       {featured.length > 0 && (
