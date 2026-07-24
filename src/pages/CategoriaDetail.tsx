@@ -49,7 +49,7 @@ export default function CategoriaDetail() {
         {/* Category header with cover */}
         {category && (
           <ScrollReveal>
-            <div className="relative rounded-3xl overflow-hidden mb-12 aspect-[3/1] min-h-[200px]">
+            <div className="relative rounded-3xl overflow-hidden mb-8 sm:mb-12 w-full h-44 sm:h-60 lg:h-72">
               <img
                 src={category.cover_image}
                 alt={category.name}
