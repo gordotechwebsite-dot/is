@@ -47,6 +47,12 @@ export function ScrollReveal({ children, className = '', delay = 0 }: {
   )
 }
 
+export type Variant = {
+  storage: string
+  color: string
+  price: string
+}
+
 export type Product = {
   id: number
   name: string
@@ -58,6 +64,7 @@ export type Product = {
   priceRange: string
   badge?: string
   category?: string
+  variants?: Variant[]
 }
 
 export type Category = {

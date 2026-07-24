@@ -158,6 +158,11 @@ class LoginResponse(BaseModel):
     token: str
     username: str
 
+class Variant(BaseModel):
+    storage: str = ""
+    color: str = ""
+    price: str = ""
+
 class ProductResponse(BaseModel):
     id: int
     name: str
@@ -169,6 +174,7 @@ class ProductResponse(BaseModel):
     price_range: str
     badge: Optional[str] = None
     category: Optional[str] = None
+    variants: list[Variant] = []
 
 class ProductCreate(BaseModel):
     name: str
@@ -180,6 +186,7 @@ class ProductCreate(BaseModel):
     price_range: str
     badge: Optional[str] = None
     category: Optional[str] = None
+    variants: list[Variant] = []
 
 class CategoryResponse(BaseModel):
     id: int

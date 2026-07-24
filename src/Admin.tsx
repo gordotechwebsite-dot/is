@@ -3,9 +3,11 @@ import { Trash2, Edit, Plus, LogOut, Save, X, FolderOpen, Package, Home, Zap, Se
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://isphone-api.vercel.app'
 
+type Variant = { storage: string; color: string; price: string }
 type Product = {
   id: number; name: string; brand: string; condition: string; image: string
   storage: string[]; colors: string[]; price_range: string; badge: string | null; category: string | null
+  variants?: Variant[]
 }
 type Category = { id: number; name: string; slug: string; cover_image: string; position: number }
 type Banner = { id: number; image: string; link: string | null; position: number; active: boolean }
@@ -50,6 +52,7 @@ function Admin() {
   const [formBadge, setFormBadge] = useState('')
   const [formCategory, setFormCategory] = useState('')
   const [formImage, setFormImage] = useState('')
+  const [formVariants, setFormVariants] = useState<Variant[]>([])
 
   // Category form
   const [editingCat, setEditingCat] = useState<Category | null>(null)
@@ -127,6 +130,7 @@ function Admin() {
   const resetProductForm = () => {
     setFormName(''); setFormBrand('apple'); setFormCondition('Nuevo'); setFormStorage('')
     setFormColors(''); setFormPrice(''); setFormBadge(''); setFormCategory(''); setFormImage('')
+    setFormVariants([])
     setEditing(null); setShowForm(false)
   }
 
@@ -134,6 +138,7 @@ function Admin() {
     setEditing(p); setFormName(p.name); setFormBrand(p.brand); setFormCondition(p.condition)
     setFormStorage(p.storage.join(',')); setFormColors(p.colors.join(','))
     setFormPrice(p.price_range); setFormBadge(p.badge || ''); setFormCategory(p.category || '')
+    setFormVariants(p.variants || [])
     setFormImage(p.image); setShowForm(true)
   }
 
@@ -145,6 +150,7 @@ function Admin() {
       storage: formStorage.split(',').map(s => s.trim()).filter(Boolean),
       colors: formColors.split(',').map(s => s.trim()).filter(Boolean),
       price_range: formPrice, badge: formBadge || null, category: formCategory || null,
+      variants: formVariants.filter(v => v.price.trim()),
     }
     const url = editing ? `${API_URL}/api/admin/products/${editing.id}` : `${API_URL}/api/admin/products`
     const method = editing ? 'PUT' : 'POST'
@@ -510,6 +516,54 @@ function Admin() {
                   <Input label="Colores (separar con coma)" value={formColors} onChange={setFormColors} placeholder="Negro,Blanco,Azul" required />
                   <Input label="Rango de precio" value={formPrice} onChange={setFormPrice} placeholder="Desde $3.400.000" required />
                   <Input label="Etiqueta (opcional)" value={formBadge} onChange={setFormBadge} placeholder="Pro, Ultra, Nuevo..." />
+
+                  <div className="border-t border-gray-800 pt-4">
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-sm text-gray-400">Precios por variante (opcional)</label>
+                      <button type="button"
+                        onClick={() => setFormVariants([...formVariants, {
+                          storage: formStorage.split(',').map(s => s.trim()).filter(Boolean)[0] || '',
+                          color: formColors.split(',').map(s => s.trim()).filter(Boolean)[0] || '',
+                          price: '',
+                        }])}
+                        className="flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300">
+                        <Plus className="w-3 h-3" /> Agregar variante
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-500 mb-3">Si defines variantes, el cliente elige capacidad + color y verá el precio exacto. Si no, se muestra el precio de arriba.</p>
+                    {formVariants.length > 0 && (
+                      <div className="space-y-2">
+                        {formVariants.map((v, idx) => {
+                          const storageOpts = formStorage.split(',').map(s => s.trim()).filter(Boolean)
+                          const colorOpts = formColors.split(',').map(s => s.trim()).filter(Boolean)
+                          const update = (field: keyof Variant, value: string) => {
+                            setFormVariants(formVariants.map((x, i) => i === idx ? { ...x, [field]: value } : x))
+                          }
+                          return (
+                            <div key={idx} className="flex gap-2 items-center">
+                              <select value={v.storage} onChange={e => update('storage', e.target.value)}
+                                className="flex-1 min-w-0 px-2 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-purple-500">
+                                {storageOpts.length === 0 && <option value="">—</option>}
+                                {storageOpts.map(s => <option key={s} value={s}>{s}</option>)}
+                              </select>
+                              <select value={v.color} onChange={e => update('color', e.target.value)}
+                                className="flex-1 min-w-0 px-2 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-purple-500">
+                                {colorOpts.length === 0 && <option value="">—</option>}
+                                {colorOpts.map(c => <option key={c} value={c}>{c}</option>)}
+                              </select>
+                              <input value={v.price} onChange={e => update('price', e.target.value)} placeholder="$3.400.000"
+                                className="flex-1 min-w-0 px-2 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-purple-500" />
+                              <button type="button" onClick={() => setFormVariants(formVariants.filter((_, i) => i !== idx))}
+                                className="p-2 text-gray-500 hover:text-red-400 shrink-0">
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
+
                   <div className="flex gap-3 pt-2">
                     <button type="submit" disabled={loading}
                       className="flex-1 flex items-center justify-center gap-2 bg-purple-700 text-white py-3 rounded-xl font-semibold hover:bg-purple-600 disabled:opacity-50">

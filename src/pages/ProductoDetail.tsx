@@ -14,6 +14,8 @@ export default function ProductoDetail() {
   const { id } = useParams<{ id: string }>()
   const [product, setProduct] = useState<Product | null>(null)
   const [loaded, setLoaded] = useState(false)
+  const [selStorage, setSelStorage] = useState('')
+  const [selColor, setSelColor] = useState('')
 
   useEffect(() => {
     fetch(`${API_URL}/api/products`)
@@ -26,6 +28,8 @@ export default function ProductoDetail() {
             priceRange: (found as unknown as Record<string, string>).price_range || found.priceRange || '',
             image: resolveImage(found.image),
           })
+          setSelStorage(found.storage?.[0] || '')
+          setSelColor(found.colors?.[0] || '')
         }
         setLoaded(true)
       })
@@ -100,46 +104,82 @@ export default function ProductoDetail() {
                 </span>
               </div>
 
-              {product.priceRange && (
-                <p className="text-2xl font-bold text-purple-700 mb-6">{product.priceRange}</p>
-              )}
+              {(() => {
+                const hasVariants = !!product.variants && product.variants.length > 0
+                const matched = hasVariants
+                  ? product.variants!.find(v => v.storage === selStorage && v.color === selColor)
+                  : undefined
+                const displayPrice = matched?.price || product.priceRange
+                const waText = hasVariants
+                  ? `Hola! Me interesa el ${product.name} (${product.condition}) — ${selStorage}, ${selColor}${matched?.price ? ` (${matched.price})` : ''}`
+                  : `Hola! Me interesa el ${product.name} (${product.condition})`
+                return (
+                  <>
+                    {displayPrice && (
+                      <p className="text-2xl font-bold text-purple-700 mb-6">{displayPrice}</p>
+                    )}
 
-              {product.storage && product.storage.length > 0 && (
-                <div className="mb-4">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Almacenamiento disponible</p>
-                  <div className="flex flex-wrap gap-2">
-                    {product.storage.map(s => (
-                      <span key={s} className="border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium text-gray-700">
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+                    {product.storage && product.storage.length > 0 && (
+                      <div className="mb-4">
+                        <p className="text-sm font-medium text-gray-700 mb-2">Almacenamiento{hasVariants ? '' : ' disponible'}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {product.storage.map(s => (
+                            <button
+                              key={s}
+                              type="button"
+                              onClick={() => setSelStorage(s)}
+                              className={`border rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                                hasVariants && selStorage === s
+                                  ? 'border-purple-600 bg-purple-50 text-purple-700'
+                                  : 'border-gray-200 text-gray-700 hover:border-gray-300'
+                              }`}
+                            >
+                              {s}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-              {product.colors && product.colors.length > 0 && (
-                <div className="mb-6">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Colores disponibles</p>
-                  <div className="flex flex-wrap gap-2">
-                    {product.colors.map(c => (
-                      <span key={c} className="border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium text-gray-700">
-                        {c}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+                    {product.colors && product.colors.length > 0 && (
+                      <div className="mb-6">
+                        <p className="text-sm font-medium text-gray-700 mb-2">Color{hasVariants ? '' : 'es disponibles'}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {product.colors.map(c => (
+                            <button
+                              key={c}
+                              type="button"
+                              onClick={() => setSelColor(c)}
+                              className={`border rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                                hasVariants && selColor === c
+                                  ? 'border-purple-600 bg-purple-50 text-purple-700'
+                                  : 'border-gray-200 text-gray-700 hover:border-gray-300'
+                              }`}
+                            >
+                              {c}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-              <a
-                href={`${WHATSAPP_LINK}?text=${encodeURIComponent(`Hola! Me interesa el ${product.name} (${product.condition})`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-3 bg-green-500 text-white px-8 py-4 rounded-full font-semibold hover:bg-green-600 transition-colors shadow-lg text-lg"
-              >
-                <WhatsAppIcon className="w-6 h-6" />
-                Consultar disponibilidad
-                <ArrowRight className="w-5 h-5" />
-              </a>
+                    {hasVariants && !matched && (
+                      <p className="text-sm text-amber-600 mb-4">Esta combinación no está disponible. Consúltala por WhatsApp.</p>
+                    )}
+
+                    <a
+                      href={`${WHATSAPP_LINK}?text=${encodeURIComponent(waText)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-3 bg-green-500 text-white px-8 py-4 rounded-full font-semibold hover:bg-green-600 transition-colors shadow-lg text-lg"
+                    >
+                      <WhatsAppIcon className="w-6 h-6" />
+                      Consultar disponibilidad
+                      <ArrowRight className="w-5 h-5" />
+                    </a>
+                  </>
+                )
+              })()}
             </div>
           </div>
         </ScrollReveal>
