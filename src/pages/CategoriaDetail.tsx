@@ -3,6 +3,13 @@ import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Smartphone } from 'lucide-react'
 import { ScrollReveal, API_URL, Product, Category } from '../shared'
 
+function resolveImage(img: string): string {
+  if (!img) return img
+  if (img.startsWith('http')) return img
+  if (img.startsWith('/api/')) return `${API_URL}${img}`
+  return img.replace(/\.png$/i, '.webp')
+}
+
 export default function CategoriaDetail() {
   const { slug } = useParams<{ slug: string }>()
   const [products, setProducts] = useState<Product[]>([])
@@ -18,6 +25,7 @@ export default function CategoriaDetail() {
         const mapped = prods.map((p: { id: number; name: string; brand: string; condition: string; image: string; storage: string[]; colors: string[]; price_range: string; badge?: string; category?: string }) => ({
           ...p,
           priceRange: p.price_range,
+          image: resolveImage(p.image),
         }))
         setProducts(mapped.filter((p: Product) => p.category === slug))
         const cat = cats.find((c: Category) => c.slug === slug)

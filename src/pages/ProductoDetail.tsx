@@ -3,6 +3,13 @@ import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Package } from 'lucide-react'
 import { ScrollReveal, WhatsAppIcon, WHATSAPP_LINK, API_URL, Product } from '../shared'
 
+function resolveImage(img: string): string {
+  if (!img) return img
+  if (img.startsWith('http')) return img
+  if (img.startsWith('/api/')) return `${API_URL}${img}`
+  return img.replace(/\.png$/i, '.webp')
+}
+
 export default function ProductoDetail() {
   const { id } = useParams<{ id: string }>()
   const [product, setProduct] = useState<Product | null>(null)
@@ -17,7 +24,7 @@ export default function ProductoDetail() {
           setProduct({
             ...found,
             priceRange: (found as unknown as Record<string, string>).price_range || found.priceRange || '',
-            image: found.image && !found.image.startsWith('http') ? `${API_URL}${found.image}` : found.image,
+            image: resolveImage(found.image),
           })
         }
         setLoaded(true)
