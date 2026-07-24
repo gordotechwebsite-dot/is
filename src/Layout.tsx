@@ -25,7 +25,7 @@ export default function Layout() {
         setAllProducts(data.map(p => ({
           ...p,
           priceRange: (p as unknown as Record<string, string>).price_range || p.priceRange || '',
-          image: p.image && !p.image.startsWith('http') ? `${API_URL}${p.image}` : p.image,
+          image: p.image && p.image.startsWith('http') ? p.image : p.image?.startsWith('/api/') ? `${API_URL}${p.image}` : p.image?.replace(/\.png$/i, '.webp'),
         })))
       }).catch(() => {})
     }
