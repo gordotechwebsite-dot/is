@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ShieldCheck, Truck, RefreshCw, BadgeCheck, ArrowRight } from 'lucide-react'
+import { ShieldCheck, Truck, RefreshCw, BadgeCheck, ArrowRight, Wrench, Headphones, Smartphone } from 'lucide-react'
 import BannerCarousel from '../components/BannerCarousel'
-import { ScrollReveal, API_URL, Category, Product } from '../shared'
+import { ScrollReveal, WhatsAppIcon, WHATSAPP_LINK, API_URL, Category, Product } from '../shared'
 
 const BRAND_LABELS: Record<string, string> = {
   apple: 'Apple',
@@ -17,6 +17,13 @@ function resolveImage(img: string): string {
   if (img.startsWith('/api/')) return `${API_URL}${img}`
   return img.replace(/\.png$/i, '.webp')
 }
+
+const SUPPORT_ITEMS = [
+  { icon: Wrench, title: 'Reparaciones', text: 'Cambio de pantalla, batería, puerto de carga y más, con repuestos de calidad.' },
+  { icon: ShieldCheck, title: 'Garantía y respaldo', text: 'Acompañamiento posventa y garantía en cada equipo y servicio.' },
+  { icon: Headphones, title: 'Asesoría personalizada', text: 'Te ayudamos a elegir, configurar y migrar tu información sin complicaciones.' },
+  { icon: Smartphone, title: 'Diagnóstico gratis', text: 'Revisamos tu equipo y te damos una cotización clara antes de reparar.' },
+]
 
 const TRUST_ITEMS = [
   { icon: ShieldCheck, title: 'Garantía incluida', text: 'Todos nuestros equipos con garantía' },
@@ -191,6 +198,52 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Soporte técnico */}
+      <section className="py-14 lg:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ScrollReveal>
+            <div className="text-center max-w-2xl mx-auto mb-10 lg:mb-14">
+              <span className="inline-block text-xs font-semibold uppercase tracking-wide text-purple-700 bg-purple-50 px-3 py-1 rounded-full mb-3">
+                Servicio técnico
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+                También ofrecemos soporte técnico
+              </h2>
+              <p className="text-gray-500 mt-3 text-sm sm:text-base">
+                No solo vendemos equipos: reparamos, asesoramos y te acompañamos. Técnicos especializados y repuestos de calidad en Boyacá.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+            {SUPPORT_ITEMS.map(({ icon: Icon, title, text }, i) => (
+              <ScrollReveal key={title} delay={i * 0.05}>
+                <div className="h-full rounded-2xl border border-gray-100 bg-gradient-to-b from-white to-[#faf9f7] p-6 hover:border-purple-200 hover:shadow-lg transition-all">
+                  <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center mb-4">
+                    <Icon className="w-6 h-6 text-purple-700" />
+                  </div>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1.5">{title}</h3>
+                  <p className="text-sm text-gray-500 leading-snug">{text}</p>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+
+          <div className="mt-10 text-center">
+            <a
+              href={`${WHATSAPP_LINK}?text=${encodeURIComponent('Hola! Necesito soporte técnico para mi equipo')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-3 bg-green-500 text-white px-8 py-4 rounded-full font-semibold hover:bg-green-600 transition-colors shadow-lg"
+            >
+              <WhatsAppIcon className="w-5 h-5" />
+              Solicitar soporte técnico
+              <ArrowRight className="w-5 h-5" />
+            </a>
+          </div>
+        </div>
+      </section>
 
       {/* Trade-In CTA band */}
       <section className="py-14 lg:py-20">
