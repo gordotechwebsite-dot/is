@@ -210,7 +210,7 @@ export default function Home() {
                 to="/reparaciones"
                 className="inline-flex items-center justify-center gap-2 bg-purple-700 text-white px-8 py-4 rounded-full font-semibold hover:bg-purple-800 transition-colors shadow-lg"
               >
-                Ver reparaciones <ArrowRight className="w-5 h-5" />
+                Obtén Servicio Técnico <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
           </ScrollReveal>
