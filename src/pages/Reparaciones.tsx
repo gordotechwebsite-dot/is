@@ -10,12 +10,6 @@ const SERVICES = [
   { icon: Headphones, title: 'Accesorios y más', desc: 'Cámaras, botones, altavoces y otros repuestos.' },
 ]
 
-const STEPS = [
-  { step: '1', title: 'Escríbenos', desc: 'Cuéntanos qué le pasa a tu equipo' },
-  { step: '2', title: 'Diagnóstico gratis', desc: 'Revisamos y te damos una cotización clara' },
-  { step: '3', title: 'Reparamos', desc: 'Con garantía y en el menor tiempo posible' },
-]
-
 export default function Reparaciones() {
   return (
     <section className="py-12 lg:py-20">
@@ -48,23 +42,6 @@ export default function Reparaciones() {
             </ScrollReveal>
           ))}
         </div>
-
-        <ScrollReveal delay={0.2}>
-          <div className="mt-16 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-3xl p-8 sm:p-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">¿Cómo funciona?</h2>
-            <div className="grid sm:grid-cols-3 gap-6">
-              {STEPS.map(item => (
-                <div key={item.step} className="bg-white rounded-2xl p-6 text-center border border-gray-100">
-                  <div className="w-10 h-10 rounded-full bg-purple-700 text-white flex items-center justify-center font-bold mx-auto mb-4">
-                    {item.step}
-                  </div>
-                  <h4 className="font-semibold text-gray-900 mb-1">{item.title}</h4>
-                  <p className="text-sm text-gray-500">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </ScrollReveal>
 
         <div className="mt-12 text-center">
           <a
