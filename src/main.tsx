@@ -8,6 +8,7 @@ import './index.css'
 const Catalogo = lazy(() => import('./pages/Catalogo.tsx'))
 const Destacados = lazy(() => import('./pages/Destacados.tsx'))
 const TradeIn = lazy(() => import('./pages/TradeIn.tsx'))
+const Reparaciones = lazy(() => import('./pages/Reparaciones.tsx'))
 const Envios = lazy(() => import('./pages/Envios.tsx'))
 const Ofertas = lazy(() => import('./pages/Ofertas.tsx'))
 const Contacto = lazy(() => import('./pages/Contacto.tsx'))
@@ -42,6 +43,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <Route path="/catalogo" element={<Catalogo />} />
             <Route path="/destacados" element={<Destacados />} />
             <Route path="/trade-in" element={<TradeIn />} />
+            <Route path="/reparaciones" element={<Reparaciones />} />
             <Route path="/envios" element={<Envios />} />
             <Route path="/ofertas" element={<Ofertas />} />
             <Route path="/contacto" element={<Contacto />} />
