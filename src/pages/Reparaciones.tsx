@@ -21,7 +21,7 @@ const DEVICES: Device[] = [
     id: 'iphone',
     name: 'iPhone',
     icon: Smartphone,
-    desc: 'Reparación de iPhone disponible desde el iPhone 7 hasta el último.',
+    desc: 'Nuestros servicios de reparación de iPhone está disponible desde el iPhone 7 hasta el último.',
     options: [
       'Reparación de batería',
       'Reparación de pantalla',
@@ -39,7 +39,7 @@ const DEVICES: Device[] = [
     id: 'ipad',
     name: 'iPad',
     icon: Tablet,
-    desc: 'Servicio técnico experto para tu iPad con precisión y calidad.',
+    desc: 'Nuestros servicios de reparación de iPad va desde el iPad 3 A1416 (2012) hasta el último modelo.',
     options: [
       'Reparación electrónica',
       'Reparación de cristal',
@@ -55,7 +55,7 @@ const DEVICES: Device[] = [
     id: 'macbook',
     name: 'MacBook',
     icon: Laptop,
-    desc: 'Especialistas en hardware y microelectrónica, con garantía.',
+    desc: 'Nuestros servicios de reparación de MacBook va desde la MacBook Pro A1278 (2012) hasta los últimos modelos.',
     options: [
       'Reparación electrónica',
       'Reparación Flex Gate',
@@ -72,7 +72,7 @@ const DEVICES: Device[] = [
     id: 'imac',
     name: 'iMac',
     icon: Monitor,
-    desc: 'Reparaciones y mantenimiento de computadores Apple.',
+    desc: 'Nuestros servicios de reparación de iMac están disponibles desde el iMac A1418 (2012) hasta los últimos modelos.',
     options: [
       'Reparación electrónica',
       'Optimización y mantenimiento',
@@ -84,15 +84,15 @@ const DEVICES: Device[] = [
     id: 'watch',
     name: 'Watch',
     icon: Watch,
-    desc: 'Servicio especializado para tu Apple Watch.',
-    options: ['Reparación de pantalla', 'Cambio de batería', 'Otro tipo de fallas'],
+    desc: 'Nuestros servicios de reparación de Apple Watch están disponibles desde la serie 4 hasta la serie Ultra 2 en reparación de pantallas partidas.',
+    options: ['Reparación de pantalla'],
   },
   {
     id: 'cargadores',
     name: 'Cargadores',
     icon: Plug,
-    desc: 'No lo cambies, nosotros lo restauramos.',
-    options: ['Reparación de cargador', 'Otro tipo de fallas'],
+    desc: 'Nuestros servicios de reparación de cargadores sólo están disponibles para los cargadores MagSafe 1 y MagSafe 2.',
+    options: ['Reparación de cargador'],
   },
 ]
 
