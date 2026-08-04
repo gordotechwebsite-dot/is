@@ -55,6 +55,7 @@ export default function Layout() {
     { to: '/', label: 'Inicio' },
     { to: '/catalogo', label: 'Catálogo' },
     { to: '/destacados', label: 'Destacados' },
+    { to: '/reparaciones', label: 'Reparaciones' },
     { to: '/trade-in', label: 'Trade-In' },
     { to: '/ofertas', label: 'Ofertas' },
     { to: '/contacto', label: 'Contacto' },
