@@ -192,6 +192,31 @@ export default function Home() {
         </section>
       )}
 
+      {/* Soporte técnico */}
+      <section className="py-14 lg:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ScrollReveal>
+            <div className="text-center max-w-2xl mx-auto">
+              <span className="inline-block text-xs font-semibold uppercase tracking-wide text-purple-700 bg-purple-50 px-3 py-1 rounded-full mb-3">
+                Servicio técnico
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+                También ofrecemos soporte técnico
+              </h2>
+              <p className="text-gray-500 mt-3 mb-8 text-sm sm:text-base">
+                No solo vendemos equipos: reparamos, asesoramos y te acompañamos. Técnicos especializados y repuestos de calidad en Boyacá.
+              </p>
+              <Link
+                to="/reparaciones"
+                className="inline-flex items-center justify-center gap-2 bg-purple-700 text-white px-8 py-4 rounded-full font-semibold hover:bg-purple-800 transition-colors shadow-lg"
+              >
+                Ver reparaciones <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
       {/* Trade-In CTA band */}
       <section className="py-14 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
