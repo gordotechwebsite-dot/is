@@ -83,11 +83,6 @@ export default function Layout() {
                   {link.label}
                 </Link>
               ))}
-              <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
-                className="bg-purple-700 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-purple-800 transition-colors flex items-center gap-2">
-                <WhatsAppIcon className="w-4 h-4" />
-                WhatsApp
-              </a>
             </div>
 
             {/* Mobile: logo centered absolutely */}
