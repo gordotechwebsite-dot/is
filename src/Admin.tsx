@@ -24,6 +24,103 @@ type SiteContent = {
 
 type Section = 'products' | 'categories' | 'banners' | 'landing' | 'offers' | 'settings'
 
+const compressImage = (file: File, maxSize = 400): Promise<string> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = document.createElement('img')
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        let w = img.width, h = img.height
+        if (w > h) { if (w > maxSize) { h = Math.round(h * maxSize / w); w = maxSize } }
+        else { if (h > maxSize) { w = Math.round(w * maxSize / h); h = maxSize } }
+        canvas.width = w; canvas.height = h
+        const ctx = canvas.getContext('2d')!
+        ctx.drawImage(img, 0, 0, w, h)
+        resolve(canvas.toDataURL('image/jpeg', 0.6))
+      }
+      img.src = e.target?.result as string
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
+const ImageUpload = ({ value, onChange, label = 'Imagen', maxSize = 400, aspect = 'aspect-video', fit = 'cover' }: { value: string; onChange: (v: string) => void; label?: string; maxSize?: number; aspect?: string; fit?: 'cover' | 'contain' }) => {
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    const dataUrl = await compressImage(file, maxSize)
+    onChange(dataUrl)
+    setUploading(false)
+  }
+
+  return (
+    <div>
+      <label className="block text-sm text-gray-400 mb-1">{label}</label>
+      <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
+      {value ? (
+        <div className={`relative rounded-lg overflow-hidden bg-gray-800 ${aspect}`}>
+          <img src={value} alt="Preview" className={`w-full h-full ${fit === 'contain' ? 'object-contain p-2' : 'object-cover'}`} />
+          <div className="absolute top-1.5 right-1.5 flex gap-1.5">
+            <button type="button" onClick={() => fileRef.current?.click()} title="Cambiar" aria-label="Cambiar"
+              className="w-8 h-8 rounded-full bg-white/90 text-gray-800 shadow-md backdrop-blur flex items-center justify-center hover:bg-white transition-colors">
+              <Upload className="w-4 h-4" />
+            </button>
+            <button type="button" onClick={() => onChange('')} title="Quitar" aria-label="Quitar"
+              className="w-8 h-8 rounded-full bg-red-600/90 text-white shadow-md backdrop-blur flex items-center justify-center hover:bg-red-500 transition-colors">
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button type="button" onClick={() => fileRef.current?.click()}
+          className="w-full border-2 border-dashed border-gray-700 rounded-lg py-8 flex flex-col items-center gap-2 text-gray-500 hover:border-purple-500 hover:text-purple-400 transition-colors">
+          {uploading ? (
+            <span className="text-sm">Comprimiendo...</span>
+          ) : (
+            <>
+              <Image className="w-8 h-8" />
+              <span className="text-sm font-medium">Subir imagen</span>
+              <span className="text-xs">JPG, PNG — se comprime automáticamente</span>
+            </>
+          )}
+        </button>
+      )}
+    </div>
+  )
+}
+
+const Modal = ({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) => (
+  <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div className="bg-gray-900 rounded-2xl p-6 w-full max-w-lg border border-gray-800 my-8 max-h-[90vh] overflow-y-auto">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        <button onClick={onClose} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
+      </div>
+      {children}
+    </div>
+  </div>
+)
+
+const Input = ({ label, value, onChange, placeholder, required, type = 'text', textarea }: {
+  label: string; value: string; onChange: (v: string) => void; placeholder?: string; required?: boolean; type?: string; textarea?: boolean
+}) => (
+  <div>
+    <label className="block text-sm text-gray-400 mb-1">{label}</label>
+    {textarea ? (
+      <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} required={required} rows={3}
+        className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500 resize-none" />
+    ) : (
+      <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} required={required}
+        className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
+    )}
+  </div>
+)
+
 function Admin() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('admin_token'))
   const [username, setUsername] = useState('')
@@ -307,103 +404,6 @@ function Admin() {
     { key: 'landing', label: 'Página principal', icon: <Home className="w-5 h-5" /> },
     { key: 'settings', label: 'Configuración', icon: <Settings className="w-5 h-5" /> },
   ]
-
-  const compressImage = (file: File, maxSize = 400): Promise<string> => {
-    return new Promise((resolve) => {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const img = document.createElement('img')
-        img.onload = () => {
-          const canvas = document.createElement('canvas')
-          let w = img.width, h = img.height
-          if (w > h) { if (w > maxSize) { h = Math.round(h * maxSize / w); w = maxSize } }
-          else { if (h > maxSize) { w = Math.round(w * maxSize / h); h = maxSize } }
-          canvas.width = w; canvas.height = h
-          const ctx = canvas.getContext('2d')!
-          ctx.drawImage(img, 0, 0, w, h)
-          resolve(canvas.toDataURL('image/jpeg', 0.6))
-        }
-        img.src = e.target?.result as string
-      }
-      reader.readAsDataURL(file)
-    })
-  }
-
-  const ImageUpload = ({ value, onChange, label = 'Imagen', maxSize = 400, aspect = 'aspect-video', fit = 'cover' }: { value: string; onChange: (v: string) => void; label?: string; maxSize?: number; aspect?: string; fit?: 'cover' | 'contain' }) => {
-    const fileRef = useRef<HTMLInputElement>(null)
-    const [uploading, setUploading] = useState(false)
-
-    const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]
-      if (!file) return
-      setUploading(true)
-      const dataUrl = await compressImage(file, maxSize)
-      onChange(dataUrl)
-      setUploading(false)
-    }
-
-    return (
-      <div>
-        <label className="block text-sm text-gray-400 mb-1">{label}</label>
-        <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
-        {value ? (
-          <div className={`relative rounded-lg overflow-hidden bg-gray-800 ${aspect}`}>
-            <img src={value} alt="Preview" className={`w-full h-full ${fit === 'contain' ? 'object-contain p-2' : 'object-cover'}`} />
-            <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-              <button type="button" onClick={() => fileRef.current?.click()}
-                className="bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-600 flex items-center gap-2">
-                <Upload className="w-4 h-4" /> Cambiar
-              </button>
-              <button type="button" onClick={() => onChange('')}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-500 flex items-center gap-2">
-                <Trash2 className="w-4 h-4" /> Quitar
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button type="button" onClick={() => fileRef.current?.click()}
-            className="w-full border-2 border-dashed border-gray-700 rounded-lg py-8 flex flex-col items-center gap-2 text-gray-500 hover:border-purple-500 hover:text-purple-400 transition-colors">
-            {uploading ? (
-              <span className="text-sm">Comprimiendo...</span>
-            ) : (
-              <>
-                <Image className="w-8 h-8" />
-                <span className="text-sm font-medium">Subir imagen</span>
-                <span className="text-xs">JPG, PNG — se comprime automáticamente</span>
-              </>
-            )}
-          </button>
-        )}
-      </div>
-    )
-  }
-
-  const Modal = ({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) => (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-gray-900 rounded-2xl p-6 w-full max-w-lg border border-gray-800 my-8 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-white">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
-        </div>
-        {children}
-      </div>
-    </div>
-  )
-
-  const Input = ({ label, value, onChange, placeholder, required, type = 'text', textarea }: {
-    label: string; value: string; onChange: (v: string) => void; placeholder?: string; required?: boolean; type?: string; textarea?: boolean
-  }) => (
-    <div>
-      <label className="block text-sm text-gray-400 mb-1">{label}</label>
-      {textarea ? (
-        <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} required={required} rows={3}
-          className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500 resize-none" />
-      ) : (
-        <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} required={required}
-          className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
-      )}
-    </div>
-  )
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
