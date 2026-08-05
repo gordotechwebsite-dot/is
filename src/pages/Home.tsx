@@ -65,7 +65,6 @@ export default function Home() {
             <div className="flex items-end justify-between mb-8 gap-4">
               <div>
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">Explora por categoría</h2>
-                <p className="text-gray-500 mt-2 text-sm sm:text-base">Encuentra el equipo perfecto para ti</p>
               </div>
               <Link
                 to="/catalogo"
