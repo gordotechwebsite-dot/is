@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ShieldCheck, Truck, RefreshCw, BadgeCheck, ArrowRight } from 'lucide-react'
-import BannerCarousel from '../components/BannerCarousel'
+import HeroVideo from '../components/HeroVideo'
 import { ScrollReveal, API_URL, Category, Product } from '../shared'
 
 const BRAND_LABELS: Record<string, string> = {
@@ -56,7 +56,7 @@ export default function Home() {
 
   return (
     <>
-      <BannerCarousel />
+      <HeroVideo />
 
       {/* Categorías destacadas */}
       {categories.length > 0 && (
