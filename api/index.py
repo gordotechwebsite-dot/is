@@ -169,6 +169,7 @@ class ProductResponse(BaseModel):
     brand: str
     condition: str
     image: str
+    images: list[str] = []
     storage: list[str]
     colors: list[str]
     price_range: str
@@ -181,6 +182,7 @@ class ProductCreate(BaseModel):
     brand: str
     condition: str
     image: str
+    images: list[str] = []
     storage: list[str]
     colors: list[str]
     price_range: str
@@ -316,7 +318,12 @@ def create_product(product: ProductCreate, request: Request, _username: str = De
     products = _ec_load("products", INITIAL_PRODUCTS)
     new_id = max((p["id"] for p in products), default=0) + 1
     prod_data = product.model_dump()
-    prod_data["image"] = _save_image_if_base64(prod_data["image"], f"prod_img_{new_id}", request)
+    prod_data["images"] = [
+        _save_image_if_base64(img, f"prod_img_{new_id}_{idx}", request)
+        for idx, img in enumerate(prod_data["images"]) if img
+    ]
+    cover = prod_data["image"] or (prod_data["images"][0] if prod_data["images"] else "")
+    prod_data["image"] = _save_image_if_base64(cover, f"prod_img_{new_id}", request)
     new_product = {"id": new_id, **prod_data}
     products.append(new_product)
     _ec_save("products", products)
@@ -328,7 +335,12 @@ def update_product(product_id: int, product: ProductCreate, request: Request, _u
     for i, p in enumerate(products):
         if p["id"] == product_id:
             prod_data = product.model_dump()
-            prod_data["image"] = _save_image_if_base64(prod_data["image"], f"prod_img_{product_id}", request)
+            prod_data["images"] = [
+                _save_image_if_base64(img, f"prod_img_{product_id}_{idx}", request)
+                for idx, img in enumerate(prod_data["images"]) if img
+            ]
+            cover = prod_data["image"] or (prod_data["images"][0] if prod_data["images"] else "")
+            prod_data["image"] = _save_image_if_base64(cover, f"prod_img_{product_id}", request)
             products[i] = {"id": product_id, **prod_data}
             _ec_save("products", products)
             return products[i]
