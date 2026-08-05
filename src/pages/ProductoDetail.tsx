@@ -16,6 +16,7 @@ export default function ProductoDetail() {
   const [loaded, setLoaded] = useState(false)
   const [selStorage, setSelStorage] = useState('')
   const [selColor, setSelColor] = useState('')
+  const [selImage, setSelImage] = useState('')
 
   useEffect(() => {
     fetch(`${API_URL}/api/products`)
@@ -23,11 +24,16 @@ export default function ProductoDetail() {
       .then((data: Product[]) => {
         const found = data.find((p: Product) => p.id === Number(id))
         if (found) {
+          const gallery = (found.images && found.images.length > 0 ? found.images : [found.image])
+            .filter(Boolean)
+            .map(resolveImage)
           setProduct({
             ...found,
             priceRange: (found as unknown as Record<string, string>).price_range || found.priceRange || '',
             image: resolveImage(found.image),
+            images: gallery,
           })
+          setSelImage(gallery[0] || resolveImage(found.image))
           setSelStorage(found.storage?.[0] || '')
           setSelColor(found.colors?.[0] || '')
         }
@@ -71,13 +77,31 @@ export default function ProductoDetail() {
           </Link>
 
           <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-start">
-            {/* Image */}
-            <div className="bg-gray-50 rounded-3xl p-6 sm:p-8 flex items-center justify-center h-56 sm:h-72 lg:h-auto lg:aspect-square">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="max-w-full max-h-full object-contain"
-              />
+            {/* Gallery */}
+            <div className="flex flex-col gap-3">
+              <div className="bg-gray-50 rounded-3xl p-6 sm:p-8 flex items-center justify-center h-56 sm:h-72 lg:h-auto lg:aspect-square">
+                <img
+                  src={selImage || product.image}
+                  alt={product.name}
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
+              {product.images && product.images.length > 1 && (
+                <div className="flex gap-2 sm:gap-3 flex-wrap">
+                  {product.images.map((img, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setSelImage(img)}
+                      className={`w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-gray-50 p-2 flex items-center justify-center border-2 transition-colors ${
+                        selImage === img ? 'border-purple-600' : 'border-transparent hover:border-purple-300'
+                      }`}
+                    >
+                      <img src={img} alt={`${product.name} ${i + 1}`} className="max-w-full max-h-full object-contain" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Info */}

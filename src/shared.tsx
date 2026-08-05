@@ -59,6 +59,7 @@ export type Product = {
   brand: string
   condition: string
   image: string
+  images?: string[]
   storage: string[]
   colors: string[]
   priceRange: string

@@ -5,7 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'https://isphone-api.vercel.app'
 
 type Variant = { storage: string; color: string; price: string }
 type Product = {
-  id: number; name: string; brand: string; condition: string; image: string
+  id: number; name: string; brand: string; condition: string; image: string; images?: string[]
   storage: string[]; colors: string[]; price_range: string; badge: string | null; category: string | null
   variants?: Variant[]
 }
@@ -53,6 +53,7 @@ function Admin() {
   const [formBadge, setFormBadge] = useState('')
   const [formCategory, setFormCategory] = useState('')
   const [formImage, setFormImage] = useState('')
+  const [formImages, setFormImages] = useState<string[]>([])
   const [formVariants, setFormVariants] = useState<Variant[]>([])
 
   // Category form
@@ -131,6 +132,7 @@ function Admin() {
   const resetProductForm = () => {
     setFormName(''); setFormBrand('apple'); setFormCondition('Nuevo'); setFormStorage('')
     setFormColors(''); setFormPrice(''); setFormBadge(''); setFormCategory(''); setFormImage('')
+    setFormImages([])
     setFormVariants([])
     setEditing(null); setShowForm(false)
   }
@@ -140,14 +142,18 @@ function Admin() {
     setFormStorage(p.storage.join(',')); setFormColors(p.colors.join(','))
     setFormPrice(p.price_range); setFormBadge(p.badge || ''); setFormCategory(p.category || '')
     setFormVariants(p.variants || [])
-    setFormImage(p.image); setShowForm(true)
+    setFormImage(p.image)
+    setFormImages(p.images && p.images.length > 0 ? p.images : (p.image ? [p.image] : []))
+    setShowForm(true)
   }
 
   const saveProduct = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    const gallery = formImages.filter(Boolean)
     const body = {
-      name: formName, brand: formBrand, condition: formCondition, image: formImage,
+      name: formName, brand: formBrand, condition: formCondition,
+      image: gallery[0] || formImage || '', images: gallery,
       storage: formStorage.split(',').map(s => s.trim()).filter(Boolean),
       colors: formColors.split(',').map(s => s.trim()).filter(Boolean),
       price_range: formPrice, badge: formBadge || null, category: formCategory || null,
@@ -499,7 +505,28 @@ function Admin() {
             {showForm && (
               <Modal title={editing ? 'Editar producto' : 'Nuevo producto'} onClose={resetProductForm}>
                 <form onSubmit={saveProduct} className="space-y-4">
-                  <ImageUpload value={formImage} onChange={setFormImage} label="Imagen del producto" />
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-2">Fotos del producto (la primera es la portada)</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {formImages.map((img, i) => (
+                        <ImageUpload
+                          key={i}
+                          value={img}
+                          label={i === 0 ? 'Portada' : `Foto ${i + 1}`}
+                          aspect="aspect-square"
+                          onChange={v => setFormImages(prev => (
+                            v ? prev.map((x, idx) => (idx === i ? v : x)) : prev.filter((_, idx) => idx !== i)
+                          ))}
+                        />
+                      ))}
+                      <ImageUpload
+                        value=""
+                        label="Agregar foto"
+                        aspect="aspect-square"
+                        onChange={v => { if (v) setFormImages(prev => [...prev, v]) }}
+                      />
+                    </div>
+                  </div>
                   <Input label="Nombre" value={formName} onChange={setFormName} placeholder="iPhone 16 Pro" required />
                   <div className="grid grid-cols-2 gap-3">
                     <div>
