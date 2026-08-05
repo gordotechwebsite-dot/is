@@ -284,6 +284,13 @@ INITIAL_PRODUCTS = [
     {"id": 27, "name": "iPhone 16 Pro Max", "brand": "apple", "condition": "Exhibición", "image": _PH, "storage": ["256GB", "512GB"], "colors": [], "price_range": "Desde $3.350.000", "category": "iphone", "variants": [{"storage": "256GB", "color": "", "price": "$3.350.000"}, {"storage": "512GB", "color": "", "price": "$3.500.000"}]},
     {"id": 28, "name": "iPhone 17 Pro", "brand": "apple", "condition": "Exhibición", "image": _PH, "storage": ["256GB"], "colors": [], "price_range": "$3.950.000", "category": "iphone", "variants": [{"storage": "256GB", "color": "", "price": "$3.950.000"}]},
     {"id": 29, "name": "iPhone 17 Pro Max", "brand": "apple", "condition": "Exhibición", "image": _PH, "storage": ["256GB"], "colors": [], "price_range": "$4.150.000", "category": "iphone", "variants": [{"storage": "256GB", "color": "", "price": "$4.150.000"}]},
+    {"id": 30, "name": "AirTag", "brand": "apple", "condition": "Nuevo", "image": _PH, "storage": [], "colors": [], "price_range": "$99.000", "category": "accesorios", "variants": []},
+    {"id": 31, "name": "AirTag (Caja x4)", "brand": "apple", "condition": "Nuevo", "image": _PH, "storage": [], "colors": [], "price_range": "$380.000", "category": "accesorios", "variants": []},
+    {"id": 32, "name": "Apple Pencil Pro", "brand": "apple", "condition": "Nuevo", "image": _PH, "storage": [], "colors": [], "price_range": "$490.000", "category": "accesorios", "variants": []},
+    {"id": 33, "name": "Apple Pencil (USB-C)", "brand": "apple", "condition": "Nuevo", "image": _PH, "storage": [], "colors": [], "price_range": "$380.000", "category": "accesorios", "variants": []},
+    {"id": 34, "name": "AirPods Pro 3", "brand": "apple", "condition": "Nuevo", "image": _PH, "storage": [], "colors": [], "price_range": "$950.000", "category": "accesorios", "variants": []},
+    {"id": 35, "name": "AirPods Pro 2", "brand": "apple", "condition": "Nuevo", "image": _PH, "storage": [], "colors": [], "price_range": "$780.000", "category": "accesorios", "variants": []},
+    {"id": 36, "name": "AirPods Max (2da gen)", "brand": "apple", "condition": "Nuevo", "image": _PH, "storage": [], "colors": [], "price_range": "$1.990.000", "category": "accesorios", "variants": []},
 ]
 
 INITIAL_OFFERS = [
