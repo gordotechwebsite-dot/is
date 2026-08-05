@@ -143,6 +143,11 @@ export default function CategoriaDetail() {
                         Exhibición
                       </span>
                     )}
+                    {product.condition === 'Nuevo' && (
+                      <span className="absolute top-3 right-3 bg-green-500 text-white text-[10px] sm:text-xs font-semibold px-2.5 py-1 rounded-full">
+                        Nuevo
+                      </span>
+                    )}
                   </div>
                   <div className="p-4 sm:p-5">
                     <p className="text-[11px] sm:text-xs text-purple-600 font-semibold uppercase tracking-wide mb-1">
