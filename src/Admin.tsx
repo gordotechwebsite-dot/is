@@ -147,6 +147,7 @@ function Admin() {
   const [editing, setEditing] = useState<Product | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [prodCondFilter, setProdCondFilter] = useState<'Todos' | 'Nuevo' | 'Exhibición'>('Todos')
+  const [prodCatFilter, setProdCatFilter] = useState<string>('Todas')
   const [formName, setFormName] = useState('')
   const [formBrand, setFormBrand] = useState('apple')
   const [formCondition, setFormCondition] = useState('Nuevo')
@@ -485,7 +486,7 @@ function Admin() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold">Productos</h2>
-                <p className="text-gray-500 text-sm mt-1">{products.filter(p => prodCondFilter === 'Todos' || p.condition === prodCondFilter).length} productos en el catálogo</p>
+                <p className="text-gray-500 text-sm mt-1">{products.filter(p => (prodCondFilter === 'Todos' || p.condition === prodCondFilter) && (prodCatFilter === 'Todas' || p.category === prodCatFilter)).length} productos en el catálogo</p>
               </div>
               <button onClick={() => { resetProductForm(); setShowForm(true) }}
                 className="flex items-center justify-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 transition-colors w-full sm:w-auto">
@@ -505,6 +506,32 @@ function Admin() {
                   }`}
                 >
                   {opt}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap gap-2 mb-6">
+              <button
+                onClick={() => setProdCatFilter('Todas')}
+                className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-colors ${
+                  prodCatFilter === 'Todas'
+                    ? 'bg-purple-700 text-white border-purple-700'
+                    : 'bg-gray-900 text-gray-300 border-gray-700 hover:border-purple-500'
+                }`}
+              >
+                Todas
+              </button>
+              {categories.map(c => (
+                <button
+                  key={c.id}
+                  onClick={() => setProdCatFilter(c.slug)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-colors ${
+                    prodCatFilter === c.slug
+                      ? 'bg-purple-700 text-white border-purple-700'
+                      : 'bg-gray-900 text-gray-300 border-gray-700 hover:border-purple-500'
+                  }`}
+                >
+                  {c.name}
                 </button>
               ))}
             </div>
@@ -635,7 +662,7 @@ function Admin() {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {products.filter(p => prodCondFilter === 'Todos' || p.condition === prodCondFilter).map(p => (
+                {products.filter(p => (prodCondFilter === 'Todos' || p.condition === prodCondFilter) && (prodCatFilter === 'Todas' || p.category === prodCatFilter)).map(p => (
                   <div key={p.id} className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden group">
                     <div className="aspect-square bg-gray-800 p-4 relative">
                       <img src={p.image} alt={p.name} className="w-full h-full object-contain" />
