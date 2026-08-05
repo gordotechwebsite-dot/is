@@ -59,24 +59,24 @@ export default function ProductoDetail() {
   }
 
   return (
-    <section className="py-12 lg:py-20">
+    <section className="py-6 sm:py-12 lg:py-20">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <Link
             to={product.category ? `/categoria/${product.category}` : '/catalogo'}
-            className="inline-flex items-center gap-1 text-purple-700 text-sm mb-6 hover:text-purple-900 transition-colors"
+            className="inline-flex items-center gap-1 text-purple-700 text-sm mb-4 sm:mb-6 hover:text-purple-900 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Volver
           </Link>
 
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+          <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-start">
             {/* Image */}
-            <div className="bg-gray-50 rounded-3xl p-8 flex items-center justify-center aspect-square">
+            <div className="bg-gray-50 rounded-3xl p-6 sm:p-8 flex items-center justify-center h-56 sm:h-72 lg:h-auto lg:aspect-square">
               <img
                 src={product.image}
                 alt={product.name}
-                className="w-full h-full object-contain"
+                className="max-w-full max-h-full object-contain"
               />
             </div>
 
