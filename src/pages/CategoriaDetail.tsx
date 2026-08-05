@@ -15,6 +15,7 @@ export default function CategoriaDetail() {
   const [products, setProducts] = useState<Product[]>([])
   const [category, setCategory] = useState<Category | null>(null)
   const [loaded, setLoaded] = useState(false)
+  const [conditionFilter, setConditionFilter] = useState<'Todos' | 'Nuevo' | 'Exhibición'>('Todos')
 
   useEffect(() => {
     Promise.all([
@@ -34,6 +35,11 @@ export default function CategoriaDetail() {
       })
       .catch(() => setLoaded(true))
   }, [slug])
+
+  const filteredProducts =
+    conditionFilter === 'Todos'
+      ? products
+      : products.filter((p) => p.condition === conditionFilter)
 
   if (!loaded) {
     return (
@@ -85,10 +91,29 @@ export default function CategoriaDetail() {
           </div>
         )}
 
+        {/* Condition filter */}
+        {products.length > 0 && (
+          <div className="flex flex-wrap gap-2 sm:gap-3 mb-6 sm:mb-8">
+            {(['Todos', 'Nuevo', 'Exhibición'] as const).map((opt) => (
+              <button
+                key={opt}
+                onClick={() => setConditionFilter(opt)}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors border ${
+                  conditionFilter === opt
+                    ? 'bg-purple-700 text-white border-purple-700'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-purple-300 hover:text-purple-700'
+                }`}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Products grid */}
-        {products.length > 0 ? (
+        {filteredProducts.length > 0 ? (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {products.map((product, i) => (
+            {filteredProducts.map((product, i) => (
               <ScrollReveal key={product.id} delay={i * 0.05}>
                 <Link
                   to={`/producto/${product.id}`}
@@ -133,6 +158,19 @@ export default function CategoriaDetail() {
                 </Link>
               </ScrollReveal>
             ))}
+          </div>
+        ) : products.length > 0 ? (
+          <div className="text-center py-16">
+            <Smartphone className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-400 text-lg">
+              No hay productos {conditionFilter === 'Nuevo' ? 'nuevos' : 'de exhibición'} en esta categoría
+            </p>
+            <button
+              onClick={() => setConditionFilter('Todos')}
+              className="inline-flex items-center gap-2 mt-4 text-purple-700 font-medium hover:text-purple-900 transition-colors"
+            >
+              Ver todos
+            </button>
           </div>
         ) : (
           <div className="text-center py-16">

@@ -107,11 +107,14 @@ export default function ProductoDetail() {
               {(() => {
                 const hasVariants = !!product.variants && product.variants.length > 0
                 const matched = hasVariants
-                  ? product.variants!.find(v => v.storage === selStorage && v.color === selColor)
+                  ? product.variants!.find(
+                      v => v.storage === selStorage && (v.color === '' || v.color === selColor),
+                    )
                   : undefined
                 const displayPrice = matched?.price || product.priceRange
+                const selDetails = [selStorage, selColor].filter(Boolean).join(', ')
                 const waText = hasVariants
-                  ? `Hola! Me interesa el ${product.name} (${product.condition}) — ${selStorage}, ${selColor}${matched?.price ? ` (${matched.price})` : ''}`
+                  ? `Hola! Me interesa el ${product.name} (${product.condition})${selDetails ? ` — ${selDetails}` : ''}${matched?.price ? ` (${matched.price})` : ''}`
                   : `Hola! Me interesa el ${product.name} (${product.condition})`
                 return (
                   <>
