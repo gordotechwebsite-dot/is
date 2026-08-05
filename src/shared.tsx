@@ -73,6 +73,7 @@ export type Category = {
   name: string
   slug: string
   cover_image: string
+  header_image?: string
   position: number
 }
 
