@@ -565,8 +565,8 @@ function Admin() {
                       {categories.map(c => <option key={c.id} value={c.slug}>{c.name}</option>)}
                     </select>
                   </div>
-                  <Input label="Almacenamiento (separar con coma)" value={formStorage} onChange={setFormStorage} placeholder="128GB,256GB,512GB" required />
-                  <Input label="Colores (separar con coma)" value={formColors} onChange={setFormColors} placeholder="Negro,Blanco,Azul" required />
+                  <Input label="Almacenamiento (separar con coma, opcional)" value={formStorage} onChange={setFormStorage} placeholder="128GB,256GB,512GB" />
+                  <Input label="Colores (separar con coma, opcional)" value={formColors} onChange={setFormColors} placeholder="Negro,Blanco,Azul" />
                   <Input label="Rango de precio" value={formPrice} onChange={setFormPrice} placeholder="Desde $3.400.000" required />
                   <Input label="Etiqueta (opcional)" value={formBadge} onChange={setFormBadge} placeholder="Pro, Ultra, Nuevo..." />
 
