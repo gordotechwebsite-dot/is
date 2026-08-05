@@ -10,6 +10,11 @@ function resolveImage(img: string): string {
   return img.replace(/\.png$/i, '.webp')
 }
 
+function priceValue(p: Product): number {
+  const digits = (p.priceRange || '').replace(/[^\d]/g, '')
+  return digits ? parseInt(digits, 10) : 0
+}
+
 export default function CategoriaDetail() {
   const { slug } = useParams<{ slug: string }>()
   const [products, setProducts] = useState<Product[]>([])
@@ -36,10 +41,13 @@ export default function CategoriaDetail() {
       .catch(() => setLoaded(true))
   }, [slug])
 
-  const filteredProducts =
+  const filteredProducts = (
     conditionFilter === 'Todos'
       ? products
       : products.filter((p) => p.condition === conditionFilter)
+  )
+    .slice()
+    .sort((a, b) => priceValue(b) - priceValue(a))
 
   if (!loaded) {
     return (
