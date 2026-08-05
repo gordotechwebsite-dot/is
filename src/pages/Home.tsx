@@ -162,9 +162,11 @@ export default function Home() {
                       )}
                     </div>
                     <div className="p-4 sm:p-5">
-                      <p className="text-[11px] sm:text-xs text-purple-600 font-semibold uppercase tracking-wide mb-1">
-                        {BRAND_LABELS[product.brand] || product.brand}
-                      </p>
+                      {product.brand !== 'apple' && (
+                        <p className="text-[11px] sm:text-xs text-purple-600 font-semibold uppercase tracking-wide mb-1">
+                          {BRAND_LABELS[product.brand] || product.brand}
+                        </p>
+                      )}
                       <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 group-hover:text-purple-700 transition-colors line-clamp-1">
                         {product.name}
                       </h3>
