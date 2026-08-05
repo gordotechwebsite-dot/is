@@ -349,14 +349,14 @@ function Admin() {
         {value ? (
           <div className={`relative rounded-lg overflow-hidden bg-gray-800 ${aspect}`}>
             <img src={value} alt="Preview" className={`w-full h-full ${fit === 'contain' ? 'object-contain p-2' : 'object-cover'}`} />
-            <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-              <button type="button" onClick={() => fileRef.current?.click()}
-                className="bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-600 flex items-center gap-2">
-                <Upload className="w-4 h-4" /> Cambiar
+            <div className="absolute top-1.5 right-1.5 flex gap-1.5">
+              <button type="button" onClick={() => fileRef.current?.click()} title="Cambiar" aria-label="Cambiar"
+                className="w-8 h-8 rounded-full bg-white/90 text-gray-800 shadow-md backdrop-blur flex items-center justify-center hover:bg-white transition-colors">
+                <Upload className="w-4 h-4" />
               </button>
-              <button type="button" onClick={() => onChange('')}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-500 flex items-center gap-2">
-                <Trash2 className="w-4 h-4" /> Quitar
+              <button type="button" onClick={() => onChange('')} title="Quitar" aria-label="Quitar"
+                className="w-8 h-8 rounded-full bg-red-600/90 text-white shadow-md backdrop-blur flex items-center justify-center hover:bg-red-500 transition-colors">
+                <Trash2 className="w-4 h-4" />
               </button>
             </div>
           </div>
