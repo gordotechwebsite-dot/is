@@ -79,6 +79,11 @@ export default function Destacados() {
                         Exhibición
                       </span>
                     )}
+                    {product.condition === 'Nuevo' && (
+                      <span className="absolute top-3 right-3 bg-green-600 text-white text-[10px] sm:text-xs font-semibold px-2.5 py-1 rounded-full">
+                        Nuevo
+                      </span>
+                    )}
                   </div>
                   <div className="p-4 sm:p-5">
                     {product.brand !== 'apple' && (
