@@ -106,9 +106,11 @@ export default function ProductoDetail() {
 
             {/* Info */}
             <div className="flex flex-col justify-center">
-              <p className="text-sm text-purple-600 font-semibold uppercase tracking-wide mb-2">
-                {product.brand}
-              </p>
+              {product.brand !== 'apple' && (
+                <p className="text-sm text-purple-600 font-semibold uppercase tracking-wide mb-2">
+                  {product.brand}
+                </p>
+              )}
               <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
                 {product.name}
               </h1>

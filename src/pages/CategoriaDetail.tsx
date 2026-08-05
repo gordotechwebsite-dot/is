@@ -145,15 +145,15 @@ export default function CategoriaDetail() {
                     )}
                   </div>
                   <div className="p-4 sm:p-5">
-                    <p className="text-[11px] sm:text-xs text-purple-600 font-semibold uppercase tracking-wide mb-1">
-                      {product.brand === 'apple'
-                        ? 'Apple'
-                        : product.brand === 'samsung'
+                    {product.brand !== 'apple' && (
+                      <p className="text-[11px] sm:text-xs text-purple-600 font-semibold uppercase tracking-wide mb-1">
+                        {product.brand === 'samsung'
                           ? 'Samsung'
                           : product.brand === 'xiaomi'
                             ? 'Xiaomi'
                             : 'Motorola'}
-                    </p>
+                      </p>
+                    )}
                     <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 group-hover:text-purple-700 transition-colors line-clamp-1">
                       {product.name}
                     </h3>
