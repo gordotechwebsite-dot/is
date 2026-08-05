@@ -329,7 +329,7 @@ function Admin() {
     })
   }
 
-  const ImageUpload = ({ value, onChange, label = 'Imagen', maxSize = 400, aspect = 'aspect-video' }: { value: string; onChange: (v: string) => void; label?: string; maxSize?: number; aspect?: string }) => {
+  const ImageUpload = ({ value, onChange, label = 'Imagen', maxSize = 400, aspect = 'aspect-video', fit = 'cover' }: { value: string; onChange: (v: string) => void; label?: string; maxSize?: number; aspect?: string; fit?: 'cover' | 'contain' }) => {
     const fileRef = useRef<HTMLInputElement>(null)
     const [uploading, setUploading] = useState(false)
 
@@ -348,7 +348,7 @@ function Admin() {
         <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
         {value ? (
           <div className={`relative rounded-lg overflow-hidden bg-gray-800 ${aspect}`}>
-            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+            <img src={value} alt="Preview" className={`w-full h-full ${fit === 'contain' ? 'object-contain p-2' : 'object-cover'}`} />
             <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
               <button type="button" onClick={() => fileRef.current?.click()}
                 className="bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-600 flex items-center gap-2">
@@ -514,6 +514,7 @@ function Admin() {
                           value={img}
                           label={i === 0 ? 'Portada' : `Foto ${i + 1}`}
                           aspect="aspect-square"
+                          fit="contain"
                           onChange={v => setFormImages(prev => (
                             v ? prev.map((x, idx) => (idx === i ? v : x)) : prev.filter((_, idx) => idx !== i)
                           ))}
@@ -523,6 +524,7 @@ function Admin() {
                         value=""
                         label="Agregar foto"
                         aspect="aspect-square"
+                        fit="contain"
                         onChange={v => { if (v) setFormImages(prev => [...prev, v]) }}
                       />
                     </div>
