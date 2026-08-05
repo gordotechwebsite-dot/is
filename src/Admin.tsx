@@ -37,7 +37,13 @@ const compressImage = (file: File, maxSize = 400): Promise<string> => {
         canvas.width = w; canvas.height = h
         const ctx = canvas.getContext('2d')!
         ctx.drawImage(img, 0, 0, w, h)
-        resolve(canvas.toDataURL('image/jpeg', 0.6))
+        const hasAlpha = file.type === 'image/png' || file.type === 'image/webp'
+        if (hasAlpha) {
+          const webp = canvas.toDataURL('image/webp', 0.85)
+          resolve(webp.startsWith('data:image/webp') ? webp : canvas.toDataURL('image/png'))
+        } else {
+          resolve(canvas.toDataURL('image/jpeg', 0.6))
+        }
       }
       img.src = e.target?.result as string
     }
