@@ -9,7 +9,7 @@ type Product = {
   storage: string[]; colors: string[]; price_range: string; badge: string | null; category: string | null
   variants?: Variant[]
 }
-type Category = { id: number; name: string; slug: string; cover_image: string; position: number }
+type Category = { id: number; name: string; slug: string; cover_image: string; header_image?: string; position: number }
 type Banner = { id: number; image: string; link: string | null; position: number; active: boolean }
 type Offer = {
   id: number; title: string; description: string; badge: string | null
@@ -165,6 +165,7 @@ function Admin() {
   const [catName, setCatName] = useState('')
   const [catSlug, setCatSlug] = useState('')
   const [catCoverImage, setCatCoverImage] = useState('')
+  const [catHeaderImage, setCatHeaderImage] = useState('')
   const [catPosition, setCatPosition] = useState(0)
 
   // Banner form
@@ -278,15 +279,15 @@ function Admin() {
   }
 
   // --- Categories ---
-  const resetCatForm = () => { setCatName(''); setCatSlug(''); setCatCoverImage(''); setCatPosition(0); setEditingCat(null); setShowCatForm(false) }
+  const resetCatForm = () => { setCatName(''); setCatSlug(''); setCatCoverImage(''); setCatHeaderImage(''); setCatPosition(0); setEditingCat(null); setShowCatForm(false) }
 
   const openEditCat = (c: Category) => {
-    setEditingCat(c); setCatName(c.name); setCatSlug(c.slug); setCatCoverImage(c.cover_image); setCatPosition(c.position || 0); setShowCatForm(true)
+    setEditingCat(c); setCatName(c.name); setCatSlug(c.slug); setCatCoverImage(c.cover_image); setCatHeaderImage(c.header_image || ''); setCatPosition(c.position || 0); setShowCatForm(true)
   }
 
   const saveCat = async (e: React.FormEvent) => {
     e.preventDefault(); setLoading(true)
-    const body = { name: catName, slug: catSlug, cover_image: catCoverImage, position: catPosition }
+    const body = { name: catName, slug: catSlug, cover_image: catCoverImage, header_image: catHeaderImage, position: catPosition }
     const url = editingCat ? `${API_URL}/api/admin/categories/${editingCat.id}` : `${API_URL}/api/admin/categories`
     const method = editingCat ? 'PUT' : 'POST'
     const res = await fetch(url, { method, headers: headers(), body: JSON.stringify(body) })
@@ -676,7 +677,8 @@ function Admin() {
                 <form onSubmit={saveCat} className="space-y-4">
                   <Input label="Nombre" value={catName} onChange={v => { setCatName(v); if (!editingCat) setCatSlug(v.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')) }} placeholder="Smartphones" required />
                   <Input label="Slug (URL)" value={catSlug} onChange={setCatSlug} placeholder="smartphones" required />
-                  <ImageUpload value={catCoverImage} onChange={setCatCoverImage} label="Imagen de portada" />
+                  <ImageUpload value={catCoverImage} onChange={setCatCoverImage} label="Imagen de portada (tarjeta del catálogo)" aspect="aspect-square" />
+                  <ImageUpload value={catHeaderImage} onChange={setCatHeaderImage} label="Imagen del encabezado (fondo del título dentro de la categoría)" />
                   <div>
                     <label className="block text-sm text-gray-400 mb-1">Posición (orden en catálogo)</label>
                     <input type="number" min={0} value={catPosition} onChange={e => setCatPosition(Number(e.target.value))}

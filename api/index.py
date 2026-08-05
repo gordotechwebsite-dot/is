@@ -195,12 +195,14 @@ class CategoryResponse(BaseModel):
     name: str
     slug: str
     cover_image: str
+    header_image: str = ""
     position: int = 0
 
 class CategoryCreate(BaseModel):
     name: str
     slug: str
     cover_image: str
+    header_image: str = ""
     position: int = 0
 
 class OfferResponse(BaseModel):
@@ -376,6 +378,7 @@ def create_category(category: CategoryCreate, request: Request, _username: str =
     new_id = max((c["id"] for c in categories), default=0) + 1
     cat_data = category.model_dump()
     cat_data["cover_image"] = _save_image_if_base64(cat_data["cover_image"], f"cat_img_{new_id}", request)
+    cat_data["header_image"] = _save_image_if_base64(cat_data["header_image"], f"cat_header_{new_id}", request)
     new_cat = {"id": new_id, **cat_data}
     categories.append(new_cat)
     _ec_save("categories", categories)
@@ -388,6 +391,7 @@ def update_category(category_id: int, category: CategoryCreate, request: Request
         if c["id"] == category_id:
             cat_data = category.model_dump()
             cat_data["cover_image"] = _save_image_if_base64(cat_data["cover_image"], f"cat_img_{category_id}", request)
+            cat_data["header_image"] = _save_image_if_base64(cat_data["header_image"], f"cat_header_{category_id}", request)
             categories[i] = {"id": category_id, **cat_data}
             _ec_save("categories", categories)
             return categories[i]
