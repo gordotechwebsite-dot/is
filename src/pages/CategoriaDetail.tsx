@@ -52,7 +52,7 @@ export default function CategoriaDetail() {
   const [products, setProducts] = useState<Product[]>([])
   const [category, setCategory] = useState<Category | null>(null)
   const [loaded, setLoaded] = useState(false)
-  const [conditionFilter, setConditionFilter] = useState<'Todos' | 'Nuevo' | 'Exhibición'>('Todos')
+  const [conditionFilter, setConditionFilter] = useState<'Todos' | 'Nuevo' | 'Exhibición'>('Nuevo')
 
   useEffect(() => {
     Promise.all([
@@ -65,7 +65,9 @@ export default function CategoriaDetail() {
           priceRange: p.price_range,
           image: resolveImage(p.image),
         }))
-        setProducts(mapped.filter((p: Product) => p.category === slug))
+        const ofCategory = mapped.filter((p: Product) => p.category === slug)
+        setProducts(ofCategory)
+        setConditionFilter(ofCategory.some((p: Product) => p.condition === 'Nuevo') ? 'Nuevo' : 'Todos')
         const cat = cats.find((c: Category) => c.slug === slug)
         setCategory(cat || null)
         setLoaded(true)
