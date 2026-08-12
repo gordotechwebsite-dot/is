@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Trash2, Edit, Plus, LogOut, Save, X, FolderOpen, Package, Home, Zap, Settings, ChevronLeft, Eye, Upload, Image, GalleryHorizontalEnd, Menu } from 'lucide-react'
+import { Trash2, Edit, Plus, LogOut, Save, X, FolderOpen, Package, Home, Zap, Settings, ChevronLeft, Eye, Upload, Image, GalleryHorizontalEnd, Menu, Video } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://isphone-api.vercel.app'
 
@@ -20,9 +20,31 @@ type SiteContent = {
   hero_description: string; hero_image: string; hero_cta_text: string
   cta_title: string; cta_description: string; cta_button_text: string
   banner_text: string; banner_active: boolean
+  hero_video: string; hero_video_poster: string
 }
 
-type Section = 'products' | 'categories' | 'banners' | 'landing' | 'offers' | 'settings'
+type Section = 'products' | 'categories' | 'banners' | 'landing' | 'offers' | 'video' | 'settings'
+
+const MAX_VIDEO_MB = 100
+
+// Uploads straight to Vercel Blob with a short-lived token: routing the file
+// through the API would hit its 4.5 MB request body limit.
+const uploadVideo = async (file: File, token: string): Promise<string> => {
+  const res = await fetch(`${API_URL}/api/admin/upload-token`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ filename: file.name, content_type: file.type }),
+  })
+  if (!res.ok) throw new Error('No se pudo iniciar la subida')
+  const { token: clientToken, url } = await res.json()
+  const put = await fetch(url, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${clientToken}`, 'x-content-type': file.type, 'x-api-version': '7' },
+    body: file,
+  })
+  if (!put.ok) throw new Error('No se pudo subir el video')
+  return (await put.json()).url
+}
 
 const compressImage = (file: File, maxSize = 400): Promise<string> => {
   return new Promise((resolve) => {
@@ -96,6 +118,66 @@ const ImageUpload = ({ value, onChange, label = 'Imagen', maxSize = 400, aspect 
           )}
         </button>
       )}
+    </div>
+  )
+}
+
+const VideoUpload = ({ value, onChange, token }: { value: string; onChange: (v: string) => void; token: string | null }) => {
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !token) return
+    setError('')
+    if (file.size > MAX_VIDEO_MB * 1024 * 1024) {
+      setError(`El video pesa ${(file.size / 1024 / 1024).toFixed(1)} MB y el máximo es ${MAX_VIDEO_MB} MB.`)
+      return
+    }
+    setUploading(true)
+    try {
+      onChange(await uploadVideo(file, token))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al subir el video')
+    }
+    setUploading(false)
+  }
+
+  return (
+    <div>
+      <label className="block text-sm text-gray-400 mb-1">Video</label>
+      <input ref={fileRef} type="file" accept="video/mp4,video/webm" onChange={handleFile} className="hidden" />
+      {value ? (
+        <div className="relative rounded-lg overflow-hidden bg-black aspect-video">
+          <video src={value} className="w-full h-full object-contain" controls muted playsInline preload="metadata" />
+          <div className="absolute top-1.5 right-1.5 flex gap-1.5">
+            <button type="button" onClick={() => fileRef.current?.click()} title="Cambiar" aria-label="Cambiar"
+              className="w-8 h-8 rounded-full bg-white/90 text-gray-800 shadow-md backdrop-blur flex items-center justify-center hover:bg-white transition-colors">
+              <Upload className="w-4 h-4" />
+            </button>
+            <button type="button" onClick={() => onChange('')} title="Eliminar" aria-label="Eliminar"
+              className="w-8 h-8 rounded-full bg-red-600/90 text-white shadow-md backdrop-blur flex items-center justify-center hover:bg-red-500 transition-colors">
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading}
+          className="w-full border-2 border-dashed border-gray-700 rounded-lg py-10 flex flex-col items-center gap-2 text-gray-500 hover:border-purple-500 hover:text-purple-400 disabled:opacity-60 transition-colors">
+          {uploading ? (
+            <span className="text-sm">Subiendo video...</span>
+          ) : (
+            <>
+              <Video className="w-8 h-8" />
+              <span className="text-sm font-medium">Subir video</span>
+              <span className="text-xs">MP4 o WebM · 1920×1080 · hasta {MAX_VIDEO_MB} MB</span>
+            </>
+          )}
+        </button>
+      )}
+      {uploading && value && <p className="text-xs text-purple-400 mt-2">Subiendo video...</p>}
+      {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
     </div>
   )
 }
@@ -410,6 +492,7 @@ function Admin() {
     { key: 'banners', label: 'Banners', icon: <GalleryHorizontalEnd className="w-5 h-5" />, count: banners.length },
     { key: 'offers', label: 'Ofertas', icon: <Zap className="w-5 h-5" />, count: offers.length },
     { key: 'landing', label: 'Página principal', icon: <Home className="w-5 h-5" /> },
+    { key: 'video', label: 'Video', icon: <Video className="w-5 h-5" /> },
     { key: 'settings', label: 'Configuración', icon: <Settings className="w-5 h-5" /> },
   ]
 
@@ -1014,6 +1097,50 @@ function Admin() {
                   </label>
                 </div>
               </div>
+            </div>
+          </>
+        )}
+
+        {/* ====== VIDEO ====== */}
+        {activeSection === 'video' && siteContent && (
+          <>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">Video del inicio</h2>
+                <p className="text-gray-500 text-sm mt-1">El video que se reproduce arriba en la página principal</p>
+              </div>
+              <button onClick={saveSiteContent} disabled={loading}
+                className="flex items-center justify-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 disabled:opacity-50 transition-colors w-full sm:w-auto">
+                <Save className="w-4 h-4" /> Guardar cambios
+              </button>
+            </div>
+
+            <div className="bg-gray-900 rounded-xl border border-gray-800 p-6 space-y-6">
+              <div className="bg-gray-800/60 border border-gray-700 rounded-xl p-4 text-sm text-gray-300 space-y-1">
+                <p className="font-semibold text-purple-400">Requisitos del archivo</p>
+                <p>Formato: MP4 (H.264) o WebM</p>
+                <p>Dimensiones: 1920×1080 px recomendado (mínimo 1280×720), formato horizontal 16:9</p>
+                <p>Peso máximo: {MAX_VIDEO_MB} MB — entre 5 y 15 MB carga más rápido</p>
+                <p>Duración recomendada: 10 a 30 segundos (se reproduce en bucle)</p>
+                <p>El video se reproduce sin sonido, así que el audio no se escucha</p>
+              </div>
+
+              <VideoUpload
+                value={siteContent.hero_video}
+                onChange={v => setSiteContent({ ...siteContent, hero_video: v })}
+                token={token}
+              />
+
+              <ImageUpload
+                value={siteContent.hero_video_poster}
+                onChange={v => setSiteContent({ ...siteContent, hero_video_poster: v })}
+                label="Imagen de portada del video (se ve mientras carga, opcional)"
+                maxSize={1280}
+              />
+
+              <p className="text-xs text-gray-500">
+                Si dejas el video vacío se usa el video que viene por defecto. Recuerda dar "Guardar cambios" después de subirlo o eliminarlo.
+              </p>
             </div>
           </>
         )}
