@@ -3,6 +3,7 @@ import hashlib
 import hmac
 import json
 import os
+import time
 import urllib.error
 import urllib.request
 from typing import Optional
@@ -122,6 +123,29 @@ def _upload_to_blob(data_url: str, key: str) -> str:
     return result["url"]
 
 
+MAX_UPLOAD_BYTES = 100 * 1024 * 1024
+
+
+def _client_upload_token(pathname: str, content_type: str) -> str:
+    """Short-lived token that lets the admin upload straight to Vercel Blob.
+
+    Avoids routing large files (videos) through the serverless function, which
+    caps request bodies at 4.5 MB.
+    """
+    store_id = BLOB_TOKEN.split("_")[3]
+    payload = base64.b64encode(json.dumps({
+        "pathname": pathname,
+        "allowedContentTypes": [content_type],
+        "maximumSizeInBytes": MAX_UPLOAD_BYTES,
+        "addRandomSuffix": True,
+        "cacheControlMaxAge": 31536000,
+        "validUntil": int(time.time() * 1000) + 120_000,
+    }, separators=(",", ":")).encode()).decode()
+    signature = hmac.new(BLOB_TOKEN.encode(), payload.encode(), hashlib.sha256).hexdigest()
+    secured = base64.b64encode(f"{signature}.{payload}".encode()).decode()
+    return f"vercel_blob_client_{store_id}_{secured}"
+
+
 def _save_image_if_base64(image_value: str, key: str, request: Request) -> str:
     if image_value.startswith("data:image"):
         if BLOB_TOKEN:
@@ -235,6 +259,10 @@ class BannerCreate(BaseModel):
     position: int = 0
     active: bool = True
 
+class UploadTokenRequest(BaseModel):
+    filename: str
+    content_type: str
+
 class SiteContent(BaseModel):
     hero_subtitle: str = "Evolución en tus manos"
     hero_title_1: str = "Tu próximo"
@@ -248,6 +276,8 @@ class SiteContent(BaseModel):
     cta_button_text: str = "Escribir por WhatsApp"
     banner_text: str = "OBTÉN UN REGALO POR TU PRIMERA COMPRA MAYOR A $250.000"
     banner_active: bool = True
+    hero_video: str = ""
+    hero_video_poster: str = ""
 
 
 # --- Defaults ---
@@ -504,3 +534,18 @@ def update_site_content(content: SiteContent, _username: str = Depends(verify_to
     data = content.model_dump()
     _ec_save("site_content", data)
     return data
+
+
+# --- Uploads ---
+
+@app.post("/api/admin/upload-token")
+def create_upload_token(body: UploadTokenRequest, _username: str = Depends(verify_token)):
+    if not BLOB_TOKEN:
+        raise HTTPException(status_code=500, detail="Almacenamiento no configurado")
+    safe_name = "".join(c for c in body.filename if c.isalnum() or c in "-_.") or "archivo"
+    pathname = f"videos/{safe_name}"
+    return {
+        "token": _client_upload_token(pathname, body.content_type),
+        "url": f"https://blob.vercel-storage.com/{pathname}",
+        "max_bytes": MAX_UPLOAD_BYTES,
+    }
