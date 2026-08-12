@@ -185,6 +185,7 @@ class LoginResponse(BaseModel):
 class Variant(BaseModel):
     storage: str = ""
     color: str = ""
+    sim: str = ""
     price: str = ""
 
 class ProductResponse(BaseModel):
@@ -196,6 +197,7 @@ class ProductResponse(BaseModel):
     images: list[str] = []
     storage: list[str]
     colors: list[str]
+    sim_options: list[str] = []
     price_range: str
     badge: Optional[str] = None
     category: Optional[str] = None
@@ -209,6 +211,7 @@ class ProductCreate(BaseModel):
     images: list[str] = []
     storage: list[str]
     colors: list[str]
+    sim_options: list[str] = []
     price_range: str
     badge: Optional[str] = None
     category: Optional[str] = None
@@ -298,8 +301,7 @@ INITIAL_PRODUCTS = [
     {"id": 11, "name": "iPhone 17e", "brand": "apple", "condition": "Nuevo", "image": _PH, "storage": ["256GB"], "colors": [], "price_range": "$2.480.000", "category": "iphone", "variants": [{"storage": "256GB", "color": "", "price": "$2.480.000"}]},
     {"id": 12, "name": "iPhone 17", "brand": "apple", "condition": "Nuevo", "image": _PH, "storage": ["256GB"], "colors": [], "price_range": "$3.380.000", "category": "iphone", "variants": [{"storage": "256GB", "color": "", "price": "$3.380.000"}]},
     {"id": 13, "name": "iPhone 17 Pro", "brand": "apple", "condition": "Nuevo", "image": _PH, "storage": ["256GB"], "colors": [], "price_range": "$4.150.000", "category": "iphone", "variants": [{"storage": "256GB", "color": "", "price": "$4.150.000"}]},
-    {"id": 14, "name": "iPhone 17 Pro Max", "brand": "apple", "condition": "Nuevo", "image": _PH, "storage": ["256GB", "512GB", "1TB"], "colors": [], "price_range": "Desde $4.300.000", "category": "iphone", "variants": [{"storage": "256GB", "color": "", "price": "$4.300.000"}, {"storage": "512GB", "color": "", "price": "$5.900.000"}, {"storage": "1TB", "color": "", "price": "$6.500.000"}]},
-    {"id": 15, "name": "iPhone 17 Pro Max SIM Física", "brand": "apple", "condition": "Nuevo", "image": _PH, "storage": ["256GB"], "colors": [], "price_range": "$4.850.000", "category": "iphone", "variants": [{"storage": "256GB", "color": "", "price": "$4.850.000"}]},
+    {"id": 14, "name": "iPhone 17 Pro Max", "brand": "apple", "condition": "Nuevo", "image": _PH, "storage": ["256GB", "512GB", "1TB"], "colors": [], "sim_options": ["eSIM", "SIM Física"], "price_range": "Desde $4.300.000", "category": "iphone", "variants": [{"storage": "256GB", "color": "", "sim": "eSIM", "price": "$4.300.000"}, {"storage": "512GB", "color": "", "sim": "eSIM", "price": "$5.900.000"}, {"storage": "1TB", "color": "", "sim": "eSIM", "price": "$6.500.000"}, {"storage": "256GB", "color": "", "sim": "SIM Física", "price": "$4.850.000"}]},
     {"id": 16, "name": "iPhone 13", "brand": "apple", "condition": "Exhibición", "image": _PH, "storage": ["128GB", "256GB"], "colors": [], "price_range": "Desde $1.250.000", "category": "iphone", "variants": [{"storage": "128GB", "color": "", "price": "$1.250.000"}, {"storage": "256GB", "color": "", "price": "$1.350.000"}]},
     {"id": 17, "name": "iPhone 14", "brand": "apple", "condition": "Exhibición", "image": _PH, "storage": ["128GB"], "colors": [], "price_range": "$1.400.000", "category": "iphone", "variants": [{"storage": "128GB", "color": "", "price": "$1.400.000"}]},
     {"id": 18, "name": "iPhone 13 Pro", "brand": "apple", "condition": "Exhibición", "image": _PH, "storage": ["128GB", "256GB"], "colors": [], "price_range": "Desde $1.790.000", "category": "iphone", "variants": [{"storage": "128GB", "color": "", "price": "$1.790.000"}, {"storage": "256GB", "color": "", "price": "$1.900.000"}]},

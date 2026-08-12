@@ -16,6 +16,7 @@ export default function ProductoDetail() {
   const [loaded, setLoaded] = useState(false)
   const [selStorage, setSelStorage] = useState('')
   const [selColor, setSelColor] = useState('')
+  const [selSim, setSelSim] = useState('')
   const [selImage, setSelImage] = useState('')
 
   useEffect(() => {
@@ -24,6 +25,7 @@ export default function ProductoDetail() {
       .then((data: Product[]) => {
         const found = data.find((p: Product) => p.id === Number(id))
         if (found) {
+          const simOptions = (found as unknown as { sim_options?: string[] }).sim_options || []
           const gallery = (found.images && found.images.length > 0 ? found.images : [found.image])
             .filter(Boolean)
             .map(resolveImage)
@@ -32,10 +34,12 @@ export default function ProductoDetail() {
             priceRange: (found as unknown as Record<string, string>).price_range || found.priceRange || '',
             image: resolveImage(found.image),
             images: gallery,
+            simOptions,
           })
           setSelImage(gallery[0] || resolveImage(found.image))
           setSelStorage(found.storage?.[0] || '')
           setSelColor(found.colors?.[0] || '')
+          setSelSim(simOptions[0] || '')
         }
         setLoaded(true)
       })
@@ -134,11 +138,13 @@ export default function ProductoDetail() {
                 const hasVariants = !!product.variants && product.variants.length > 0
                 const matched = hasVariants
                   ? product.variants!.find(
-                      v => v.storage === selStorage && (v.color === '' || v.color === selColor),
+                      v => v.storage === selStorage
+                        && (v.color === '' || v.color === selColor)
+                        && (!v.sim || v.sim === selSim),
                     )
                   : undefined
                 const displayPrice = matched?.price || product.priceRange
-                const selDetails = [selStorage, selColor].filter(Boolean).join(', ')
+                const selDetails = [selStorage, selColor, selSim].filter(Boolean).join(', ')
                 const waText = hasVariants
                   ? `Hola! Me interesa el ${product.name} (${product.condition})${selDetails ? ` — ${selDetails}` : ''}${matched?.price ? ` (${matched.price})` : ''}`
                   : `Hola! Me interesa el ${product.name} (${product.condition})`
@@ -159,6 +165,28 @@ export default function ProductoDetail() {
                               onClick={() => setSelStorage(s)}
                               className={`border rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                                 hasVariants && selStorage === s
+                                  ? 'border-purple-600 bg-purple-50 text-purple-700'
+                                  : 'border-gray-200 text-gray-700 hover:border-gray-300'
+                              }`}
+                            >
+                              {s}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {product.simOptions && product.simOptions.length > 0 && (
+                      <div className="mb-4">
+                        <p className="text-sm font-medium text-gray-700 mb-2">Tipo de SIM</p>
+                        <div className="flex flex-wrap gap-2">
+                          {product.simOptions.map(s => (
+                            <button
+                              key={s}
+                              type="button"
+                              onClick={() => setSelSim(s)}
+                              className={`border rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                                selSim === s
                                   ? 'border-purple-600 bg-purple-50 text-purple-700'
                                   : 'border-gray-200 text-gray-700 hover:border-gray-300'
                               }`}

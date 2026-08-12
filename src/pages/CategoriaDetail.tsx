@@ -15,6 +15,38 @@ function priceValue(p: Product): number {
   return digits ? parseInt(digits, 10) : 0
 }
 
+const PHONE_NAME = /^(iphone|galaxy|samsung|xiaomi|redmi|motorola|moto|poco|honor)\b/i
+
+const TIER_RANK: [RegExp, number][] = [
+  [/pro\s*max/i, 4],
+  [/pro/i, 3],
+  [/plus/i, 2],
+  [/\d+\s*e\b/i, 0],
+]
+
+// Generación del modelo (17 Pro Max > 17 Pro > 17 > 17e > 16 ...).
+// Solo aplica a equipos; el resto queda en 0 y se ordena por precio.
+function modelRank(p: Product): number {
+  const name = p.name || ''
+  if (!PHONE_NAME.test(name)) return 0
+  const match = name.match(/\d+/)
+  const generation = match ? parseInt(match[0], 10) : 0
+  const tier = TIER_RANK.find(([re]) => re.test(name))?.[1] ?? 1
+  return generation * 10 + tier
+}
+
+// Evita que dos productos del mismo modelo (misma foto) queden seguidos:
+// toma siempre el siguiente que no repita el nombre anterior.
+function spreadDuplicates(items: Product[]): Product[] {
+  const pending = items.slice()
+  const out: Product[] = []
+  while (pending.length) {
+    const next = pending.findIndex((p) => p.name !== out[out.length - 1]?.name)
+    out.push(...pending.splice(next === -1 ? 0 : next, 1))
+  }
+  return out
+}
+
 export default function CategoriaDetail() {
   const { slug } = useParams<{ slug: string }>()
   const [products, setProducts] = useState<Product[]>([])
@@ -41,13 +73,15 @@ export default function CategoriaDetail() {
       .catch(() => setLoaded(true))
   }, [slug])
 
-  const filteredProducts = (
+  const sorted = (
     conditionFilter === 'Todos'
       ? products
       : products.filter((p) => p.condition === conditionFilter)
   )
     .slice()
-    .sort((a, b) => priceValue(b) - priceValue(a))
+    .sort((a, b) => modelRank(b) - modelRank(a) || priceValue(b) - priceValue(a))
+
+  const filteredProducts = conditionFilter === 'Todos' ? spreadDuplicates(sorted) : sorted
 
   if (!loaded) {
     return (
@@ -159,7 +193,7 @@ export default function CategoriaDetail() {
                             : 'Motorola'}
                       </p>
                     )}
-                    <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 group-hover:text-purple-700 transition-colors line-clamp-1">
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 group-hover:text-purple-700 transition-colors line-clamp-2 min-h-[3rem] sm:min-h-[3.5rem]">
                       {product.name}
                     </h3>
                     <p className="text-xs text-gray-500 mb-3 line-clamp-1">{product.storage.join(' • ')}</p>
