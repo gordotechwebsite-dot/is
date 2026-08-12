@@ -35,6 +35,18 @@ function modelRank(p: Product): number {
   return generation * 10 + tier
 }
 
+// Evita que dos productos del mismo modelo (misma foto) queden seguidos:
+// toma siempre el siguiente que no repita el nombre anterior.
+function spreadDuplicates(items: Product[]): Product[] {
+  const pending = items.slice()
+  const out: Product[] = []
+  while (pending.length) {
+    const next = pending.findIndex((p) => p.name !== out[out.length - 1]?.name)
+    out.push(...pending.splice(next === -1 ? 0 : next, 1))
+  }
+  return out
+}
+
 export default function CategoriaDetail() {
   const { slug } = useParams<{ slug: string }>()
   const [products, setProducts] = useState<Product[]>([])
@@ -61,13 +73,15 @@ export default function CategoriaDetail() {
       .catch(() => setLoaded(true))
   }, [slug])
 
-  const filteredProducts = (
+  const sorted = (
     conditionFilter === 'Todos'
       ? products
       : products.filter((p) => p.condition === conditionFilter)
   )
     .slice()
     .sort((a, b) => modelRank(b) - modelRank(a) || priceValue(b) - priceValue(a))
+
+  const filteredProducts = conditionFilter === 'Todos' ? spreadDuplicates(sorted) : sorted
 
   if (!loaded) {
     return (
