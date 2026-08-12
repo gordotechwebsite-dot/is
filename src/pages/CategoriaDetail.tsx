@@ -15,6 +15,26 @@ function priceValue(p: Product): number {
   return digits ? parseInt(digits, 10) : 0
 }
 
+const PHONE_NAME = /^(iphone|galaxy|samsung|xiaomi|redmi|motorola|moto|poco|honor)\b/i
+
+const TIER_RANK: [RegExp, number][] = [
+  [/pro\s*max/i, 4],
+  [/pro/i, 3],
+  [/plus/i, 2],
+  [/\d+\s*e\b/i, 0],
+]
+
+// Generación del modelo (17 Pro Max > 17 Pro > 17 > 17e > 16 ...).
+// Solo aplica a equipos; el resto queda en 0 y se ordena por precio.
+function modelRank(p: Product): number {
+  const name = p.name || ''
+  if (!PHONE_NAME.test(name)) return 0
+  const match = name.match(/\d+/)
+  const generation = match ? parseInt(match[0], 10) : 0
+  const tier = TIER_RANK.find(([re]) => re.test(name))?.[1] ?? 1
+  return generation * 10 + tier
+}
+
 export default function CategoriaDetail() {
   const { slug } = useParams<{ slug: string }>()
   const [products, setProducts] = useState<Product[]>([])
@@ -47,7 +67,7 @@ export default function CategoriaDetail() {
       : products.filter((p) => p.condition === conditionFilter)
   )
     .slice()
-    .sort((a, b) => priceValue(b) - priceValue(a))
+    .sort((a, b) => modelRank(b) - modelRank(a) || priceValue(b) - priceValue(a))
 
   if (!loaded) {
     return (
