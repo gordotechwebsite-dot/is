@@ -3,10 +3,10 @@ import { Trash2, Edit, Plus, LogOut, Save, X, FolderOpen, Package, Home, Zap, Se
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://isphone-api.vercel.app'
 
-type Variant = { storage: string; color: string; price: string }
+type Variant = { storage: string; color: string; sim: string; price: string }
 type Product = {
   id: number; name: string; brand: string; condition: string; image: string; images?: string[]
-  storage: string[]; colors: string[]; price_range: string; badge: string | null; category: string | null
+  storage: string[]; colors: string[]; sim_options?: string[]; price_range: string; badge: string | null; category: string | null
   variants?: Variant[]
 }
 type Category = { id: number; name: string; slug: string; cover_image: string; header_image?: string; position: number }
@@ -235,6 +235,7 @@ function Admin() {
   const [formCondition, setFormCondition] = useState('Nuevo')
   const [formStorage, setFormStorage] = useState('')
   const [formColors, setFormColors] = useState('')
+  const [formSim, setFormSim] = useState('')
   const [formPrice, setFormPrice] = useState('')
   const [formBadge, setFormBadge] = useState('')
   const [formCategory, setFormCategory] = useState('')
@@ -318,7 +319,7 @@ function Admin() {
   // --- Products ---
   const resetProductForm = () => {
     setFormName(''); setFormBrand('apple'); setFormCondition('Nuevo'); setFormStorage('')
-    setFormColors(''); setFormPrice(''); setFormBadge(''); setFormCategory(''); setFormImage('')
+    setFormColors(''); setFormSim(''); setFormPrice(''); setFormBadge(''); setFormCategory(''); setFormImage('')
     setFormImages([])
     setFormVariants([])
     setEditing(null); setShowForm(false)
@@ -326,7 +327,7 @@ function Admin() {
 
   const openEditProduct = (p: Product) => {
     setEditing(p); setFormName(p.name); setFormBrand(p.brand); setFormCondition(p.condition)
-    setFormStorage(p.storage.join(',')); setFormColors(p.colors.join(','))
+    setFormStorage(p.storage.join(',')); setFormColors(p.colors.join(',')); setFormSim((p.sim_options || []).join(','))
     setFormPrice(p.price_range); setFormBadge(p.badge || ''); setFormCategory(p.category || '')
     setFormVariants(p.variants || [])
     setFormImage(p.image)
@@ -343,6 +344,7 @@ function Admin() {
       image: gallery[0] || formImage || '', images: gallery,
       storage: formStorage.split(',').map(s => s.trim()).filter(Boolean),
       colors: formColors.split(',').map(s => s.trim()).filter(Boolean),
+      sim_options: formSim.split(',').map(s => s.trim()).filter(Boolean),
       price_range: formPrice, badge: formBadge || null, category: formCategory || null,
       variants: formVariants.filter(v => v.price.trim()),
     }
@@ -677,6 +679,7 @@ function Admin() {
                   </div>
                   <Input label="Almacenamiento (separar con coma, opcional)" value={formStorage} onChange={setFormStorage} placeholder="128GB,256GB,512GB" />
                   <Input label="Colores (separar con coma, opcional)" value={formColors} onChange={setFormColors} placeholder="Negro,Blanco,Azul" />
+                  <Input label="Tipos de SIM (separar con coma, opcional)" value={formSim} onChange={setFormSim} placeholder="eSIM,SIM Física" />
                   <Input label="Rango de precio" value={formPrice} onChange={setFormPrice} placeholder="Desde $3.400.000" required />
                   <Input label="Etiqueta (opcional)" value={formBadge} onChange={setFormBadge} placeholder="Pro, Ultra, Nuevo..." />
 
@@ -687,18 +690,20 @@ function Admin() {
                         onClick={() => setFormVariants([...formVariants, {
                           storage: formStorage.split(',').map(s => s.trim()).filter(Boolean)[0] || '',
                           color: formColors.split(',').map(s => s.trim()).filter(Boolean)[0] || '',
+                          sim: formSim.split(',').map(s => s.trim()).filter(Boolean)[0] || '',
                           price: '',
                         }])}
                         className="flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300">
                         <Plus className="w-3 h-3" /> Agregar variante
                       </button>
                     </div>
-                    <p className="text-xs text-gray-500 mb-3">Si defines variantes, el cliente elige capacidad + color y verá el precio exacto. Si no, se muestra el precio de arriba.</p>
+                    <p className="text-xs text-gray-500 mb-3">Si defines variantes, el cliente elige capacidad, color y tipo de SIM, y verá el precio exacto. Si no, se muestra el precio de arriba.</p>
                     {formVariants.length > 0 && (
                       <div className="space-y-2">
                         {formVariants.map((v, idx) => {
                           const storageOpts = formStorage.split(',').map(s => s.trim()).filter(Boolean)
                           const colorOpts = formColors.split(',').map(s => s.trim()).filter(Boolean)
+                          const simOpts = formSim.split(',').map(s => s.trim()).filter(Boolean)
                           const update = (field: keyof Variant, value: string) => {
                             setFormVariants(formVariants.map((x, i) => i === idx ? { ...x, [field]: value } : x))
                           }
@@ -714,6 +719,12 @@ function Admin() {
                                 {colorOpts.length === 0 && <option value="">—</option>}
                                 {colorOpts.map(c => <option key={c} value={c}>{c}</option>)}
                               </select>
+                              {simOpts.length > 0 && (
+                                <select value={v.sim} onChange={e => update('sim', e.target.value)}
+                                  className="flex-1 min-w-0 px-2 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-purple-500">
+                                  {simOpts.map(s => <option key={s} value={s}>{s}</option>)}
+                                </select>
+                              )}
                               <input value={v.price} onChange={e => update('price', e.target.value)} placeholder="$3.400.000"
                                 className="flex-1 min-w-0 px-2 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-purple-500" />
                               <button type="button" onClick={() => setFormVariants(formVariants.filter((_, i) => i !== idx))}
