@@ -73,7 +73,7 @@ const compressImage = (file: File, maxSize = 400): Promise<string> => {
   })
 }
 
-const ImageUpload = ({ value, onChange, label = 'Imagen', maxSize = 400, aspect = 'aspect-video', fit = 'cover' }: { value: string; onChange: (v: string) => void; label?: string; maxSize?: number; aspect?: string; fit?: 'cover' | 'contain' }) => {
+const ImageUpload = ({ value, onChange, label = 'Imagen', hint, maxSize = 400, aspect = 'aspect-video', fit = 'cover' }: { value: string; onChange: (v: string) => void; label?: string; hint?: string; maxSize?: number; aspect?: string; fit?: 'cover' | 'contain' }) => {
   const fileRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
 
@@ -89,6 +89,7 @@ const ImageUpload = ({ value, onChange, label = 'Imagen', maxSize = 400, aspect 
   return (
     <div>
       <label className="block text-sm text-gray-400 mb-1">{label}</label>
+      {hint && <p className="text-xs text-gray-500 mb-2">{hint}</p>}
       <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
       {value ? (
         <div className={`relative rounded-lg overflow-hidden bg-gray-800 ${aspect}`}>
@@ -798,8 +799,10 @@ function Admin() {
                 <form onSubmit={saveCat} className="space-y-4">
                   <Input label="Nombre" value={catName} onChange={v => { setCatName(v); if (!editingCat) setCatSlug(v.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')) }} placeholder="Smartphones" required />
                   <Input label="Slug (URL)" value={catSlug} onChange={setCatSlug} placeholder="smartphones" required />
-                  <ImageUpload value={catCoverImage} onChange={setCatCoverImage} label="Imagen de portada (tarjeta del catálogo)" aspect="aspect-square" />
-                  <ImageUpload value={catHeaderImage} onChange={setCatHeaderImage} label="Imagen del encabezado (fondo del título dentro de la categoría)" />
+                  <ImageUpload value={catCoverImage} onChange={setCatCoverImage} label="Imagen de portada (tarjeta del catálogo)"
+                    hint="Cuadrada, 800×800 px recomendado" maxSize={800} aspect="aspect-square" />
+                  <ImageUpload value={catHeaderImage} onChange={setCatHeaderImage} label="Imagen del encabezado (fondo del título dentro de la categoría)"
+                    hint="Horizontal, 1600×600 px recomendado (se recorta arriba y abajo, deja lo importante centrado)" maxSize={1600} />
                   <div>
                     <label className="block text-sm text-gray-400 mb-1">Posición (orden en catálogo)</label>
                     <input type="number" min={0} value={catPosition} onChange={e => setCatPosition(Number(e.target.value))}
