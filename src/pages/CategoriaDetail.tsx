@@ -75,6 +75,8 @@ export default function CategoriaDetail() {
       .catch(() => setLoaded(true))
   }, [slug])
 
+  const hasMixedConditions = new Set(products.map((p) => p.condition)).size > 1
+
   const sorted = (
     conditionFilter === 'Todos'
       ? products
@@ -136,7 +138,7 @@ export default function CategoriaDetail() {
         )}
 
         {/* Condition filter */}
-        {products.length > 0 && (
+        {hasMixedConditions && (
           <div className="flex flex-wrap gap-2 sm:gap-3 mb-6 sm:mb-8">
             {(['Todos', 'Nuevo', 'Exhibición'] as const).map((opt) => (
               <button
