@@ -66,10 +66,10 @@ export default function Layout() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-pearl/95 backdrop-blur-md z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-16 md:h-20">
             {/* Desktop: logo left */}
             <Link to="/" className="hidden md:flex items-center gap-2">
-              <img src="/images/isphone-logo.webp" alt="iSphone" className="h-24" />
+              <img src="/images/isphone-wordmark.webp" alt="iSphone" className="h-9" />
             </Link>
 
             {/* Desktop nav */}
@@ -88,7 +88,7 @@ export default function Layout() {
 
             {/* Mobile: logo centered absolutely */}
             <Link to="/" className="md:hidden absolute left-1/2 -translate-x-1/2">
-              <img src="/images/isphone-logo.webp" alt="iSphone" className="h-32" />
+              <img src="/images/isphone-wordmark.webp" alt="iSphone" className="h-10" />
             </Link>
           </div>
         </div>
@@ -134,7 +134,7 @@ export default function Layout() {
       </nav>
 
       {/* Page content */}
-      <main className="flex-1 pt-20">
+      <main className="flex-1 pt-16 md:pt-20">
         <Outlet />
       </main>
 
@@ -143,7 +143,7 @@ export default function Layout() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             <div>
-              <img src="/images/isphone-logo.webp" alt="iSphone" className="h-10 mb-4 brightness-0 invert" />
+              <img src="/images/isphone-wordmark.webp" alt="iSphone" className="h-8 mb-4 brightness-0 invert" />
               <p className="text-sm text-gray-500 leading-relaxed">
                 Evolución en tus manos. Equipos nuevos y de exhibición con garantía en Boyacá, Colombia.
               </p>
