@@ -41,6 +41,8 @@ export default function Layout() {
 
   useEffect(() => { setSearchOpen(false); setSearchQuery('') }, [location])
 
+  useEffect(() => { window.scrollTo(0, 0) }, [location.pathname])
+
   useEffect(() => {
     fetch(`${API_URL}/api/site-content`)
       .then(r => r.json())
