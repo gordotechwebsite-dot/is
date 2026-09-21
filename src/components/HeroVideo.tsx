@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Wrench } from 'lucide-react'
+import { ArrowRight, Wrench, Play } from 'lucide-react'
 import { API_URL } from '../shared'
 
 const DEFAULT_VIDEO = '/video/iphone17-pro.mp4'
@@ -9,6 +9,17 @@ const DEFAULT_POSTER = '/video/iphone17-pro-poster.jpg'
 export default function HeroVideo() {
   const [src, setSrc] = useState(DEFAULT_VIDEO)
   const [poster, setPoster] = useState(DEFAULT_POSTER)
+  const [needsTap, setNeedsTap] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  const tryPlay = () => {
+    const v = videoRef.current
+    if (!v) return
+    v.muted = true
+    v.play().then(() => setNeedsTap(false)).catch(() => setNeedsTap(true))
+  }
+
+  useEffect(() => { tryPlay() }, [src])
 
   useEffect(() => {
     fetch(`${API_URL}/api/site-content`)
@@ -24,6 +35,7 @@ export default function HeroVideo() {
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
       <div className="relative overflow-hidden rounded-2xl lg:rounded-3xl shadow-sm bg-black">
         <video
+          ref={videoRef}
           key={src}
           className="w-full aspect-video lg:aspect-auto lg:h-[520px] xl:h-[560px] object-cover"
           src={src}
@@ -32,11 +44,25 @@ export default function HeroVideo() {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
+          onCanPlay={() => { if (videoRef.current?.paused) tryPlay() }}
+          onPlaying={() => setNeedsTap(false)}
         />
+        {needsTap && (
+          <button
+            type="button"
+            onClick={tryPlay}
+            aria-label="Reproducir video"
+            className="absolute inset-0 z-10 flex items-center justify-center"
+          >
+            <span className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+              <Play className="w-7 h-7 text-gray-900 ml-1" fill="currentColor" />
+            </span>
+          </button>
+        )}
         <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent pointer-events-none" />
-        <div className="hidden lg:flex absolute inset-0 items-end p-12">
-          <div className="max-w-xl">
+        <div className="hidden lg:flex absolute inset-0 items-end p-12 pointer-events-none">
+          <div className="max-w-xl pointer-events-auto">
             <h1 className="text-5xl font-bold text-white leading-tight mb-4">
               Evolución en tus manos
             </h1>
