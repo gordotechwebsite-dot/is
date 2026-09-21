@@ -32,21 +32,33 @@ const MAX_VIDEO_MB = 100
 
 // Uploads straight to Vercel Blob with a short-lived token: routing the file
 // through the API would hit its 4.5 MB request body limit.
-const uploadVideo = async (file: File, token: string): Promise<string> => {
+const uploadBlob = async (data: Blob, filename: string, token: string): Promise<string> => {
   const res = await fetch(`${API_URL}/api/admin/upload-token`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ filename: file.name, content_type: file.type }),
+    body: JSON.stringify({ filename, content_type: data.type }),
   })
   if (!res.ok) throw new Error('No se pudo iniciar la subida')
   const { token: clientToken, url } = await res.json()
   const put = await fetch(url, {
     method: 'PUT',
-    headers: { Authorization: `Bearer ${clientToken}`, 'x-content-type': file.type, 'x-api-version': '7' },
-    body: file,
+    headers: { Authorization: `Bearer ${clientToken}`, 'x-content-type': data.type, 'x-api-version': '7' },
+    body: data,
   })
-  if (!put.ok) throw new Error('No se pudo subir el video')
+  if (!put.ok) throw new Error('No se pudo subir el archivo')
   return (await put.json()).url
+}
+
+const uploadVideo = (file: File, token: string) => uploadBlob(file, file.name, token)
+
+// Product photos are picked as base64 data URLs; a product with several
+// colors and photos per color can exceed the API's 4.5 MB body limit, so
+// they are uploaded to Blob first and only their URLs are sent.
+const uploadDataUrl = async (value: string, name: string, token: string): Promise<string> => {
+  if (!value.startsWith('data:image')) return value
+  const blob = await (await fetch(value)).blob()
+  const ext = blob.type.split('/')[1] || 'png'
+  return uploadBlob(blob, `${name}.${ext}`, token)
 }
 
 const compressImage = (file: File, maxSize = 400): Promise<string> => {
@@ -351,10 +363,27 @@ function Admin() {
   const saveProduct = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    const gallery = formImages.filter(Boolean)
-    const colorOptions = formColorOpts
-      .map(c => ({ ...c, name: c.name.trim(), images: c.images.filter(Boolean) }))
-      .filter(c => c.name)
+    let gallery: string[]
+    let colorOptions: ColorOption[]
+    try {
+      const stamp = Date.now()
+      gallery = await Promise.all(
+        formImages.filter(Boolean).map((img, i) => uploadDataUrl(img, `prod_${stamp}_${i}`, token || '')),
+      )
+      colorOptions = await Promise.all(
+        formColorOpts
+          .map(c => ({ ...c, name: c.name.trim(), images: c.images.filter(Boolean) }))
+          .filter(c => c.name)
+          .map(async (c, ci) => ({
+            ...c,
+            images: await Promise.all(c.images.map((img, i) => uploadDataUrl(img, `prod_${stamp}_c${ci}_${i}`, token || ''))),
+          })),
+      )
+    } catch (err) {
+      flash(err instanceof Error ? err.message : 'No se pudieron subir las fotos')
+      setLoading(false)
+      return
+    }
     const body = {
       name: formName, brand: formBrand, condition: formCondition,
       image: gallery[0] || formImage || '', images: gallery,
@@ -371,7 +400,10 @@ function Admin() {
     const res = await fetch(url, { method, headers: headers(), body: JSON.stringify(body) })
     if (res.status === 401) { handleLogout(); return }
     if (res.ok) { await fetchAll(); resetProductForm(); flash('Producto guardado') }
-    else flash('Error al guardar')
+    else {
+      const detail = await res.text().catch(() => '')
+      flash(`Error al guardar (${res.status})${detail ? ': ' + detail.slice(0, 120) : ''}`)
+    }
     setLoading(false)
   }
 
