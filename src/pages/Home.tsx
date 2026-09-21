@@ -203,9 +203,6 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-6 lg:grid-cols-2">
           <ScrollReveal className="h-full">
             <div className="h-full rounded-3xl bg-gray-50 border border-gray-100 px-6 py-12 sm:px-12 lg:py-14 text-center lg:text-left flex flex-col justify-center">
-              <span className="inline-block self-center lg:self-start text-xs font-semibold uppercase tracking-wide text-purple-700 bg-purple-50 px-3 py-1 rounded-full mb-3">
-                Servicio técnico
-              </span>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
                 También ofrecemos soporte técnico
               </h2>
@@ -226,9 +223,6 @@ export default function Home() {
               <div className="absolute -top-16 -right-10 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
               <div className="absolute -bottom-16 -left-10 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
               <div className="relative flex flex-col">
-                <span className="inline-block self-center lg:self-start text-xs font-semibold uppercase tracking-wide text-purple-100 bg-white/10 px-3 py-1 rounded-full mb-3">
-                  Trade-In
-                </span>
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3">
                   ¿Quieres actualizar tu equipo?
                 </h2>
