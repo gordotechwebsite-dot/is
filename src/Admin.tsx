@@ -61,6 +61,13 @@ const uploadDataUrl = async (value: string, name: string, token: string): Promis
   return uploadBlob(blob, `${name}.${ext}`, token)
 }
 
+const normalizeHex = (raw: string, expand = false) => {
+  const v = raw.trim().replace(/^#+/, '').toLowerCase()
+  if (!v) return ''
+  const s = expand && /^[0-9a-f]{3}$/.test(v) ? v.split('').map(ch => ch + ch).join('') : v
+  return '#' + s
+}
+
 const compressImage = (file: File, maxSize = 400): Promise<string> => {
   return new Promise((resolve, reject) => {
     if (/\.hei[cf]$/i.test(file.name) || /hei[cf]/i.test(file.type)) {
@@ -385,8 +392,7 @@ function Admin() {
       )
       const colorOptions: ColorOption[] = await Promise.all(
         formColorOpts
-          .map(c => ({ ...c, name: c.name.trim(), images: c.images.filter(Boolean) }))
-          .filter(c => c.name)
+          .map((c, i) => ({ ...c, name: c.name.trim() || `Color ${i + 1}`, hex: normalizeHex(c.hex, true) || '#888888', images: c.images.filter(Boolean) }))
           .map(async (c, ci) => ({
             ...c,
             images: await Promise.all(c.images.map((img, i) => uploadDataUrl(img, `prod_${stamp}_c${ci}_${i}`, token || ''))),
@@ -755,15 +761,17 @@ function Admin() {
                       {formColorOpts.map((c, idx) => {
                         const update = (patch: Partial<ColorOption>) =>
                           setFormColorOpts(formColorOpts.map((x, i) => (i === idx ? { ...x, ...patch } : x)))
+                        const pickerHex = /^#[0-9a-f]{6}$/i.test(c.hex) ? c.hex : '#888888'
                         return (
                           <div key={idx} className="bg-gray-800/60 border border-gray-800 rounded-xl p-3 space-y-3">
                             <div className="flex gap-2 items-center">
-                              <input type="color" value={c.hex} onChange={e => update({ hex: e.target.value })}
+                              <input type="color" value={pickerHex} onChange={e => update({ hex: e.target.value })}
                                 title="Código de color"
                                 className="w-10 h-10 shrink-0 rounded-lg border border-gray-700 bg-gray-800 cursor-pointer p-0.5" />
-                              <input value={c.hex} onChange={e => update({ hex: e.target.value })} placeholder="#000000"
+                              <input value={c.hex} onChange={e => update({ hex: normalizeHex(e.target.value) })}
+                                onBlur={e => update({ hex: normalizeHex(e.target.value, true) || '#888888' })} placeholder="#000000"
                                 className="w-24 shrink-0 px-2 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm font-mono focus:outline-none focus:border-purple-500" />
-                              <input value={c.name} onChange={e => update({ name: e.target.value })} placeholder="Nombre (Titanio Negro)"
+                              <input value={c.name} onChange={e => update({ name: e.target.value })} placeholder="Nombre (ej. Titanio Negro)"
                                 className="flex-1 min-w-0 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-purple-500" />
                               <button type="button" onClick={() => setFormColorOpts(formColorOpts.filter((_, i) => i !== idx))}
                                 className="p-2 text-gray-500 hover:text-red-400 shrink-0">

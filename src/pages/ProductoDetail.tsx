@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Package } from 'lucide-react'
 import { ScrollReveal, WHATSAPP_LINK, API_URL, Product, ColorOption } from '../shared'
 
 const HEX_RE = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i
+const isAutoName = (name: string) => /^Color \d+$/.test(name)
 const safeHex = (hex: string) => (HEX_RE.test(hex) ? hex : '#888888')
 
 function resolveImage(img: string): string {
@@ -165,7 +166,7 @@ export default function ProductoDetail() {
                     )
                   : undefined
                 const displayPrice = matched?.price || product.priceRange
-                const selDetails = [selStorage, selColor, selSim].filter(Boolean).join(', ')
+                const selDetails = [selStorage, isAutoName(selColor) ? '' : selColor, selSim].filter(Boolean).join(', ')
                 const waText = hasVariants
                   ? `Hola! Me interesa el ${product.name} (${product.condition})${selDetails ? ` — ${selDetails}` : ''}${matched?.price ? ` (${matched.price})` : ''}`
                   : `Hola! Me interesa el ${product.name} (${product.condition})`
@@ -223,7 +224,7 @@ export default function ProductoDetail() {
                       <div className="mb-6">
                         <p className="text-sm font-medium text-gray-700 mb-2">
                           Color{hasVariants || colorOptions.length > 0 ? '' : 'es disponibles'}
-                          {colorOptions.length > 0 && selColor && <span className="text-gray-500 font-normal"> · {selColor}</span>}
+                          {colorOptions.length > 0 && selColor && !isAutoName(selColor) && <span className="text-gray-500 font-normal"> · {selColor}</span>}
                         </p>
                         <div className="flex flex-wrap gap-2">
                           {colorOptions.length > 0 ? colorOptions.map(c => (
