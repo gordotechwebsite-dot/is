@@ -88,11 +88,21 @@ const DEVICES: Device[] = [
     options: ['Reparación de pantalla'],
   },
   {
-    id: 'cargadores',
-    name: 'Cargadores',
-    icon: Plug,
-    desc: 'Nuestros servicios de reparación de cargadores sólo están disponibles para los cargadores MagSafe 1 y MagSafe 2.',
-    options: ['Reparación de cargador'],
+    id: 'android',
+    name: 'Android',
+    icon: Smartphone,
+    desc: 'Nuestros servicios de reparación de Android están disponibles para Samsung, Xiaomi, Motorola, Huawei y otras marcas.',
+    options: [
+      'Reparación de batería',
+      'Reparación de pantalla',
+      'Reparación cristal trasero',
+      'Reparaciones electrónicas',
+      'Reparación cristal cámara',
+      'Reparación puerto de carga',
+      'Reparación auricular',
+      'Mantenimiento',
+      'Otro tipo de fallas',
+    ],
   },
 ]
 
@@ -112,7 +122,7 @@ function optionIcon(option: string): LucideIcon {
   if (o.includes('display') || o.includes('lcd') || o.includes('bisel')) return Monitor
   if (o.includes('pantalla')) return Smartphone
   if (o.includes('backcover')) return Cpu
-  if (o.includes('cargador')) return Plug
+  if (o.includes('carga')) return Plug
   return Wrench
 }
 
