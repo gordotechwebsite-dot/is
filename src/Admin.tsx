@@ -385,8 +385,7 @@ function Admin() {
       )
       const colorOptions: ColorOption[] = await Promise.all(
         formColorOpts
-          .map(c => ({ ...c, name: c.name.trim(), images: c.images.filter(Boolean) }))
-          .filter(c => c.name)
+          .map((c, i) => ({ ...c, name: c.name.trim() || `Color ${i + 1}`, images: c.images.filter(Boolean) }))
           .map(async (c, ci) => ({
             ...c,
             images: await Promise.all(c.images.map((img, i) => uploadDataUrl(img, `prod_${stamp}_c${ci}_${i}`, token || ''))),
@@ -763,7 +762,7 @@ function Admin() {
                                 className="w-10 h-10 shrink-0 rounded-lg border border-gray-700 bg-gray-800 cursor-pointer p-0.5" />
                               <input value={c.hex} onChange={e => update({ hex: e.target.value })} placeholder="#000000"
                                 className="w-24 shrink-0 px-2 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm font-mono focus:outline-none focus:border-purple-500" />
-                              <input value={c.name} onChange={e => update({ name: e.target.value })} placeholder="Nombre (Titanio Negro)"
+                              <input value={c.name} onChange={e => update({ name: e.target.value })} placeholder="Nombre (ej. Titanio Negro)"
                                 className="flex-1 min-w-0 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-purple-500" />
                               <button type="button" onClick={() => setFormColorOpts(formColorOpts.filter((_, i) => i !== idx))}
                                 className="p-2 text-gray-500 hover:text-red-400 shrink-0">
