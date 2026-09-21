@@ -53,9 +53,9 @@ const DEVICES: Device[] = [
   },
   {
     id: 'macbook',
-    name: 'MacBook',
+    name: 'Laptop',
     icon: Laptop,
-    desc: 'Nuestros servicios de reparación de MacBook va desde la MacBook Pro A1278 (2012) hasta los últimos modelos.',
+    desc: 'Nuestros servicios de reparación de laptops cubren MacBook (desde la MacBook Pro A1278 de 2012) y portátiles Windows de todas las marcas.',
     options: [
       'Reparación electrónica',
       'Reparación Flex Gate',
@@ -65,18 +65,6 @@ const DEVICES: Device[] = [
       'Reemplazo Touch Bar',
       'Reemplazo LCD',
       'Bisel de pantalla',
-      'Otro tipo de fallas',
-    ],
-  },
-  {
-    id: 'imac',
-    name: 'iMac',
-    icon: Monitor,
-    desc: 'Nuestros servicios de reparación de iMac están disponibles desde el iMac A1418 (2012) hasta los últimos modelos.',
-    options: [
-      'Reparación electrónica',
-      'Optimización y mantenimiento',
-      'Cambio de pantalla',
       'Otro tipo de fallas',
     ],
   },
