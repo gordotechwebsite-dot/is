@@ -556,7 +556,8 @@ def create_upload_token(body: UploadTokenRequest, _username: str = Depends(verif
     if not BLOB_TOKEN:
         raise HTTPException(status_code=500, detail="Almacenamiento no configurado")
     safe_name = "".join(c for c in body.filename if c.isalnum() or c in "-_.") or "archivo"
-    pathname = f"videos/{safe_name}"
+    folder = "images" if body.content_type.startswith("image/") else "videos"
+    pathname = f"{folder}/{safe_name}"
     return {
         "token": _client_upload_token(pathname, body.content_type),
         "url": f"https://blob.vercel-storage.com/{pathname}",
