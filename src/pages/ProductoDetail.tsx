@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Package } from 'lucide-react'
-import { ScrollReveal, WhatsAppIcon, WHATSAPP_LINK, API_URL, Product } from '../shared'
+import { ScrollReveal, WHATSAPP_LINK, API_URL, Product } from '../shared'
 
 function resolveImage(img: string): string {
   if (!img) return img
@@ -230,7 +230,6 @@ export default function ProductoDetail() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center gap-3 bg-green-500 text-white px-8 py-4 rounded-full font-semibold hover:bg-green-600 transition-colors shadow-lg text-lg"
                     >
-                      <WhatsAppIcon className="w-6 h-6" />
                       Consultar disponibilidad
                       <ArrowRight className="w-5 h-5" />
                     </a>
