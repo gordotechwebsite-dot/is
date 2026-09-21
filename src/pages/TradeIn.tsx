@@ -35,7 +35,6 @@ export default function TradeIn() {
               </div>
               <a href={`${WHATSAPP_LINK}?text=Hola!%20Quiero%20información%20sobre%20el%20Trade-In`} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-purple-700 text-white px-8 py-4 rounded-full font-semibold hover:bg-purple-800 transition-colors shadow-lg shadow-purple-700/25">
-                <RefreshCw className="w-5 h-5" />
                 Consultar Trade-In
               </a>
             </div>
