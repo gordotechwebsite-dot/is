@@ -47,8 +47,9 @@ export default function Home() {
       .catch(() => {})
   }, [])
 
+  const featuredSource = products.some(p => p.featured) ? products.filter(p => p.featured) : products
   const featured = Object.values(
-    products.reduce<Record<string, Product>>((acc, p) => {
+    featuredSource.reduce<Record<string, Product>>((acc, p) => {
       if (!acc[p.name]) acc[p.name] = p
       return acc
     }, {})

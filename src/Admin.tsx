@@ -8,6 +8,7 @@ type Product = {
   id: number; name: string; brand: string; condition: string; image: string; images?: string[]
   storage: string[]; colors: string[]; sim_options?: string[]; price_range: string; badge: string | null; category: string | null
   variants?: Variant[]
+  featured?: boolean
 }
 type Category = { id: number; name: string; slug: string; cover_image: string; header_image?: string; position: number }
 type Banner = { id: number; image: string; link: string | null; position: number; active: boolean }
@@ -240,6 +241,7 @@ function Admin() {
   const [formPrice, setFormPrice] = useState('')
   const [formBadge, setFormBadge] = useState('')
   const [formCategory, setFormCategory] = useState('')
+  const [formFeatured, setFormFeatured] = useState(false)
   const [formImage, setFormImage] = useState('')
   const [formImages, setFormImages] = useState<string[]>([])
   const [formVariants, setFormVariants] = useState<Variant[]>([])
@@ -321,6 +323,7 @@ function Admin() {
   const resetProductForm = () => {
     setFormName(''); setFormBrand('apple'); setFormCondition('Nuevo'); setFormStorage('')
     setFormColors(''); setFormSim(''); setFormPrice(''); setFormBadge(''); setFormCategory(''); setFormImage('')
+    setFormFeatured(false)
     setFormImages([])
     setFormVariants([])
     setEditing(null); setShowForm(false)
@@ -330,6 +333,7 @@ function Admin() {
     setEditing(p); setFormName(p.name); setFormBrand(p.brand); setFormCondition(p.condition)
     setFormStorage(p.storage.join(',')); setFormColors(p.colors.join(',')); setFormSim((p.sim_options || []).join(','))
     setFormPrice(p.price_range); setFormBadge(p.badge || ''); setFormCategory(p.category || '')
+    setFormFeatured(!!p.featured)
     setFormVariants(p.variants || [])
     setFormImage(p.image)
     setFormImages(p.images && p.images.length > 0 ? p.images : (p.image ? [p.image] : []))
@@ -348,6 +352,7 @@ function Admin() {
       sim_options: formSim.split(',').map(s => s.trim()).filter(Boolean),
       price_range: formPrice, badge: formBadge || null, category: formCategory || null,
       variants: formVariants.filter(v => v.price.trim()),
+      featured: formFeatured,
     }
     const url = editing ? `${API_URL}/api/admin/products/${editing.id}` : `${API_URL}/api/admin/products`
     const method = editing ? 'PUT' : 'POST'
@@ -683,6 +688,12 @@ function Admin() {
                   <Input label="Tipos de SIM (separar con coma, opcional)" value={formSim} onChange={setFormSim} placeholder="eSIM,SIM Física" />
                   <Input label="Rango de precio" value={formPrice} onChange={setFormPrice} placeholder="Desde $3.400.000" required />
                   <Input label="Etiqueta (opcional)" value={formBadge} onChange={setFormBadge} placeholder="Pro, Ultra, Nuevo..." />
+                  <label className="flex items-center gap-3 cursor-pointer select-none">
+                    <input type="checkbox" checked={formFeatured} onChange={e => setFormFeatured(e.target.checked)}
+                      className="w-5 h-5 rounded accent-purple-600" />
+                    <span className="text-sm text-white">Destacado</span>
+                    <span className="text-xs text-gray-500">Se muestra en Destacados y en el inicio</span>
+                  </label>
 
                   <div className="border-t border-gray-800 pt-4">
                     <div className="flex items-center justify-between mb-1">
@@ -769,7 +780,7 @@ function Admin() {
                     </div>
                     <div className="p-3">
                       <p className="font-medium text-sm">{p.name}</p>
-                      <p className="text-xs text-gray-400 capitalize">{p.brand} · {p.condition}</p>
+                      <p className="text-xs text-gray-400 capitalize">{p.brand} · {p.condition}{p.featured && <span className="ml-1.5 text-amber-400 normal-case">★ Destacado</span>}</p>
                       {p.category && <p className="text-xs text-purple-400 mt-0.5">{p.category}</p>}
                       <p className="text-purple-400 text-sm font-semibold mt-1">{p.price_range}</p>
                     </div>

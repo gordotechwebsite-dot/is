@@ -202,6 +202,7 @@ class ProductResponse(BaseModel):
     badge: Optional[str] = None
     category: Optional[str] = None
     variants: list[Variant] = []
+    featured: bool = False
 
 class ProductCreate(BaseModel):
     name: str
@@ -216,6 +217,7 @@ class ProductCreate(BaseModel):
     badge: Optional[str] = None
     category: Optional[str] = None
     variants: list[Variant] = []
+    featured: bool = False
 
 class CategoryResponse(BaseModel):
     id: int
