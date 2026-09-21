@@ -1,7 +1,7 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import {
   Smartphone, Tablet, Laptop, Monitor, Watch, Plug,
-  ChevronRight, ChevronLeft, BatteryCharging, ScanFace, Layers,
+  ChevronRight, BatteryCharging, ScanFace, Layers,
   CircuitBoard, MemoryStick, Camera, Volume2, Settings, Sparkles,
   Keyboard, Cpu, HelpCircle, Wrench, Droplets, RefreshCw, ToggleLeft,
 } from 'lucide-react'
@@ -126,11 +126,6 @@ function optionIcon(option: string): LucideIcon {
 
 export default function Reparaciones() {
   const [selected, setSelected] = useState<Device>(DEVICES[0]!)
-  const scrollRef = useRef<HTMLDivElement>(null)
-
-  const scroll = (dir: 'left' | 'right') => {
-    scrollRef.current?.scrollBy({ left: dir === 'left' ? -300 : 300, behavior: 'smooth' })
-  }
 
   const waLink = (option: string) =>
     `${WHATSAPP_LINK}?text=${encodeURIComponent(
@@ -153,19 +148,7 @@ export default function Reparaciones() {
 
         {/* Selector deslizable de dispositivos */}
         <div className="relative mb-10">
-          <button
-            type="button"
-            aria-label="Anterior"
-            onClick={() => scroll('left')}
-            className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border border-gray-100 items-center justify-center text-gray-600 hover:text-purple-700"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-
-          <div
-            ref={scrollRef}
-            className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 no-scrollbar sm:px-10 lg:gap-5"
-          >
+          <div className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 no-scrollbar lg:gap-5">
             {DEVICES.map(device => {
               const Icon = device.icon
               const active = selected.id === device.id
@@ -194,15 +177,6 @@ export default function Reparaciones() {
               )
             })}
           </div>
-
-          <button
-            type="button"
-            aria-label="Siguiente"
-            onClick={() => scroll('right')}
-            className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md border border-gray-100 items-center justify-center text-gray-600 hover:text-purple-700"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
         </div>
 
         {/* Opciones del dispositivo seleccionado */}
