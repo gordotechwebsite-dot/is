@@ -67,7 +67,7 @@ export default function HeroVideo() {
               Evolución en tus manos
             </h1>
             <p className="text-lg text-gray-200 mb-8">
-              iPhone, Android, iPad, Mac y accesorios con garantía. Envíos contra entrega en todo Boyacá.
+              Equipos, Accesorios y Soporte Técnico.
             </p>
             <div className="flex gap-3">
               <Link
