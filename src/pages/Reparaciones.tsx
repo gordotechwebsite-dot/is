@@ -69,18 +69,6 @@ const DEVICES: Device[] = [
     ],
   },
   {
-    id: 'imac',
-    name: 'iMac',
-    icon: Monitor,
-    desc: 'Nuestros servicios de reparación de iMac están disponibles desde el iMac A1418 (2012) hasta los últimos modelos.',
-    options: [
-      'Reparación electrónica',
-      'Optimización y mantenimiento',
-      'Cambio de pantalla',
-      'Otro tipo de fallas',
-    ],
-  },
-  {
     id: 'watch',
     name: 'Watch',
     icon: Watch,
