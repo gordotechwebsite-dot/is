@@ -228,7 +228,7 @@ export default function ProductoDetail() {
                       href={`${WHATSAPP_LINK}?text=${encodeURIComponent(waText)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-3 bg-green-500 text-white px-8 py-4 rounded-full font-semibold hover:bg-green-600 transition-colors shadow-lg text-lg"
+                      className="self-center sm:self-start w-full max-w-xs inline-flex items-center justify-center gap-3 bg-green-500 text-white px-8 py-4 rounded-full font-semibold hover:bg-green-600 transition-colors shadow-lg text-lg"
                     >
                       Consultar disponibilidad
                       <ArrowRight className="w-5 h-5" />
