@@ -72,8 +72,15 @@ const DEVICES: Device[] = [
     id: 'watch',
     name: 'Watch',
     icon: Watch,
-    desc: 'Nuestros servicios de reparación de Apple Watch están disponibles desde la serie 4 hasta la serie Ultra 2 en reparación de pantallas partidas.',
-    options: ['Reparación de pantalla'],
+    desc: 'Nuestros servicios de reparación de Apple Watch están disponibles desde la serie 4 hasta la serie Ultra 2.',
+    options: [
+      'Cambio de pantalla o cristal roto',
+      'Reemplazo de batería',
+      'Reparación del cristal o sensor trasero',
+      'Daño por ingreso de agua o humedad',
+      'Reparación de botón lateral',
+      'Restauración de software',
+    ],
   },
   {
     id: 'android',
@@ -104,9 +111,9 @@ function optionIcon(option: string): LucideIcon {
   if (o.includes('electrón')) return CircuitBoard
   if (o.includes('memoria')) return MemoryStick
   if (o.includes('auricular') || o.includes('altavoz')) return Volume2
-  if (o.includes('líquidos')) return Droplets
+  if (o.includes('líquidos') || o.includes('agua')) return Droplets
   if (o.includes('software')) return RefreshCw
-  if (o.includes('botones')) return ToggleLeft
+  if (o.includes('botón') || o.includes('botones')) return ToggleLeft
   if (o.includes('placa')) return Cpu
   if (o.includes('optimiz') || o.includes('flex')) return Sparkles
   if (o.includes('mantenimiento')) return Settings
@@ -140,7 +147,7 @@ export default function Reparaciones() {
               ¿Qué deseas reparar?
             </h1>
             <p className="text-lg text-gray-600 leading-relaxed">
-              Selecciona tu dispositivo y elige el servicio. Técnicos especializados y repuestos de calidad, con garantía en Boyacá.
+              Selecciona tu dispositivo y elige el tipo de reparación.
             </p>
           </div>
         </ScrollReveal>
@@ -158,7 +165,7 @@ export default function Reparaciones() {
 
           <div
             ref={scrollRef}
-            className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 no-scrollbar"
+            className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 no-scrollbar sm:px-10 lg:gap-5"
           >
             {DEVICES.map(device => {
               const Icon = device.icon
@@ -168,7 +175,7 @@ export default function Reparaciones() {
                   key={device.id}
                   type="button"
                   onClick={() => setSelected(device)}
-                  className={`snap-start shrink-0 w-36 sm:w-44 rounded-2xl border p-5 text-center transition-all ${
+                  className={`snap-start shrink-0 w-36 sm:w-44 lg:w-auto lg:flex-1 rounded-2xl border p-5 text-center transition-all ${
                     active
                       ? 'border-purple-600 bg-purple-50 shadow-lg'
                       : 'border-gray-100 bg-white hover:border-purple-200 hover:shadow-md'
