@@ -188,6 +188,11 @@ class Variant(BaseModel):
     sim: str = ""
     price: str = ""
 
+class ColorOption(BaseModel):
+    name: str
+    hex: str = "#888888"
+    images: list[str] = []
+
 class ProductResponse(BaseModel):
     id: int
     name: str
@@ -203,6 +208,7 @@ class ProductResponse(BaseModel):
     category: Optional[str] = None
     variants: list[Variant] = []
     featured: bool = False
+    color_options: list[ColorOption] = []
 
 class ProductCreate(BaseModel):
     name: str
@@ -218,6 +224,7 @@ class ProductCreate(BaseModel):
     category: Optional[str] = None
     variants: list[Variant] = []
     featured: bool = False
+    color_options: list[ColorOption] = []
 
 class CategoryResponse(BaseModel):
     id: int
@@ -356,17 +363,25 @@ def logout(authorization: Optional[str] = Header(None)):
 def get_products():
     return _ec_load("products", INITIAL_PRODUCTS)
 
+def _persist_product_images(prod_data: dict, product_id: int, request: Request) -> dict:
+    prod_data["images"] = [
+        _save_image_if_base64(img, f"prod_img_{product_id}_{idx}", request)
+        for idx, img in enumerate(prod_data["images"]) if img
+    ]
+    cover = prod_data["image"] or (prod_data["images"][0] if prod_data["images"] else "")
+    prod_data["image"] = _save_image_if_base64(cover, f"prod_img_{product_id}", request)
+    for cidx, opt in enumerate(prod_data.get("color_options", [])):
+        opt["images"] = [
+            _save_image_if_base64(img, f"prod_img_{product_id}_c{cidx}_{idx}", request)
+            for idx, img in enumerate(opt["images"]) if img
+        ]
+    return prod_data
+
 @app.post("/api/admin/products", response_model=ProductResponse)
 def create_product(product: ProductCreate, request: Request, _username: str = Depends(verify_token)):
     products = _ec_load("products", INITIAL_PRODUCTS)
     new_id = max((p["id"] for p in products), default=0) + 1
-    prod_data = product.model_dump()
-    prod_data["images"] = [
-        _save_image_if_base64(img, f"prod_img_{new_id}_{idx}", request)
-        for idx, img in enumerate(prod_data["images"]) if img
-    ]
-    cover = prod_data["image"] or (prod_data["images"][0] if prod_data["images"] else "")
-    prod_data["image"] = _save_image_if_base64(cover, f"prod_img_{new_id}", request)
+    prod_data = _persist_product_images(product.model_dump(), new_id, request)
     new_product = {"id": new_id, **prod_data}
     products.append(new_product)
     _ec_save("products", products)
@@ -377,13 +392,7 @@ def update_product(product_id: int, product: ProductCreate, request: Request, _u
     products = _ec_load("products", INITIAL_PRODUCTS)
     for i, p in enumerate(products):
         if p["id"] == product_id:
-            prod_data = product.model_dump()
-            prod_data["images"] = [
-                _save_image_if_base64(img, f"prod_img_{product_id}_{idx}", request)
-                for idx, img in enumerate(prod_data["images"]) if img
-            ]
-            cover = prod_data["image"] or (prod_data["images"][0] if prod_data["images"] else "")
-            prod_data["image"] = _save_image_if_base64(cover, f"prod_img_{product_id}", request)
+            prod_data = _persist_product_images(product.model_dump(), product_id, request)
             products[i] = {"id": product_id, **prod_data}
             _ec_save("products", products)
             return products[i]

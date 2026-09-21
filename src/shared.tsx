@@ -69,7 +69,10 @@ export type Product = {
   category?: string
   variants?: Variant[]
   featured?: boolean
+  color_options?: ColorOption[]
 }
+
+export type ColorOption = { name: string; hex: string; images: string[] }
 
 export type Category = {
   id: number

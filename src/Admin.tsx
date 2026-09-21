@@ -4,11 +4,13 @@ import { Trash2, Edit, Plus, LogOut, Save, X, FolderOpen, Package, Home, Zap, Se
 const API_URL = import.meta.env.VITE_API_URL || 'https://isphone-api.vercel.app'
 
 type Variant = { storage: string; color: string; sim: string; price: string }
+type ColorOption = { name: string; hex: string; images: string[] }
 type Product = {
   id: number; name: string; brand: string; condition: string; image: string; images?: string[]
   storage: string[]; colors: string[]; sim_options?: string[]; price_range: string; badge: string | null; category: string | null
   variants?: Variant[]
   featured?: boolean
+  color_options?: ColorOption[]
 }
 type Category = { id: number; name: string; slug: string; cover_image: string; header_image?: string; position: number }
 type Banner = { id: number; image: string; link: string | null; position: number; active: boolean }
@@ -236,7 +238,7 @@ function Admin() {
   const [formBrand, setFormBrand] = useState('apple')
   const [formCondition, setFormCondition] = useState('Nuevo')
   const [formStorage, setFormStorage] = useState('')
-  const [formColors, setFormColors] = useState('')
+  const [formColorOpts, setFormColorOpts] = useState<ColorOption[]>([])
   const [formSim, setFormSim] = useState('')
   const [formPrice, setFormPrice] = useState('')
   const [formBadge, setFormBadge] = useState('')
@@ -322,7 +324,7 @@ function Admin() {
   // --- Products ---
   const resetProductForm = () => {
     setFormName(''); setFormBrand('apple'); setFormCondition('Nuevo'); setFormStorage('')
-    setFormColors(''); setFormSim(''); setFormPrice(''); setFormBadge(''); setFormCategory(''); setFormImage('')
+    setFormColorOpts([]); setFormSim(''); setFormPrice(''); setFormBadge(''); setFormCategory(''); setFormImage('')
     setFormFeatured(false)
     setFormImages([])
     setFormVariants([])
@@ -331,7 +333,13 @@ function Admin() {
 
   const openEditProduct = (p: Product) => {
     setEditing(p); setFormName(p.name); setFormBrand(p.brand); setFormCondition(p.condition)
-    setFormStorage(p.storage.join(',')); setFormColors(p.colors.join(',')); setFormSim((p.sim_options || []).join(','))
+    setFormStorage(p.storage.join(','))
+    setFormColorOpts(
+      p.color_options && p.color_options.length > 0
+        ? p.color_options
+        : p.colors.map(name => ({ name, hex: '#888888', images: [] })),
+    )
+    setFormSim((p.sim_options || []).join(','))
     setFormPrice(p.price_range); setFormBadge(p.badge || ''); setFormCategory(p.category || '')
     setFormFeatured(!!p.featured)
     setFormVariants(p.variants || [])
@@ -344,11 +352,15 @@ function Admin() {
     e.preventDefault()
     setLoading(true)
     const gallery = formImages.filter(Boolean)
+    const colorOptions = formColorOpts
+      .map(c => ({ ...c, name: c.name.trim(), images: c.images.filter(Boolean) }))
+      .filter(c => c.name)
     const body = {
       name: formName, brand: formBrand, condition: formCondition,
       image: gallery[0] || formImage || '', images: gallery,
       storage: formStorage.split(',').map(s => s.trim()).filter(Boolean),
-      colors: formColors.split(',').map(s => s.trim()).filter(Boolean),
+      colors: colorOptions.map(c => c.name),
+      color_options: colorOptions,
       sim_options: formSim.split(',').map(s => s.trim()).filter(Boolean),
       price_range: formPrice, badge: formBadge || null, category: formCategory || null,
       variants: formVariants.filter(v => v.price.trim()),
@@ -684,7 +696,61 @@ function Admin() {
                     </select>
                   </div>
                   <Input label="Almacenamiento (separar con coma, opcional)" value={formStorage} onChange={setFormStorage} placeholder="128GB,256GB,512GB" />
-                  <Input label="Colores (separar con coma, opcional)" value={formColors} onChange={setFormColors} placeholder="Negro,Blanco,Azul" />
+                  <div className="border-t border-gray-800 pt-4">
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-sm text-gray-400">Colores (opcional)</label>
+                      <button type="button"
+                        onClick={() => setFormColorOpts([...formColorOpts, { name: '', hex: '#888888', images: [] }])}
+                        className="flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300">
+                        <Plus className="w-3 h-3" /> Agregar color
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-500 mb-3">Cada color se muestra como un recuadro en la ficha. Si le agregas fotos, al elegirlo el cliente verá esas fotos; si no, verá las fotos generales del producto.</p>
+                    <div className="space-y-3">
+                      {formColorOpts.map((c, idx) => {
+                        const update = (patch: Partial<ColorOption>) =>
+                          setFormColorOpts(formColorOpts.map((x, i) => (i === idx ? { ...x, ...patch } : x)))
+                        return (
+                          <div key={idx} className="bg-gray-800/60 border border-gray-800 rounded-xl p-3 space-y-3">
+                            <div className="flex gap-2 items-center">
+                              <input type="color" value={c.hex} onChange={e => update({ hex: e.target.value })}
+                                title="Código de color"
+                                className="w-10 h-10 shrink-0 rounded-lg border border-gray-700 bg-gray-800 cursor-pointer p-0.5" />
+                              <input value={c.hex} onChange={e => update({ hex: e.target.value })} placeholder="#000000"
+                                className="w-24 shrink-0 px-2 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm font-mono focus:outline-none focus:border-purple-500" />
+                              <input value={c.name} onChange={e => update({ name: e.target.value })} placeholder="Nombre (Titanio Negro)"
+                                className="flex-1 min-w-0 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-purple-500" />
+                              <button type="button" onClick={() => setFormColorOpts(formColorOpts.filter((_, i) => i !== idx))}
+                                className="p-2 text-gray-500 hover:text-red-400 shrink-0">
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                              {c.images.map((img, i) => (
+                                <ImageUpload
+                                  key={i}
+                                  value={img}
+                                  label={`Foto ${i + 1}`}
+                                  aspect="aspect-square"
+                                  fit="contain"
+                                  onChange={v => update({
+                                    images: v ? c.images.map((x, j) => (j === i ? v : x)) : c.images.filter((_, j) => j !== i),
+                                  })}
+                                />
+                              ))}
+                              <ImageUpload
+                                value=""
+                                label="Agregar foto"
+                                aspect="aspect-square"
+                                fit="contain"
+                                onChange={v => { if (v) update({ images: [...c.images, v] }) }}
+                              />
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
                   <Input label="Tipos de SIM (separar con coma, opcional)" value={formSim} onChange={setFormSim} placeholder="eSIM,SIM Física" />
                   <Input label="Rango de precio" value={formPrice} onChange={setFormPrice} placeholder="Desde $3.400.000" required />
                   <Input label="Etiqueta (opcional)" value={formBadge} onChange={setFormBadge} placeholder="Pro, Ultra, Nuevo..." />
@@ -701,7 +767,7 @@ function Admin() {
                       <button type="button"
                         onClick={() => setFormVariants([...formVariants, {
                           storage: formStorage.split(',').map(s => s.trim()).filter(Boolean)[0] || '',
-                          color: formColors.split(',').map(s => s.trim()).filter(Boolean)[0] || '',
+                          color: formColorOpts.map(c => c.name.trim()).filter(Boolean)[0] || '',
                           sim: formSim.split(',').map(s => s.trim()).filter(Boolean)[0] || '',
                           price: '',
                         }])}
@@ -714,7 +780,7 @@ function Admin() {
                       <div className="space-y-2">
                         {formVariants.map((v, idx) => {
                           const storageOpts = formStorage.split(',').map(s => s.trim()).filter(Boolean)
-                          const colorOpts = formColors.split(',').map(s => s.trim()).filter(Boolean)
+                          const colorOpts = formColorOpts.map(c => c.name.trim()).filter(Boolean)
                           const simOpts = formSim.split(',').map(s => s.trim()).filter(Boolean)
                           const update = (field: keyof Variant, value: string) => {
                             setFormVariants(formVariants.map((x, i) => i === idx ? { ...x, [field]: value } : x))
