@@ -32,7 +32,6 @@ const DEVICES: Device[] = [
       'Reparación cristal cámara',
       'Reparación auricular',
       'Mantenimiento',
-      'Otro tipo de fallas',
     ],
   },
   {
