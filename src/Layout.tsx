@@ -75,13 +75,13 @@ export default function Layout() {
             </Link>
 
             {/* Desktop nav */}
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden md:flex flex-1 items-center justify-between ml-10 lg:ml-16 -mr-3">
               {navLinks.map(link => (
                 <Link key={link.to} to={link.to}
-                  className={`text-sm font-medium transition-colors ${
+                  className={`text-base lg:text-lg font-medium px-3 py-2 rounded-full transition-colors ${
                     location.pathname === link.to
-                      ? 'text-purple-700'
-                      : 'text-gray-700 hover:text-purple-700'
+                      ? 'text-purple-700 bg-purple-50'
+                      : 'text-gray-700 hover:text-purple-700 hover:bg-purple-50/60'
                   }`}>
                   {link.label}
                 </Link>
