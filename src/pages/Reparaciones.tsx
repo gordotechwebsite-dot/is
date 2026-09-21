@@ -140,7 +140,7 @@ export default function Reparaciones() {
               ¿Qué deseas reparar?
             </h1>
             <p className="text-lg text-gray-600 leading-relaxed">
-              Selecciona tu dispositivo y elige el servicio. Técnicos especializados y repuestos de calidad, con garantía en Boyacá.
+              Selecciona tu dispositivo y elige el tipo de reparación.
             </p>
           </div>
         </ScrollReveal>
