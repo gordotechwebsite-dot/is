@@ -3,7 +3,7 @@ import {
   Smartphone, Tablet, Laptop, Monitor, Watch, Plug,
   ChevronRight, ChevronLeft, BatteryCharging, ScanFace, Layers,
   CircuitBoard, MemoryStick, Camera, Volume2, Settings, Sparkles,
-  Keyboard, Cpu, HelpCircle, Wrench,
+  Keyboard, Cpu, HelpCircle, Wrench, Droplets, RefreshCw, ToggleLeft,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { ScrollReveal, WHATSAPP_LINK } from '../shared'
@@ -93,15 +93,15 @@ const DEVICES: Device[] = [
     icon: Smartphone,
     desc: 'Nuestros servicios de reparación de Android están disponibles para Samsung, Xiaomi, Motorola, Huawei y otras marcas.',
     options: [
-      'Reparación de batería',
-      'Reparación de pantalla',
-      'Reparación cristal trasero',
-      'Reparaciones electrónicas',
-      'Reparación cristal cámara',
-      'Reparación puerto de carga',
-      'Reparación auricular',
-      'Mantenimiento',
-      'Otro tipo de fallas',
+      'Cambio de pantalla',
+      'Reemplazo de batería',
+      'Reparación del puerto de carga',
+      'Reparación por daños por líquidos',
+      'Restauración de software',
+      'Sustitución de altavoz o micrófono',
+      'Reparación de botones físicos',
+      'Reemplazo de módulo de cámara',
+      'Reparación de placa base',
     ],
   },
 ]
@@ -115,7 +115,11 @@ function optionIcon(option: string): LucideIcon {
   if (o.includes('cristal')) return Layers
   if (o.includes('electrón')) return CircuitBoard
   if (o.includes('memoria')) return MemoryStick
-  if (o.includes('auricular')) return Volume2
+  if (o.includes('auricular') || o.includes('altavoz')) return Volume2
+  if (o.includes('líquidos')) return Droplets
+  if (o.includes('software')) return RefreshCw
+  if (o.includes('botones')) return ToggleLeft
+  if (o.includes('placa')) return Cpu
   if (o.includes('optimiz') || o.includes('flex')) return Sparkles
   if (o.includes('mantenimiento')) return Settings
   if (o.includes('teclado') || o.includes('touch bar')) return Keyboard
