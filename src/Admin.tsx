@@ -62,10 +62,16 @@ const uploadDataUrl = async (value: string, name: string, token: string): Promis
 }
 
 const compressImage = (file: File, maxSize = 400): Promise<string> => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
+    if (/\.hei[cf]$/i.test(file.name) || /hei[cf]/i.test(file.type)) {
+      reject(new Error('Formato HEIC no soportado: exporta la foto como JPG o PNG'))
+      return
+    }
     const reader = new FileReader()
+    reader.onerror = () => reject(new Error('No se pudo leer el archivo'))
     reader.onload = (e) => {
       const img = document.createElement('img')
+      img.onerror = () => reject(new Error(`No se pudo abrir la imagen (${file.type || 'formato desconocido'}); usa JPG o PNG`))
       img.onload = () => {
         const canvas = document.createElement('canvas')
         let w = img.width, h = img.height
@@ -91,13 +97,19 @@ const compressImage = (file: File, maxSize = 400): Promise<string> => {
 const ImageUpload = ({ value, onChange, label = 'Imagen', hint, maxSize = 400, aspect = 'aspect-video', fit = 'cover' }: { value: string; onChange: (v: string) => void; label?: string; hint?: string; maxSize?: number; aspect?: string; fit?: 'cover' | 'contain' }) => {
   const fileRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
+    e.target.value = ''
     if (!file) return
     setUploading(true)
-    const dataUrl = await compressImage(file, maxSize)
-    onChange(dataUrl)
+    setError('')
+    try {
+      onChange(await compressImage(file, maxSize))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo procesar la imagen')
+    }
     setUploading(false)
   }
 
@@ -134,6 +146,7 @@ const ImageUpload = ({ value, onChange, label = 'Imagen', hint, maxSize = 400, a
           )}
         </button>
       )}
+      {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
     </div>
   )
 }
@@ -251,6 +264,7 @@ function Admin() {
   const [formCondition, setFormCondition] = useState('Nuevo')
   const [formStorage, setFormStorage] = useState('')
   const [formColorOpts, setFormColorOpts] = useState<ColorOption[]>([])
+  const [formError, setFormError] = useState('')
   const [formSim, setFormSim] = useState('')
   const [formPrice, setFormPrice] = useState('')
   const [formBadge, setFormBadge] = useState('')
@@ -336,7 +350,7 @@ function Admin() {
   // --- Products ---
   const resetProductForm = () => {
     setFormName(''); setFormBrand('apple'); setFormCondition('Nuevo'); setFormStorage('')
-    setFormColorOpts([]); setFormSim(''); setFormPrice(''); setFormBadge(''); setFormCategory(''); setFormImage('')
+    setFormColorOpts([]); setFormError(''); setFormSim(''); setFormPrice(''); setFormBadge(''); setFormCategory(''); setFormImage('')
     setFormFeatured(false)
     setFormImages([])
     setFormVariants([])
@@ -363,14 +377,13 @@ function Admin() {
   const saveProduct = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    let gallery: string[]
-    let colorOptions: ColorOption[]
+    setFormError('')
     try {
       const stamp = Date.now()
-      gallery = await Promise.all(
+      const gallery: string[] = await Promise.all(
         formImages.filter(Boolean).map((img, i) => uploadDataUrl(img, `prod_${stamp}_${i}`, token || '')),
       )
-      colorOptions = await Promise.all(
+      const colorOptions: ColorOption[] = await Promise.all(
         formColorOpts
           .map(c => ({ ...c, name: c.name.trim(), images: c.images.filter(Boolean) }))
           .filter(c => c.name)
@@ -379,30 +392,30 @@ function Admin() {
             images: await Promise.all(c.images.map((img, i) => uploadDataUrl(img, `prod_${stamp}_c${ci}_${i}`, token || ''))),
           })),
       )
+      const body = {
+        name: formName, brand: formBrand, condition: formCondition,
+        image: gallery[0] || formImage || '', images: gallery,
+        storage: formStorage.split(',').map(s => s.trim()).filter(Boolean),
+        colors: colorOptions.map(c => c.name),
+        color_options: colorOptions,
+        sim_options: formSim.split(',').map(s => s.trim()).filter(Boolean),
+        price_range: formPrice, badge: formBadge || null, category: formCategory || null,
+        variants: formVariants.filter(v => v.price.trim()),
+        featured: formFeatured,
+      }
+      const url = editing ? `${API_URL}/api/admin/products/${editing.id}` : `${API_URL}/api/admin/products`
+      const method = editing ? 'PUT' : 'POST'
+      const res = await fetch(url, { method, headers: headers(), body: JSON.stringify(body) })
+      if (res.status === 401) { handleLogout(); return }
+      if (!res.ok) {
+        const detail = await res.text().catch(() => '')
+        throw new Error(`Error al guardar (${res.status})${detail ? ': ' + detail.slice(0, 160) : ''}`)
+      }
+      await fetchAll(); resetProductForm(); flash('Producto guardado')
     } catch (err) {
-      flash(err instanceof Error ? err.message : 'No se pudieron subir las fotos')
-      setLoading(false)
-      return
-    }
-    const body = {
-      name: formName, brand: formBrand, condition: formCondition,
-      image: gallery[0] || formImage || '', images: gallery,
-      storage: formStorage.split(',').map(s => s.trim()).filter(Boolean),
-      colors: colorOptions.map(c => c.name),
-      color_options: colorOptions,
-      sim_options: formSim.split(',').map(s => s.trim()).filter(Boolean),
-      price_range: formPrice, badge: formBadge || null, category: formCategory || null,
-      variants: formVariants.filter(v => v.price.trim()),
-      featured: formFeatured,
-    }
-    const url = editing ? `${API_URL}/api/admin/products/${editing.id}` : `${API_URL}/api/admin/products`
-    const method = editing ? 'PUT' : 'POST'
-    const res = await fetch(url, { method, headers: headers(), body: JSON.stringify(body) })
-    if (res.status === 401) { handleLogout(); return }
-    if (res.ok) { await fetchAll(); resetProductForm(); flash('Producto guardado') }
-    else {
-      const detail = await res.text().catch(() => '')
-      flash(`Error al guardar (${res.status})${detail ? ': ' + detail.slice(0, 120) : ''}`)
+      const msg = err instanceof Error ? err.message : 'No se pudo guardar el producto'
+      setFormError(msg)
+      flash(msg)
     }
     setLoading(false)
   }
@@ -848,10 +861,11 @@ function Admin() {
                     )}
                   </div>
 
+                  {formError && <p className="text-sm text-red-400 bg-red-900/30 border border-red-800 rounded-lg px-3 py-2">{formError}</p>}
                   <div className="flex gap-3 pt-2">
                     <button type="submit" disabled={loading}
                       className="flex-1 flex items-center justify-center gap-2 bg-purple-700 text-white py-3 rounded-xl font-semibold hover:bg-purple-600 disabled:opacity-50">
-                      <Save className="w-4 h-4" /> {loading ? 'Guardando...' : 'Guardar'}
+                      <Save className="w-4 h-4" /> {loading ? 'Subiendo fotos y guardando...' : 'Guardar'}
                     </button>
                     <button type="button" onClick={resetProductForm} className="px-6 py-3 bg-gray-800 text-gray-300 rounded-xl hover:bg-gray-700">Cancelar</button>
                   </div>
