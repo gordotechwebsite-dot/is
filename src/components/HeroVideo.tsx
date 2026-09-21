@@ -37,9 +37,6 @@ export default function HeroVideo() {
         <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent pointer-events-none" />
         <div className="hidden lg:flex absolute inset-0 items-end p-12">
           <div className="max-w-xl">
-            <span className="inline-block text-xs font-semibold uppercase tracking-widest text-purple-200 bg-white/10 backdrop-blur px-3 py-1 rounded-full mb-4">
-              Boyacá · Nuevos y de exhibición
-            </span>
             <h1 className="text-5xl font-bold text-white leading-tight mb-4">
               Evolución en tus manos
             </h1>
