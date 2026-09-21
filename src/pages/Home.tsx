@@ -74,14 +74,14 @@ export default function Home() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 lg:gap-5">
               {categories.map((cat, i) => (
-                <ScrollReveal key={cat.id} delay={i * 0.05}>
+                <ScrollReveal key={cat.id} delay={i * 0.05} className={i === 0 ? 'lg:col-span-2 lg:row-span-2' : ''}>
                   <Link
                     to={cat.slug === 'ofertas' ? '/ofertas' : `/categoria/${cat.slug}`}
-                    className="group block"
+                    className="group flex flex-col h-full"
                   >
-                    <div className="relative rounded-2xl overflow-hidden aspect-square bg-gradient-to-br from-purple-100 via-pink-50 to-orange-100">
+                    <div className={`relative rounded-2xl overflow-hidden aspect-square bg-gradient-to-br from-purple-100 via-pink-50 to-orange-100 group-hover:shadow-lg transition-shadow ${i === 0 ? 'lg:aspect-auto lg:flex-1 lg:rounded-3xl' : ''}`}>
                       <img
                         src={cat.cover_image}
                         alt={cat.name}
@@ -89,7 +89,7 @@ export default function Home() {
                         className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
-                    <h3 className="mt-3 text-base sm:text-lg font-bold text-gray-900 group-hover:text-purple-700 transition-colors">
+                    <h3 className={`mt-3 text-base sm:text-lg font-bold text-gray-900 group-hover:text-purple-700 transition-colors lg:text-center ${i === 0 ? 'lg:text-xl' : 'lg:text-base'}`}>
                       {cat.name}
                     </h3>
                   </Link>
@@ -198,12 +198,12 @@ export default function Home() {
         </section>
       )}
 
-      {/* Soporte técnico */}
+      {/* Soporte técnico + Trade-In */}
       <section className="py-14 lg:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollReveal>
-            <div className="text-center max-w-2xl mx-auto">
-              <span className="inline-block text-xs font-semibold uppercase tracking-wide text-purple-700 bg-purple-50 px-3 py-1 rounded-full mb-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-6 lg:grid-cols-2">
+          <ScrollReveal className="h-full">
+            <div className="h-full rounded-3xl bg-gray-50 border border-gray-100 px-6 py-12 sm:px-12 lg:py-14 text-center lg:text-left flex flex-col justify-center">
+              <span className="inline-block self-center lg:self-start text-xs font-semibold uppercase tracking-wide text-purple-700 bg-purple-50 px-3 py-1 rounded-full mb-3">
                 Servicio técnico
               </span>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
@@ -214,32 +214,30 @@ export default function Home() {
               </p>
               <Link
                 to="/reparaciones"
-                className="inline-flex items-center justify-center gap-2 bg-purple-700 text-white px-8 py-4 rounded-full font-semibold hover:bg-purple-800 transition-colors shadow-lg"
+                className="inline-flex self-center lg:self-start items-center justify-center gap-2 bg-purple-700 text-white px-8 py-4 rounded-full font-semibold hover:bg-purple-800 transition-colors shadow-lg"
               >
                 Obtén Servicio Técnico <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
           </ScrollReveal>
-        </div>
-      </section>
 
-      {/* Trade-In CTA band */}
-      <section className="py-14 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollReveal>
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-700 via-purple-800 to-indigo-900 px-6 py-12 sm:px-12 sm:py-16 text-center">
+          <ScrollReveal delay={0.1} className="h-full">
+            <div className="relative h-full overflow-hidden rounded-3xl bg-gradient-to-br from-purple-700 via-purple-800 to-indigo-900 px-6 py-12 sm:px-12 lg:py-14 text-center lg:text-left flex flex-col justify-center">
               <div className="absolute -top-16 -right-10 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
               <div className="absolute -bottom-16 -left-10 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-              <div className="relative">
+              <div className="relative flex flex-col">
+                <span className="inline-block self-center lg:self-start text-xs font-semibold uppercase tracking-wide text-purple-100 bg-white/10 px-3 py-1 rounded-full mb-3">
+                  Trade-In
+                </span>
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3">
                   ¿Quieres actualizar tu equipo?
                 </h2>
-                <p className="text-purple-100 max-w-2xl mx-auto mb-8 text-sm sm:text-base">
-                  Con Trade-In entregas tu celular actual y pagas menos por el nuevo. Fácil, rápido y con la mejor valoración de Boyacá.
+                <p className="text-purple-100 mb-8 text-sm sm:text-base">
+                  Entregas tu celular actual y pagas menos por el nuevo. Fácil, rápido y con la mejor valoración de Boyacá.
                 </p>
                 <Link
                   to="/trade-in"
-                  className="inline-flex items-center gap-2 bg-white text-purple-800 px-8 py-4 rounded-full font-semibold hover:bg-purple-50 transition-colors shadow-lg"
+                  className="inline-flex self-center lg:self-start items-center gap-2 bg-white text-purple-800 px-8 py-4 rounded-full font-semibold hover:bg-purple-50 transition-colors shadow-lg"
                 >
                   Conoce el Trade-In <ArrowRight className="w-5 h-5" />
                 </Link>
