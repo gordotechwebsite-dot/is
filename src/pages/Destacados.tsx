@@ -30,7 +30,7 @@ export default function Destacados() {
           priceRange: p.price_range || p.priceRange || '',
           image: resolveImage(p.image),
         }))
-        setProducts(mapped)
+        setProducts(mapped.filter(p => p.featured))
         setLoaded(true)
       })
       .catch(() => setLoaded(true))
@@ -107,7 +107,7 @@ export default function Destacados() {
         ) : (
           <div className="text-center py-16">
             <Smartphone className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-400 text-lg">No hay productos disponibles aún</p>
+            <p className="text-gray-400 text-lg">Aún no hay productos destacados</p>
             <Link
               to="/catalogo"
               className="inline-flex items-center gap-2 mt-4 text-purple-700 font-medium hover:text-purple-900 transition-colors"

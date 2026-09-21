@@ -68,6 +68,7 @@ export type Product = {
   badge?: string
   category?: string
   variants?: Variant[]
+  featured?: boolean
 }
 
 export type Category = {
