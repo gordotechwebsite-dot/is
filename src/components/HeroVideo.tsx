@@ -5,10 +5,16 @@ import { API_URL } from '../shared'
 
 const DEFAULT_VIDEO = '/video/iphone17-pro.mp4'
 const DEFAULT_POSTER = '/video/iphone17-pro-poster.jpg'
+const DEFAULT_TITLE = 'Evolución en tus manos'
+const DEFAULT_DESCRIPTION = 'Equipos, Accesorios y Soporte Técnico.'
+const DEFAULT_CTA = 'Ver catálogo'
 
 export default function HeroVideo() {
   const [src, setSrc] = useState(DEFAULT_VIDEO)
   const [poster, setPoster] = useState(DEFAULT_POSTER)
+  const [title, setTitle] = useState(DEFAULT_TITLE)
+  const [description, setDescription] = useState(DEFAULT_DESCRIPTION)
+  const [ctaText, setCtaText] = useState(DEFAULT_CTA)
   const [needsTap, setNeedsTap] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
 
@@ -27,6 +33,9 @@ export default function HeroVideo() {
       .then(data => {
         if (data.hero_video) setSrc(data.hero_video)
         if (data.hero_video_poster) setPoster(data.hero_video_poster)
+        if (data.hero_title_1) setTitle(data.hero_title_1)
+        if (data.hero_description) setDescription(data.hero_description)
+        if (data.hero_cta_text) setCtaText(data.hero_cta_text)
       })
       .catch(() => {})
   }, [])
@@ -64,17 +73,17 @@ export default function HeroVideo() {
         <div className="hidden lg:flex absolute inset-0 items-end p-12 pointer-events-none">
           <div className="max-w-xl pointer-events-auto">
             <h1 className="text-5xl font-bold text-white leading-tight mb-4">
-              Evolución en tus manos
+              {title}
             </h1>
             <p className="text-lg text-gray-200 mb-8">
-              Equipos, Accesorios y Soporte Técnico.
+              {description}
             </p>
             <div className="flex gap-3">
               <Link
                 to="/catalogo"
                 className="inline-flex items-center gap-2 bg-white text-gray-900 px-7 py-3.5 rounded-full font-semibold hover:bg-purple-50 transition-colors"
               >
-                Ver catálogo <ArrowRight className="w-5 h-5" />
+                {ctaText} <ArrowRight className="w-5 h-5" />
               </Link>
               <Link
                 to="/reparaciones"
