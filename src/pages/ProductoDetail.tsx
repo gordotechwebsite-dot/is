@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Package } from 'lucide-react'
-import { ScrollReveal, WHATSAPP_LINK, API_URL, Product } from '../shared'
+import { ScrollReveal, WHATSAPP_LINK, API_URL, Product, ColorOption } from '../shared'
+
+const HEX_RE = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i
+const safeHex = (hex: string) => (HEX_RE.test(hex) ? hex : '#888888')
 
 function resolveImage(img: string): string {
   if (!img) return img
@@ -29,16 +32,24 @@ export default function ProductoDetail() {
           const gallery = (found.images && found.images.length > 0 ? found.images : [found.image])
             .filter(Boolean)
             .map(resolveImage)
+          const colorOptions: ColorOption[] = (found.color_options || []).map(c => ({
+            ...c,
+            images: (c.images || []).filter(Boolean).map(resolveImage),
+          }))
+          const colors = colorOptions.length > 0 ? colorOptions.map(c => c.name) : (found.colors || [])
+          const firstGallery = colorOptions[0]?.images.length ? colorOptions[0].images : gallery
           setProduct({
             ...found,
             priceRange: (found as unknown as Record<string, string>).price_range || found.priceRange || '',
             image: resolveImage(found.image),
             images: gallery,
+            colors,
+            color_options: colorOptions,
             simOptions,
           })
-          setSelImage(gallery[0] || resolveImage(found.image))
+          setSelImage(firstGallery[0] || resolveImage(found.image))
           setSelStorage(found.storage?.[0] || '')
-          setSelColor(found.colors?.[0] || '')
+          setSelColor(colors[0] || '')
           setSelSim(simOptions[0] || '')
         }
         setLoaded(true)
@@ -68,6 +79,16 @@ export default function ProductoDetail() {
     )
   }
 
+  const colorOptions = product.color_options || []
+  const activeColor = colorOptions.find(c => c.name === selColor)
+  const gallery = activeColor && activeColor.images.length > 0 ? activeColor.images : (product.images || [])
+  const selectColor = (name: string) => {
+    setSelColor(name)
+    const opt = colorOptions.find(c => c.name === name)
+    const imgs = opt && opt.images.length > 0 ? opt.images : (product.images || [])
+    if (imgs[0]) setSelImage(imgs[0])
+  }
+
   return (
     <section className="py-6 sm:py-12 lg:py-20">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -90,9 +111,9 @@ export default function ProductoDetail() {
                   className="max-w-full max-h-full object-contain"
                 />
               </div>
-              {product.images && product.images.length > 1 && (
+              {gallery.length > 1 && (
                 <div className="flex gap-2 sm:gap-3 flex-wrap">
-                  {product.images.map((img, i) => (
+                  {gallery.map((img, i) => (
                     <button
                       key={i}
                       type="button"
@@ -200,9 +221,28 @@ export default function ProductoDetail() {
 
                     {product.colors && product.colors.length > 0 && (
                       <div className="mb-6">
-                        <p className="text-sm font-medium text-gray-700 mb-2">Color{hasVariants ? '' : 'es disponibles'}</p>
+                        <p className="text-sm font-medium text-gray-700 mb-2">
+                          Color{hasVariants || colorOptions.length > 0 ? '' : 'es disponibles'}
+                          {colorOptions.length > 0 && selColor && <span className="text-gray-500 font-normal"> · {selColor}</span>}
+                        </p>
                         <div className="flex flex-wrap gap-2">
-                          {product.colors.map(c => (
+                          {colorOptions.length > 0 ? colorOptions.map(c => (
+                            <button
+                              key={c.name}
+                              type="button"
+                              title={c.name}
+                              aria-label={c.name}
+                              aria-pressed={selColor === c.name}
+                              onClick={() => selectColor(c.name)}
+                              className={`w-9 h-9 rounded-lg border-2 p-0.5 transition-all ${
+                                selColor === c.name
+                                  ? 'border-purple-600 ring-2 ring-purple-200'
+                                  : 'border-gray-200 hover:border-gray-400'
+                              }`}
+                            >
+                              <span className="block w-full h-full rounded-md" style={{ backgroundColor: safeHex(c.hex) }} />
+                            </button>
+                          )) : product.colors.map(c => (
                             <button
                               key={c}
                               type="button"
