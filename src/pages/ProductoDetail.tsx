@@ -105,7 +105,7 @@ export default function ProductoDetail() {
           <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-start">
             {/* Gallery */}
             <div className="flex flex-col gap-3">
-              <div className="bg-gray-50 rounded-3xl p-6 sm:p-8 flex items-center justify-center h-56 sm:h-72 lg:h-auto lg:aspect-square">
+              <div className="bg-gray-50 rounded-3xl p-4 sm:p-8 flex items-center justify-center h-56 sm:h-72 lg:h-auto lg:aspect-square w-[85%] mx-auto lg:w-full">
                 <img
                   src={selImage || product.image}
                   alt={product.name}
