@@ -1013,7 +1013,7 @@ function Admin() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold">Página Principal</h2>
-                <p className="text-gray-500 text-sm mt-1">Edita el contenido del hero, CTA y banner promocional</p>
+                <p className="text-gray-500 text-sm mt-1">Edita el texto sobre el video y el banner promocional</p>
               </div>
               <button onClick={saveSiteContent} disabled={loading}
                 className="flex items-center justify-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 disabled:opacity-50 transition-colors w-full sm:w-auto">
@@ -1024,72 +1024,22 @@ function Admin() {
             <div className="space-y-8">
               {/* Hero */}
               <div className="bg-gray-900 rounded-xl border border-gray-800 p-6">
-                <h3 className="text-lg font-semibold mb-4 text-purple-400">Hero (sección principal)</h3>
+                <h3 className="text-lg font-semibold mb-1 text-purple-400">Texto sobre el video (escritorio)</h3>
+                <p className="text-xs text-gray-500 mb-4">Se muestra encima del video del inicio en computador. En móvil solo se ve el video.</p>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm text-gray-400 mb-1">Subtítulo superior</label>
-                    <input value={siteContent.hero_subtitle} onChange={e => setSiteContent({ ...siteContent, hero_subtitle: e.target.value })}
+                    <label className="block text-sm text-gray-400 mb-1">Título</label>
+                    <input value={siteContent.hero_title_1} onChange={e => setSiteContent({ ...siteContent, hero_title_1: e.target.value })}
                       className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <label className="block text-sm text-gray-400 mb-1">Título línea 1</label>
-                      <input value={siteContent.hero_title_1} onChange={e => setSiteContent({ ...siteContent, hero_title_1: e.target.value })}
-                        className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
-                    </div>
-                    <div>
-                      <label className="block text-sm text-gray-400 mb-1">Título línea 2 (degradado)</label>
-                      <input value={siteContent.hero_title_2} onChange={e => setSiteContent({ ...siteContent, hero_title_2: e.target.value })}
-                        className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
-                    </div>
-                    <div>
-                      <label className="block text-sm text-gray-400 mb-1">Título línea 3</label>
-                      <input value={siteContent.hero_title_3} onChange={e => setSiteContent({ ...siteContent, hero_title_3: e.target.value })}
-                        className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
-                    </div>
                   </div>
                   <div>
                     <label className="block text-sm text-gray-400 mb-1">Descripción</label>
                     <textarea value={siteContent.hero_description} onChange={e => setSiteContent({ ...siteContent, hero_description: e.target.value })} rows={2}
                       className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500 resize-none" />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-sm text-gray-400 mb-1">URL imagen hero</label>
-                      <input value={siteContent.hero_image} onChange={e => setSiteContent({ ...siteContent, hero_image: e.target.value })}
-                        className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
-                    </div>
-                    <div>
-                      <label className="block text-sm text-gray-400 mb-1">Texto botón CTA</label>
-                      <input value={siteContent.hero_cta_text} onChange={e => setSiteContent({ ...siteContent, hero_cta_text: e.target.value })}
-                        className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
-                    </div>
-                  </div>
-                  {siteContent.hero_image && (
-                    <div className="bg-gray-800 rounded-lg p-2 flex justify-center">
-                      <img src={siteContent.hero_image} alt="Hero preview" className="h-32 object-cover rounded-lg" />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* CTA */}
-              <div className="bg-gray-900 rounded-xl border border-gray-800 p-6">
-                <h3 className="text-lg font-semibold mb-4 text-purple-400">Sección CTA (llamada a la acción)</h3>
-                <div className="space-y-4">
                   <div>
-                    <label className="block text-sm text-gray-400 mb-1">Título</label>
-                    <input value={siteContent.cta_title} onChange={e => setSiteContent({ ...siteContent, cta_title: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-400 mb-1">Descripción</label>
-                    <textarea value={siteContent.cta_description} onChange={e => setSiteContent({ ...siteContent, cta_description: e.target.value })} rows={2}
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500 resize-none" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-400 mb-1">Texto del botón</label>
-                    <input value={siteContent.cta_button_text} onChange={e => setSiteContent({ ...siteContent, cta_button_text: e.target.value })}
+                    <label className="block text-sm text-gray-400 mb-1">Texto del botón principal</label>
+                    <input value={siteContent.hero_cta_text} onChange={e => setSiteContent({ ...siteContent, hero_cta_text: e.target.value })}
                       className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500" />
                   </div>
                 </div>
