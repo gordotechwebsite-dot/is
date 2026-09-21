@@ -158,7 +158,7 @@ export default function Reparaciones() {
 
           <div
             ref={scrollRef}
-            className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 no-scrollbar"
+            className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 no-scrollbar sm:px-10 lg:gap-5"
           >
             {DEVICES.map(device => {
               const Icon = device.icon
@@ -168,7 +168,7 @@ export default function Reparaciones() {
                   key={device.id}
                   type="button"
                   onClick={() => setSelected(device)}
-                  className={`snap-start shrink-0 w-36 sm:w-44 rounded-2xl border p-5 text-center transition-all ${
+                  className={`snap-start shrink-0 w-36 sm:w-44 lg:w-auto lg:flex-1 rounded-2xl border p-5 text-center transition-all ${
                     active
                       ? 'border-purple-600 bg-purple-50 shadow-lg'
                       : 'border-gray-100 bg-white hover:border-purple-200 hover:shadow-md'
