@@ -8,9 +8,6 @@ export default function TradeIn() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <ScrollReveal>
             <div>
-              <span className="inline-block bg-purple-100 text-purple-700 px-4 py-1 rounded-full text-sm font-semibold mb-6">
-                Programa estrella
-              </span>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
                 Trade-In:
                 <span className="block gradient-text">Actualiza tu equipo</span>
