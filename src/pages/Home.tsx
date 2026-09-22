@@ -65,9 +65,9 @@ export default function Home() {
       {(categories.length > 0 || !categoriesReady) && (
         <section className="py-10 lg:py-14">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-end justify-between mb-8 gap-4">
-              <div>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">Explora por categoría</h2>
+            <div className="flex items-end justify-center sm:justify-between mb-8 gap-4 px-14 sm:px-0">
+              <div className="text-center sm:text-left">
+                <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-gray-900">Explora por categoría</h2>
               </div>
               <Link
                 to="/catalogo"
