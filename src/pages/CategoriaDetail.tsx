@@ -34,7 +34,7 @@ function modelRank(p: Product): number {
   const name = p.name || ''
   if (!PHONE_NAME.test(name)) return 0
   const match = name.match(/(?:\b([a-z]))?\s*(\d+)/i)
-  const generation = match ? parseInt(match[2], 10) : 0
+  const generation = match?.[2] ? parseInt(match[2], 10) : 0
   const series = match?.[1] ? SERIES_RANK[match[1].toLowerCase()] ?? 2 : 2
   const tier = TIER_RANK.find(([re]) => re.test(name))?.[1] ?? 1
   return series * 10000 + generation * 10 + tier
