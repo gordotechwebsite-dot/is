@@ -16,7 +16,7 @@ const iconMap: Record<string, React.ReactNode> = {
 }
 
 const defaultOffers: Offer[] = [
-  { id: 1, title: 'Regalo primera compra', description: 'Compras mayores a $250.000 reciben un regalo sorpresa. Válido para clientes nuevos.', badge: '🎁 PROMOCIÓN ACTIVA', icon: 'gift', featured: true, active: true },
+  { id: 1, title: 'Regalo primera compra', description: 'Compras mayores a $250.000 reciben un regalo sorpresa. Válido para clientes nuevos.', icon: 'gift', featured: true, active: true },
   { id: 2, title: 'Trade-In con descuento extra', description: 'Trae tu equipo anterior y recibe un descuento adicional sobre el valor de Trade-In.', icon: 'percent', featured: false, active: true },
   { id: 3, title: 'Equipos de exhibición', description: 'Equipos como nuevos con hasta 30% de descuento. Garantía incluida en todos.', icon: 'tag', featured: false, active: true },
 ]
@@ -57,11 +57,6 @@ export default function Ofertas() {
                 <div className="absolute top-10 right-10 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px]" />
               </div>
               <div className="relative z-10 text-center">
-                {featured.badge && (
-                  <span className="inline-block bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-bold mb-6">
-                    {featured.badge}
-                  </span>
-                )}
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">
                   {featured.title}
                 </h2>
