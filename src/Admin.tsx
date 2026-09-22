@@ -1260,7 +1260,7 @@ function Admin() {
                 <h3 className="text-lg font-semibold mb-3 text-purple-400">Redes sociales</h3>
                 <div className="space-y-2 text-sm text-gray-400">
                   <p><span className="text-gray-300 font-medium">WhatsApp:</span> +57 318 682 3290</p>
-                  <p><span className="text-gray-300 font-medium">Instagram:</span> <a href="https://www.instagram.com/isphonecol" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">@isphonecol</a></p>
+                  <p><span className="text-gray-300 font-medium">Instagram:</span> <a href="https://www.instagram.com/isphone_sas" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">@isphone_sas</a></p>
                   <p><span className="text-gray-300 font-medium">Facebook:</span> <a href="https://www.facebook.com/share/1LQ2kyQA8z/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">iSphone Facebook</a></p>
                 </div>
               </div>
