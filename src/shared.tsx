@@ -4,6 +4,41 @@ export const WHATSAPP_NUMBER = '573186823290'
 export const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}`
 export const API_URL = import.meta.env.VITE_API_URL || 'https://isphone-api.vercel.app'
 
+const CACHE_PREFIX = 'isphone:cache:'
+
+export function readCache<T>(key: string): T | null {
+  try {
+    const raw = localStorage.getItem(CACHE_PREFIX + key)
+    return raw ? (JSON.parse(raw) as T) : null
+  } catch {
+    return null
+  }
+}
+
+function writeCache(key: string, value: unknown) {
+  try {
+    localStorage.setItem(CACHE_PREFIX + key, JSON.stringify(value))
+  } catch {
+    /* storage lleno o deshabilitado */
+  }
+}
+
+export async function fetchList<T>(path: string, retries = 2): Promise<T[]> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const r = await fetch(`${API_URL}${path}`)
+      if (!r.ok) throw new Error(`HTTP ${r.status}`)
+      const data: unknown = await r.json()
+      if (!Array.isArray(data)) throw new Error('respuesta inválida')
+      writeCache(path, data)
+      return data as T[]
+    } catch (e) {
+      if (attempt >= retries) throw e
+      await new Promise(res => setTimeout(res, 800 * (attempt + 1)))
+    }
+  }
+}
+
 export function WhatsAppIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 175.216 175.552" xmlns="http://www.w3.org/2000/svg">

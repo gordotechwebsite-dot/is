@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ShieldCheck, Truck, RefreshCw, BadgeCheck, ArrowRight } from 'lucide-react'
 import HeroVideo from '../components/HeroVideo'
-import { ScrollReveal, API_URL, Category, Product } from '../shared'
+import { ScrollReveal, API_URL, Category, Product, fetchList, readCache } from '../shared'
 
 const BRAND_LABELS: Record<string, string> = {
   apple: 'Apple',
@@ -18,6 +18,16 @@ function resolveImage(img: string): string {
   return img.replace(/\.png$/i, '.webp')
 }
 
+type RawProduct = Product & { price_range?: string }
+
+function mapProducts(data: RawProduct[]): Product[] {
+  return data.map(p => ({
+    ...p,
+    priceRange: p.price_range || p.priceRange || '',
+    image: resolveImage(p.image),
+  }))
+}
+
 const TRUST_ITEMS = [
   { icon: ShieldCheck, title: 'Garantía incluida', text: 'Todos nuestros equipos con garantía' },
   { icon: Truck, title: 'Contra entrega', text: 'Envíos a Ramiriquí y todo Boyacá' },
@@ -26,25 +36,17 @@ const TRUST_ITEMS = [
 ]
 
 export default function Home() {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [products, setProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<Category[]>(() => readCache<Category[]>('/api/categories') || [])
+  const [products, setProducts] = useState<Product[]>(() => mapProducts(readCache<RawProduct[]>('/api/products') || []))
+
+  const [categoriesReady, setCategoriesReady] = useState(categories.length > 0)
 
   useEffect(() => {
-    fetch(`${API_URL}/api/categories`)
-      .then(r => r.json())
-      .then((data: Category[]) => setCategories(Array.isArray(data) ? data : []))
+    fetchList<Category>('/api/categories')
+      .then(setCategories)
       .catch(() => {})
-    fetch(`${API_URL}/api/products`)
-      .then(r => r.json())
-      .then((data: Array<Product & { price_range?: string }>) => {
-        const mapped = (Array.isArray(data) ? data : []).map(p => ({
-          ...p,
-          priceRange: p.price_range || p.priceRange || '',
-          image: resolveImage(p.image),
-        }))
-        setProducts(mapped)
-      })
-      .catch(() => {})
+      .finally(() => setCategoriesReady(true))
+    fetchList<RawProduct>('/api/products').then(data => setProducts(mapProducts(data))).catch(() => {})
   }, [])
 
   const featuredSource = products.some(p => p.featured) ? products.filter(p => p.featured) : products
@@ -60,7 +62,7 @@ export default function Home() {
       <HeroVideo />
 
       {/* Categorías destacadas */}
-      {categories.length > 0 && (
+      {(categories.length > 0 || !categoriesReady) && (
         <section className="py-10 lg:py-14">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-end justify-between mb-8 gap-4">
@@ -76,6 +78,12 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 lg:gap-5">
+              {categories.length === 0 && Array.from({ length: 6 }, (_, i) => (
+                <div key={i} className={i === 0 ? 'lg:col-span-2 lg:row-span-2' : ''}>
+                  <div className={`rounded-2xl aspect-square bg-gray-100 animate-pulse ${i === 0 ? 'lg:aspect-auto lg:h-full lg:rounded-3xl' : ''}`} />
+                  <div className="mt-3 h-5 w-24 rounded bg-gray-100 animate-pulse lg:mx-auto" />
+                </div>
+              ))}
               {categories.map((cat, i) => (
                 <ScrollReveal key={cat.id} delay={i * 0.05} className={i === 0 ? 'lg:col-span-2 lg:row-span-2' : ''}>
                   <Link
