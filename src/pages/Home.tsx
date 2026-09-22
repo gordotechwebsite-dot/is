@@ -205,7 +205,7 @@ export default function Home() {
           <ScrollReveal className="h-full">
             <div className="h-full rounded-3xl bg-gray-50 border border-gray-100 px-6 py-12 sm:px-12 lg:py-14 text-center lg:text-left flex flex-col justify-center">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
-                También ofrecemos soporte técnico
+                Tu equipo en manos expertas
               </h2>
               <p className="text-gray-500 mt-3 mb-8 text-sm sm:text-base">
                 No solo vendemos equipos: reparamos, asesoramos y te acompañamos. Técnicos especializados y repuestos de calidad en Boyacá.
