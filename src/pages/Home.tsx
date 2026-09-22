@@ -208,7 +208,7 @@ export default function Home() {
                 Tu equipo en manos expertas
               </h2>
               <p className="text-gray-500 mt-3 mb-8 text-sm sm:text-base">
-                No solo vendemos equipos: reparamos, asesoramos y te acompañamos. Técnicos especializados y repuestos de calidad en Boyacá.
+                No solo vendemos equipos: reparamos, asesoramos y te acompañamos. Técnicos especializados y repuestos originales.
               </p>
               <Link
                 to="/reparaciones"
