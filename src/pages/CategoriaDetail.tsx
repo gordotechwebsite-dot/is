@@ -18,21 +18,26 @@ function priceValue(p: Product): number {
 const PHONE_NAME = /^(iphone|galaxy|samsung|xiaomi|redmi|motorola|moto|poco|honor)\b/i
 
 const TIER_RANK: [RegExp, number][] = [
+  [/ultra/i, 5],
   [/pro\s*max/i, 4],
   [/pro/i, 3],
   [/plus/i, 2],
   [/\d+\s*e\b/i, 0],
 ]
 
-// Generación del modelo (17 Pro Max > 17 Pro > 17 > 17e > 16 ...).
+// Serie Samsung: gama alta (S, Z) por encima de la media (A, M, F).
+const SERIES_RANK: Record<string, number> = { z: 3, s: 3, a: 2, m: 1, f: 1 }
+
+// Generación del modelo (17 Pro Max > 17 Pro > 17 > 17e > 16 ...; S26 Ultra > S26 > S25 > A57 ...).
 // Solo aplica a equipos; el resto queda en 0 y se ordena por precio.
 function modelRank(p: Product): number {
   const name = p.name || ''
   if (!PHONE_NAME.test(name)) return 0
-  const match = name.match(/\d+/)
-  const generation = match ? parseInt(match[0], 10) : 0
+  const match = name.match(/(?:\b([a-z]))?\s*(\d+)/i)
+  const generation = match ? parseInt(match[2], 10) : 0
+  const series = match?.[1] ? SERIES_RANK[match[1].toLowerCase()] ?? 2 : 2
   const tier = TIER_RANK.find(([re]) => re.test(name))?.[1] ?? 1
-  return generation * 10 + tier
+  return series * 10000 + generation * 10 + tier
 }
 
 // Evita que dos productos del mismo modelo (misma foto) queden seguidos:
