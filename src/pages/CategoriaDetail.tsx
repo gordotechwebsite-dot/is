@@ -1,8 +1,43 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Smartphone } from 'lucide-react'
-import { ScrollReveal, API_URL, Product, Category } from '../shared'
-import { useSeo } from '../seo'
+import { ScrollReveal, API_URL, Product, Category, productPath, serviceCities } from '../shared'
+import { useSeo, SITE_URL } from '../seo'
+import Breadcrumbs from '../components/Breadcrumbs'
+
+type CategoryCopy = { title: string; description: string; intro: string; bullets: string[] }
+
+const CITIES = `${serviceCities.slice(0, -1).join(', ')} y ${serviceCities[serviceCities.length - 1]}`
+
+const CATEGORY_COPY: Record<string, CategoryCopy> = {
+  iphone: {
+    title: 'iPhone nuevos y de exhibición en Tunja y Boyacá — precio en Colombia',
+    description: 'Tienda de iPhone en Tunja y Boyacá: iPhone 18, 17, 16 y 15 nuevos y de exhibición con garantía. Precios en pesos colombianos por capacidad, Trade-In y contra entrega en Bogotá, Chía y Cajicá.',
+    intro: `En iSphone encuentras iPhone nuevos sellados y iPhone de exhibición (originales, revisados y con garantía) a mejor precio que en las grandes cadenas. Ve el precio en Colombia de cada modelo por capacidad (128 GB, 256 GB, 512 GB, 1 TB) y color, entrega tu equipo actual como parte de pago con Trade-In y recibe contra entrega en ${CITIES}.`,
+    bullets: ['iPhone 18 Pro Max, 18 Pro, 17 Pro Max, 17 Pro, 17, 16 y 15', 'Nuevos sellados y de exhibición con garantía', 'Precio por capacidad y color, sin sorpresas', 'Trade-In: tu iPhone o Android usado como parte de pago'],
+  },
+  android: {
+    title: 'Samsung y Android en Tunja y Boyacá — precio en Colombia',
+    description: 'Samsung Galaxy S26 Ultra, S25 Ultra, A57, A37, A17 y más, nuevos y con garantía. Precio en Colombia por capacidad, Trade-In y envío contra entrega en Tunja, Boyacá, Bogotá, Chía y Cajicá.',
+    intro: `Celulares Android nuevos con garantía: Samsung Galaxy serie S (S26 Ultra, S26, S25 Ultra) y serie A (A57, A37, A26, A17, A07). Consulta el precio en Colombia por capacidad, cambia tu equipo actual con Trade-In y recibe contra entrega en ${CITIES}.`,
+    bullets: ['Samsung Galaxy S26 Ultra y S25 Ultra', 'Galaxy A57, A37, A26, A17 y A07 al mejor precio', 'Equipos nuevos con garantía', 'Soporte técnico Android: pantalla, batería, puerto de carga'],
+  },
+  accesorios: {
+    title: 'Accesorios Apple y celulares en Tunja y Boyacá: AirPods, cargadores, fundas',
+    description: 'Accesorios originales para iPhone, iPad, Mac y Android: AirPods, cargadores, cables, fundas y protectores. Compra en Tunja, Boyacá, Bogotá, Chía y Cajicá con envío contra entrega.',
+    intro: `Accesorios originales y de calidad para iPhone, iPad, Mac, Apple Watch y Android: AirPods, cargadores, cables, fundas, protectores de pantalla y más. Envíos y contra entrega en ${CITIES}.`,
+    bullets: ['AirPods y audio Apple', 'Cargadores y cables originales', 'Fundas y protectores para iPhone y Samsung', 'Asesoría por WhatsApp para elegir el accesorio correcto'],
+  },
+}
+
+function categoryCopy(slug: string, name: string): CategoryCopy {
+  return CATEGORY_COPY[slug] ?? {
+    title: `${name} nuevos y de exhibición en Tunja, Boyacá y Bogotá`,
+    description: `Compra ${name} en iSphone: equipos nuevos y de exhibición con garantía, precio en Colombia y envío contra entrega en Tunja, Boyacá, Bogotá, Chía y Cajicá.`,
+    intro: `${name} nuevos y de exhibición con garantía en iSphone. Precio en Colombia actualizado, Trade-In y envío contra entrega en ${CITIES}.`,
+    bullets: ['Equipos nuevos y de exhibición con garantía', 'Precio en pesos colombianos por variante', 'Trade-In y contra entrega', 'Soporte técnico especializado'],
+  }
+}
 
 function resolveImage(img: string): string {
   if (!img) return img
@@ -82,11 +117,41 @@ export default function CategoriaDetail() {
   }, [slug])
 
   const catName = category?.name || (slug ? slug.charAt(0).toUpperCase() + slug.slice(1) : 'Categoría')
+  const copy = categoryCopy(slug ?? '', catName)
+  const crumbs = [{ label: 'Inicio', to: '/' }, { label: 'Catálogo', to: '/catalogo' }, { label: catName }]
   useSeo({
-    title: `${catName} nuevos y de exhibición en Boyacá`,
-    description: `Compra ${catName} en iSphone: ${products.length > 0 ? `${products.length} modelos disponibles, ` : ''}equipos nuevos y de exhibición con garantía. Envíos a todo Boyacá y contra entrega en Ramiriquí.`,
+    title: copy.title,
+    description: copy.description,
     path: `/categoria/${slug ?? ''}`,
     image: category?.cover_image,
+    jsonLd: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: crumbs.map((c, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: c.label,
+          ...(c.to ? { item: `${SITE_URL}${c.to}` } : {}),
+        })),
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: copy.title,
+        url: `${SITE_URL}/categoria/${slug ?? ''}`,
+        mainEntity: {
+          '@type': 'ItemList',
+          numberOfItems: products.length,
+          itemListElement: products.slice(0, 30).map((p, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: p.name,
+            url: `${SITE_URL}${productPath(p)}`,
+          })),
+        },
+      },
+    ],
   })
 
   const hasMixedConditions = new Set(products.map((p) => p.condition)).size > 1
@@ -112,6 +177,7 @@ export default function CategoriaDetail() {
   return (
     <section className="py-12 lg:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Breadcrumbs items={crumbs} className="mb-4" />
         {/* Category header with cover */}
         {category && (
           <ScrollReveal>
@@ -176,7 +242,7 @@ export default function CategoriaDetail() {
             {filteredProducts.map((product, i) => (
               <ScrollReveal key={product.id} delay={i * 0.05}>
                 <Link
-                  to={`/producto/${product.id}`}
+                  to={productPath(product)}
                   className="group bg-white rounded-2xl border border-gray-100 overflow-hidden card-hover cursor-pointer block"
                 >
                   <div className="relative bg-gray-50 p-5 sm:p-6 aspect-square flex items-center justify-center overflow-hidden">
@@ -250,6 +316,23 @@ export default function CategoriaDetail() {
             </Link>
           </div>
         )}
+
+        <div className="mt-12 sm:mt-16 grid md:grid-cols-3 gap-8 border-t border-gray-100 pt-10">
+          <div className="md:col-span-2">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">{catName} con garantía en Tunja, Boyacá y Bogotá</h2>
+            <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{copy.intro}</p>
+            <div className="flex flex-wrap gap-3 mt-5 text-sm font-medium">
+              <Link to="/trade-in" className="text-purple-700 hover:text-purple-900">Trade-In →</Link>
+              <Link to="/reparaciones" className="text-purple-700 hover:text-purple-900">Servicio técnico →</Link>
+              <Link to="/envios" className="text-purple-700 hover:text-purple-900">Envíos y contra entrega →</Link>
+            </div>
+          </div>
+          <ul className="space-y-2 text-sm text-gray-700">
+            {copy.bullets.map(b => (
+              <li key={b} className="flex gap-2"><span className="text-purple-600">✓</span>{b}</li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   )

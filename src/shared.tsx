@@ -133,8 +133,66 @@ export const testimonials = [
   { name: 'Sofía P.', city: 'Tibaná', text: 'Compré un iPhone de exhibición y está como nuevo. Muy buen precio y atención.', rating: 5 },
 ]
 
+// Ciudades donde operamos con atención directa (aparecen en textos y datos de negocio).
+export const serviceCities = [
+  'Tunja', 'Ramiriquí', 'Jenesano', 'Tibaná', 'Soracá', 'Ciénega', 'Paipa',
+  'Bogotá', 'Chía', 'Cajicá',
+]
+
 export const coverageTowns = [
-  'Ramiriquí', 'Tunja', 'Jenesano', 'Tibaná', 'Boyacá', 'Viracachá',
-  'Ciénega', 'Zetaquira', 'Miraflores', 'Ventaquemada', 'Nuevo Colón',
-  'Úmbita', 'Chinavita', 'Garagoa', 'Tenza'
+  'Tunja', 'Ramiriquí', 'Jenesano', 'Tibaná', 'Soracá', 'Ciénega', 'Paipa',
+  'Bogotá', 'Chía', 'Cajicá', 'Boyacá', 'Viracachá', 'Zetaquira', 'Miraflores',
+  'Ventaquemada', 'Nuevo Colón', 'Úmbita', 'Chinavita', 'Garagoa', 'Tenza',
+  'Duitama', 'Sogamoso', 'Chiquinquirá', 'Villa de Leyva',
+]
+
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+// URL descriptiva de la ficha: /producto/iphone-17-pro-max-53 (el id va al final).
+export function productPath(p: { id: number; name: string }): string {
+  const slug = slugify(p.name)
+  return slug ? `/producto/${slug}-${p.id}` : `/producto/${p.id}`
+}
+
+export function productIdFromParam(param: string | undefined): number {
+  const match = (param ?? '').match(/(\d+)$/)
+  return match ? Number(match[1]) : NaN
+}
+
+export const faqs = [
+  {
+    q: '¿Qué es un iPhone o celular de exhibición?',
+    a: 'Es un equipo que estuvo en la vitrina de una tienda oficial. Es 100% original, prácticamente nuevo, con mínimo uso y a un precio menor que uno sellado. Todos nuestros equipos de exhibición se revisan y entregan con garantía.',
+  },
+  {
+    q: '¿Los iPhone de exhibición son buenos? ¿Son originales?',
+    a: 'Sí. Son equipos originales Apple con la misma calidad de uno nuevo; la diferencia es que ya no traen la caja sellada. Verificamos batería, pantalla, cámaras y funcionamiento antes de venderlos.',
+  },
+  {
+    q: '¿Cuánto cuesta un iPhone en Colombia en iSphone?',
+    a: 'El precio depende del modelo, la capacidad (128 GB, 256 GB, 512 GB o 1 TB) y si es nuevo o de exhibición. En cada ficha de producto ves el precio actualizado por capacidad y color; también puedes consultarnos por WhatsApp.',
+  },
+  {
+    q: '¿Cómo funciona el Trade-In (entrega tu equipo usado)?',
+    a: 'Traes tu iPhone, Samsung u otro celular actual, lo evaluamos y te damos un descuento sobre tu nuevo equipo. Aceptamos cualquier marca y modelo; el proceso toma menos de 15 minutos.',
+  },
+  {
+    q: '¿Hacen envíos y pago contra entrega?',
+    a: 'Sí. Atendemos en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Paipa, Bogotá, Chía y Cajicá, y enviamos a todo Boyacá y Colombia. En varias zonas puedes recibir el equipo, revisarlo y pagar al recibir.',
+  },
+  {
+    q: '¿Reparan iPhone, iPad, MacBook, Apple Watch y Android?',
+    a: 'Sí. Ofrecemos servicio técnico especializado: cambio de pantalla, batería, puerto de carga, cámara, daños por líquidos, software y placa, con repuestos originales y garantía.',
+  },
+  {
+    q: '¿Los equipos tienen garantía?',
+    a: 'Todos nuestros equipos, tanto nuevos como de exhibición, incluyen garantía. Cada dispositivo es revisado antes de la venta.',
+  },
 ]

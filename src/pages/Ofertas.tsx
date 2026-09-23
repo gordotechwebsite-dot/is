@@ -25,7 +25,7 @@ const defaultOffers: Offer[] = [
 export default function Ofertas() {
   useSeo({
     title: 'Ofertas en celulares y accesorios',
-    description: 'Promociones y descuentos en iPhone, Android y accesorios en iSphone Boyacá. Aprovecha las ofertas vigentes.',
+    description: 'Promociones y descuentos en iPhone, Samsung, iPad y accesorios en iSphone. Ofertas vigentes con garantía y contra entrega en Tunja, Boyacá y Bogotá.',
     path: '/ofertas',
   })
   const [offers, setOffers] = useState<Offer[]>(defaultOffers)

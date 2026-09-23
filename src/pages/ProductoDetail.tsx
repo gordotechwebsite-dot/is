@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, Package } from 'lucide-react'
-import { ScrollReveal, WHATSAPP_LINK, API_URL, Product, ColorOption } from '../shared'
+import { useParams, Link, useNavigate } from 'react-router-dom'
+import { ArrowLeft, ArrowRight, Package, ShieldCheck, Truck, RefreshCw, Wrench } from 'lucide-react'
+import { ScrollReveal, WHATSAPP_LINK, API_URL, Product, ColorOption, productPath, productIdFromParam, serviceCities } from '../shared'
 import { useSeo, absoluteUrl, SITE_URL } from '../seo'
+import Breadcrumbs from '../components/Breadcrumbs'
+
+const CATEGORY_LABEL: Record<string, string> = {
+  iphone: 'iPhone', android: 'Android', accesorios: 'Accesorios', ipad: 'iPad', mac: 'Mac', watch: 'Apple Watch',
+}
+const categoryLabel = (slug: string) => CATEGORY_LABEL[slug] ?? slug.charAt(0).toUpperCase() + slug.slice(1)
 
 const formatCOP = (n: number) => `$${n.toLocaleString('es-CO')}`
 
@@ -18,7 +24,9 @@ function resolveImage(img: string): string {
 }
 
 export default function ProductoDetail() {
-  const { id } = useParams<{ id: string }>()
+  const { id: idParam } = useParams<{ id: string }>()
+  const id = productIdFromParam(idParam)
+  const navigate = useNavigate()
   const [product, setProduct] = useState<Product | null>(null)
   const [loaded, setLoaded] = useState(false)
   const [selStorage, setSelStorage] = useState('')
@@ -30,8 +38,10 @@ export default function ProductoDetail() {
     fetch(`${API_URL}/api/products`)
       .then(r => r.json())
       .then((data: Product[]) => {
-        const found = data.find((p: Product) => p.id === Number(id))
+        const found = data.find((p: Product) => p.id === id)
         if (found) {
+          const canonical = productPath(found)
+          if (`/producto/${idParam ?? ''}` !== canonical) navigate(canonical, { replace: true })
           const simOptions = (found as unknown as { sim_options?: string[] }).sim_options || []
           const gallery = (found.images && found.images.length > 0 ? found.images : [found.image])
             .filter(Boolean)
@@ -59,7 +69,7 @@ export default function ProductoDetail() {
         setLoaded(true)
       })
       .catch(() => setLoaded(true))
-  }, [id])
+  }, [id, idParam, navigate])
 
   const prices = (product?.variants ?? [])
     .map(v => parseInt(v.price.replace(/[^\d]/g, ''), 10))
@@ -68,37 +78,62 @@ export default function ProductoDetail() {
   const lowPrice = prices.length ? Math.min(...prices) : basePrice
   const highPrice = prices.length ? Math.max(...prices) : basePrice
   const productImages = product ? [product.image, ...(product.images ?? [])].filter(Boolean) : []
+  const path = product ? productPath(product) : `/producto/${idParam ?? ''}`
+  const isExhibition = product?.condition === 'Exhibición'
+  const conditionText = isExhibition ? 'de exhibición' : 'nuevo'
+  const storageText = product?.storage?.length ? product.storage.join(', ') : ''
+  const catLabel = product?.category ? categoryLabel(product.category) : ''
+  const crumbs = product
+    ? [
+        { label: 'Inicio', to: '/' },
+        ...(product.category ? [{ label: catLabel, to: `/categoria/${product.category}` }] : [{ label: 'Catálogo', to: '/catalogo' }]),
+        { label: product.name },
+      ]
+    : []
 
   useSeo({
     title: product
-      ? `${product.name} ${product.condition === 'Exhibición' ? 'de exhibición' : 'nuevo'} en Boyacá${lowPrice ? ` — desde ${formatCOP(lowPrice)}` : ''}`
+      ? `${product.name} ${conditionText} — precio en Colombia${lowPrice ? ` desde ${formatCOP(lowPrice)}` : ''}`
       : 'Producto',
     description: product
-      ? `${product.name} (${product.condition})${product.storage?.length ? ` en ${product.storage.join(', ')}` : ''}. Garantía, envíos a todo Boyacá y contra entrega en Ramiriquí. Consulta disponibilidad por WhatsApp en iSphone.`
+      ? `Compra ${product.name} ${conditionText} con garantía en iSphone.${storageText ? ` Disponible en ${storageText}.` : ''} Precio actualizado en pesos colombianos, Trade-In y envío contra entrega en Tunja, Boyacá, Bogotá, Chía y Cajicá.`
       : 'Ficha de producto en iSphone.',
-    path: `/producto/${id ?? ''}`,
+    path,
     image: product?.image,
     type: 'product',
     jsonLd: product && lowPrice
-      ? {
-          '@context': 'https://schema.org',
-          '@type': 'Product',
-          name: product.name,
-          image: productImages.map(absoluteUrl),
-          description: `${product.name} ${product.condition.toLowerCase()} con garantía en iSphone, Boyacá.`,
-          brand: { '@type': 'Brand', name: product.brand },
-          itemCondition: product.condition === 'Exhibición' ? 'https://schema.org/RefurbishedCondition' : 'https://schema.org/NewCondition',
-          offers: {
-            '@type': 'AggregateOffer',
-            priceCurrency: 'COP',
-            lowPrice,
-            highPrice,
-            offerCount: Math.max(prices.length, 1),
-            availability: 'https://schema.org/InStock',
-            url: `${SITE_URL}/producto/${id ?? ''}`,
-            seller: { '@type': 'Organization', name: 'iSphone' },
+      ? [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: product.name,
+            image: productImages.map(absoluteUrl),
+            description: `${product.name} ${conditionText} con garantía en iSphone. Envíos a Tunja, Boyacá, Bogotá, Chía y Cajicá.`,
+            brand: { '@type': 'Brand', name: product.brand === 'apple' ? 'Apple' : product.brand },
+            category: catLabel || undefined,
+            itemCondition: isExhibition ? 'https://schema.org/RefurbishedCondition' : 'https://schema.org/NewCondition',
+            offers: {
+              '@type': 'AggregateOffer',
+              priceCurrency: 'COP',
+              lowPrice,
+              highPrice,
+              offerCount: Math.max(prices.length, 1),
+              availability: 'https://schema.org/InStock',
+              url: `${SITE_URL}${path}`,
+              seller: { '@type': 'Organization', name: 'iSphone' },
+            },
           },
-        }
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: crumbs.map((c, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              name: c.label,
+              ...(c.to ? { item: `${SITE_URL}${c.to}` } : {}),
+            })),
+          },
+        ]
       : null,
   })
 
@@ -138,13 +173,7 @@ export default function ProductoDetail() {
     <section className="py-6 sm:py-12 lg:py-20">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
-          <Link
-            to={product.category ? `/categoria/${product.category}` : '/catalogo'}
-            className="inline-flex items-center gap-1 text-purple-700 text-sm mb-4 sm:mb-6 hover:text-purple-900 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Volver
-          </Link>
+          <Breadcrumbs items={crumbs} className="mb-4 sm:mb-6" />
 
           <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-start">
             {/* Gallery */}
@@ -322,6 +351,33 @@ export default function ProductoDetail() {
                 )
               })()}
             </div>
+          </div>
+
+          <div className="mt-10 sm:mt-14 grid md:grid-cols-2 gap-8">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-3">{product.name} {conditionText} en Colombia</h2>
+              <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
+                {isExhibition
+                  ? `Este ${product.name} es un equipo de exhibición: 100% original, con mínimo uso de vitrina y revisado por nuestro equipo técnico (batería, pantalla, cámaras y funcionamiento). Es la forma más inteligente de estrenar ${catLabel || 'tecnología'} pagando menos que por uno sellado, con la misma garantía.`
+                  : `Este ${product.name} es nuevo, sellado y con garantía. Lo entregamos configurado y verificado, listo para usar.`}
+                {storageText ? ` Disponible en ${storageText}${product.colors?.length ? ` y en ${product.colors.filter(c => !isAutoName(c)).join(', ') || 'varios colores'}` : ''}; el precio se actualiza según la capacidad y el color que elijas.` : ''}
+                {` Atendemos en ${serviceCities.slice(0, 7).join(', ')}, ${serviceCities.slice(7).join(', ')}, con envío a todo Boyacá y Colombia y pago contra entrega en zonas habilitadas.`}
+              </p>
+            </div>
+            <ul className="grid grid-cols-2 gap-3 text-sm">
+              {[
+                { icon: ShieldCheck, t: 'Garantía incluida', d: 'Equipo revisado y respaldado' },
+                { icon: Truck, t: 'Contra entrega', d: 'Recibe, revisa y paga' },
+                { icon: RefreshCw, t: 'Trade-In', d: 'Entrega tu equipo usado', to: '/trade-in' },
+                { icon: Wrench, t: 'Soporte técnico', d: 'Servicio para tu equipo', to: '/reparaciones' },
+              ].map(({ icon: Icon, t, d, to }) => (
+                <li key={t} className="bg-gray-50 rounded-2xl p-4">
+                  <Icon className="w-5 h-5 text-purple-700 mb-2" />
+                  <p className="font-semibold text-gray-900">{to ? <Link to={to} className="hover:text-purple-700">{t}</Link> : t}</p>
+                  <p className="text-gray-500 text-xs">{d}</p>
+                </li>
+              ))}
+            </ul>
           </div>
         </ScrollReveal>
       </div>

@@ -15,6 +15,17 @@
   ],
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "https://isphone-api.vercel.app/api/sitemap.xml" },
+    {
+      "source": "/((?!api/|assets/|images/|videos/|admin|.*\\.[a-zA-Z0-9]+$).*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Googlebot|Google-InspectionTool|Storebot-Google|bingbot|BingPreview|Applebot|DuckDuckBot|YandexBot|Baiduspider|PetalBot|facebookexternalhit|Facebot|Twitterbot|WhatsApp|TelegramBot|LinkedInBot|Slackbot|Discordbot|Pinterestbot|redditbot|Embedly|ia_archiver).*"
+        }
+      ],
+      "destination": "https://isphone-api.vercel.app/api/prerender/$1"
+    },
     { "source": "/api/(.*)", "destination": "/api/index" },
     { "source": "/((?!api).*)", "destination": "/index.html" }
   ]

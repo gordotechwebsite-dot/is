@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Smartphone } from 'lucide-react'
-import { ScrollReveal, API_URL, Product } from '../shared'
+import { ScrollReveal, API_URL, Product, productPath } from '../shared'
 import { useSeo } from '../seo'
 
 const BRAND_LABELS: Record<string, string> = {
@@ -21,7 +21,7 @@ function resolveImage(img: string): string {
 export default function Destacados() {
   useSeo({
     title: 'Productos destacados',
-    description: 'Los celulares y accesorios más buscados en iSphone. iPhone y Android nuevos y de exhibición con garantía en Boyacá.',
+    description: 'Los iPhone, Samsung y accesorios más buscados en iSphone, nuevos y de exhibición con garantía. Precio en Colombia y contra entrega en Tunja, Boyacá y Bogotá.',
     path: '/destacados',
   })
   const [products, setProducts] = useState<Product[]>([])
@@ -65,7 +65,7 @@ export default function Destacados() {
             {products.map((product, i) => (
               <ScrollReveal key={product.id} delay={i * 0.03}>
                 <Link
-                  to={`/producto/${product.id}`}
+                  to={productPath(product)}
                   className="group bg-white rounded-2xl border border-gray-100 overflow-hidden card-hover cursor-pointer block h-full"
                 >
                   <div className="relative bg-gray-50 p-5 sm:p-6 aspect-square flex items-center justify-center overflow-hidden">

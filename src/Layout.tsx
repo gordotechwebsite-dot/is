@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Phone, MapPin, Menu, X, Instagram, Search, Zap } from 'lucide-react'
-import { WhatsAppIcon, WHATSAPP_LINK, API_URL, Product } from './shared'
+import { WhatsAppIcon, WHATSAPP_LINK, API_URL, Product, productPath, serviceCities } from './shared'
 
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -143,24 +143,37 @@ export default function Layout() {
       {/* Footer */}
       <footer className="bg-gray-950 text-gray-400 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
             <div>
               <img src="/images/isphone-wordmark.webp" alt="iSphone" className="h-8 mb-4 brightness-0 invert" />
               <p className="text-sm text-gray-500 leading-relaxed">
-                Evolución en tus manos. Equipos nuevos y de exhibición con garantía en Boyacá, Colombia.
+                Tienda de tecnología Apple y Android: iPhone, Samsung, iPad, MacBook y accesorios nuevos y de exhibición con garantía en Tunja, Boyacá y Bogotá.
               </p>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Tienda</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link to="/categoria/iphone" className="hover:text-white transition-colors">iPhone nuevos y de exhibición</Link></li>
+                <li><Link to="/categoria/android" className="hover:text-white transition-colors">Samsung y Android</Link></li>
+                <li><Link to="/categoria/accesorios" className="hover:text-white transition-colors">Accesorios</Link></li>
+                <li><Link to="/reparaciones" className="hover:text-white transition-colors">Servicio técnico y reparaciones</Link></li>
+                <li><Link to="/trade-in" className="hover:text-white transition-colors">Trade-In</Link></li>
+                <li><Link to="/envios" className="hover:text-white transition-colors">Envíos y contra entrega</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Dónde atendemos</h4>
+              <p className="text-sm leading-relaxed">{serviceCities.join(' · ')}</p>
+              <p className="text-xs text-gray-600 mt-2">Envíos a todo Boyacá y Colombia</p>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">Contacto</h4>
               <div className="space-y-2 text-sm">
-                <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Ramiriquí, Boyacá</p>
+                <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Tunja y Ramiriquí, Boyacá</p>
                 <p className="flex items-center gap-2"><Phone className="w-4 h-4" /> +57 318 682 3290</p>
                 <p className="flex items-center gap-2"><WhatsAppIcon className="w-4 h-4" /> WhatsApp disponible</p>
               </div>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Síguenos</h4>
-              <div className="flex gap-3">
+              <div className="flex gap-3 mt-4">
                 <a href="https://www.instagram.com/isphone_sas" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-purple-700 transition-colors">
                   <Instagram className="w-5 h-5" />
                 </a>
@@ -256,7 +269,7 @@ export default function Layout() {
                     {searchResults.map(product => (
                       <Link
                         key={product.id}
-                        to={`/producto/${product.id}`}
+                        to={productPath(product)}
                         onClick={() => setSearchOpen(false)}
                         className="flex items-center gap-4 px-5 py-3 hover:bg-purple-50 transition-colors"
                       >

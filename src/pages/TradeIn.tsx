@@ -4,8 +4,8 @@ import { useSeo } from '../seo'
 
 export default function TradeIn() {
   useSeo({
-    title: 'Trade-In: entrega tu celular usado y estrena',
-    description: 'Trae tu iPhone o Android actual, lo evaluamos y te damos un descuento sobre tu nuevo equipo. Trade-In en Ramiriquí y Boyacá.',
+    title: 'Trade-In en Tunja y Boyacá: entrega tu iPhone o Samsung usado y estrena',
+    description: 'Recibimos tu iPhone, Samsung o Android usado como parte de pago por un equipo nuevo o de exhibición. Valoración en 15 minutos en Tunja, Ramiriquí, Boyacá, Bogotá, Chía y Cajicá.',
     path: '/trade-in',
   })
   return (

@@ -4,8 +4,8 @@ import { useSeo } from '../seo'
 
 export default function Contacto() {
   useSeo({
-    title: 'Contacto',
-    description: 'Escríbenos por WhatsApp o visítanos en Ramiriquí, Boyacá. Asesoría para comprar iPhone, Android, accesorios y servicio técnico.',
+    title: 'Contacto: tienda iPhone y tecnología en Tunja, Boyacá y Bogotá',
+    description: 'Escríbenos por WhatsApp (+57 318 682 3290). Atendemos en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Paipa, Bogotá, Chía y Cajicá: iPhone, Samsung, iPad, MacBook, accesorios y servicio técnico.',
     path: '/contacto',
   })
   return (
@@ -60,8 +60,8 @@ export default function Contacto() {
               </div>
               <div>
                 <h3 className="text-lg font-bold text-gray-900 mb-2">Ubicación</h3>
-                <p className="text-gray-600">Ramiriquí, Boyacá, Colombia</p>
-                <p className="text-sm text-gray-500 mt-1">Envíos y contra entrega en todo Boyacá</p>
+                <p className="text-gray-600">Tunja y Ramiriquí, Boyacá · Bogotá, Chía y Cajicá</p>
+                <p className="text-sm text-gray-500 mt-1">Envíos y contra entrega en Boyacá, Bogotá y toda Colombia</p>
               </div>
             </div>
           </div>
