@@ -290,6 +290,7 @@ class SiteContent(BaseModel):
     banner_active: bool = True
     hero_video: str = ""
     hero_video_poster: str = ""
+    hero_videos: list[str] = []
 
 
 # --- Defaults ---

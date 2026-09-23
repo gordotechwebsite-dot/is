@@ -3,14 +3,16 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Wrench, Play } from 'lucide-react'
 import { API_URL } from '../shared'
 
-const DEFAULT_VIDEO = '/video/iphone17-pro.mp4'
-const DEFAULT_POSTER = '/video/iphone17-pro-poster.jpg'
+const DEFAULT_VIDEOS = ['/video/iphone18-pro.mp4', '/video/iphone17-pro.mp4']
+const DEFAULT_POSTER = '/video/iphone18-pro-poster.jpg'
 const DEFAULT_TITLE = 'Evolución en tus manos'
 const DEFAULT_DESCRIPTION = 'Equipos, Accesorios y Soporte Técnico.'
 const DEFAULT_CTA = 'Ver catálogo'
 
 export default function HeroVideo() {
-  const [src, setSrc] = useState(DEFAULT_VIDEO)
+  const [playlist, setPlaylist] = useState<string[]>(DEFAULT_VIDEOS)
+  const [index, setIndex] = useState(0)
+  const src = playlist[index % playlist.length] ?? DEFAULT_VIDEOS[0]
   const [poster, setPoster] = useState(DEFAULT_POSTER)
   const [title, setTitle] = useState(DEFAULT_TITLE)
   const [description, setDescription] = useState(DEFAULT_DESCRIPTION)
@@ -25,13 +27,17 @@ export default function HeroVideo() {
     v.play().then(() => setNeedsTap(false)).catch(() => setNeedsTap(true))
   }
 
-  useEffect(() => { tryPlay() }, [src])
+  useEffect(() => { tryPlay() }, [index, src])
 
   useEffect(() => {
     fetch(`${API_URL}/api/site-content`)
       .then(r => r.json())
       .then(data => {
-        if (data.hero_video) setSrc(data.hero_video)
+        const list: string[] = Array.isArray(data.hero_videos)
+          ? data.hero_videos.filter((v: unknown): v is string => typeof v === 'string' && v.length > 0)
+          : []
+        if (list.length === 0 && data.hero_video) list.push(data.hero_video)
+        if (list.length > 0) { setPlaylist(list); setIndex(0) }
         if (data.hero_video_poster) setPoster(data.hero_video_poster)
         if (data.hero_title_1) setTitle(data.hero_title_1)
         if (data.hero_description) setDescription(data.hero_description)
@@ -45,18 +51,31 @@ export default function HeroVideo() {
       <div className="relative overflow-hidden rounded-2xl lg:rounded-3xl shadow-sm bg-black">
         <video
           ref={videoRef}
-          key={src}
+          key={`${index}-${src}`}
           className="w-full aspect-video lg:aspect-auto lg:h-[520px] xl:h-[560px] object-cover"
           src={src}
-          poster={poster}
+          poster={index === 0 ? poster : undefined}
           autoPlay
           muted
-          loop
+          loop={playlist.length === 1}
           playsInline
           preload="auto"
           onCanPlay={() => { if (videoRef.current?.paused) tryPlay() }}
           onPlaying={() => setNeedsTap(false)}
+          onEnded={() => setIndex(i => (i + 1) % playlist.length)}
+          onError={() => { if (playlist.length > 1) setIndex(i => (i + 1) % playlist.length) }}
         />
+        {playlist.length > 1 && (
+          <video
+            key={`next-${(index + 1) % playlist.length}`}
+            src={playlist[(index + 1) % playlist.length]}
+            muted
+            playsInline
+            preload="auto"
+            className="hidden"
+            aria-hidden="true"
+          />
+        )}
         {needsTap && (
           <button
             type="button"
