@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Phone, MapPin, Menu, X, Instagram, Search, Zap } from 'lucide-react'
 import { WhatsAppIcon, WHATSAPP_LINK, API_URL, Product, productPath, serviceCities } from './shared'
+import { useAnalytics } from './analytics'
 
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -14,6 +15,7 @@ export default function Layout() {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const location = useLocation()
   const navigate = useNavigate()
+  useAnalytics()
 
   useEffect(() => {
     if (searchOpen && searchInputRef.current) searchInputRef.current.focus()
