@@ -1,22 +1,20 @@
 {
-  "redirects": [
+  "routes": [
     {
-      "source": "/(.*)",
+      "src": "/(.*)",
       "has": [{ "type": "host", "value": "isphone.vercel.app" }],
-      "destination": "https://isphone.co/$1",
-      "permanent": true
+      "status": 308,
+      "headers": { "Location": "https://isphone.co/$1" }
     },
     {
-      "source": "/(.*)",
+      "src": "/(.*)",
       "has": [{ "type": "host", "value": "www.isphone.co" }],
-      "destination": "https://isphone.co/$1",
-      "permanent": true
-    }
-  ],
-  "rewrites": [
-    { "source": "/sitemap.xml", "destination": "https://isphone-api.vercel.app/api/sitemap.xml" },
+      "status": 308,
+      "headers": { "Location": "https://isphone.co/$1" }
+    },
+    { "src": "/sitemap.xml", "dest": "https://isphone-api.vercel.app/api/sitemap.xml" },
     {
-      "source": "/",
+      "src": "/((?!api/|assets/|images/|videos/|admin|.*\\.[a-zA-Z0-9]+$).*)",
       "has": [
         {
           "type": "header",
@@ -24,20 +22,10 @@
           "value": ".*(Googlebot|Google-InspectionTool|Storebot-Google|bingbot|BingPreview|Applebot|DuckDuckBot|YandexBot|Baiduspider|PetalBot|facebookexternalhit|Facebot|Twitterbot|WhatsApp|TelegramBot|LinkedInBot|Slackbot|Discordbot|Pinterestbot|redditbot|Embedly|ia_archiver).*"
         }
       ],
-      "destination": "https://isphone-api.vercel.app/api/prerender/"
+      "dest": "https://isphone-api.vercel.app/api/prerender/$1"
     },
-    {
-      "source": "/((?!api/|assets/|images/|videos/|admin|.*\\.[a-zA-Z0-9]+$).*)",
-      "has": [
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": ".*(Googlebot|Google-InspectionTool|Storebot-Google|bingbot|BingPreview|Applebot|DuckDuckBot|YandexBot|Baiduspider|PetalBot|facebookexternalhit|Facebot|Twitterbot|WhatsApp|TelegramBot|LinkedInBot|Slackbot|Discordbot|Pinterestbot|redditbot|Embedly|ia_archiver).*"
-        }
-      ],
-      "destination": "https://isphone-api.vercel.app/api/prerender/$1"
-    },
-    { "source": "/api/(.*)", "destination": "/api/index" },
-    { "source": "/((?!api).*)", "destination": "/index.html" }
+    { "handle": "filesystem" },
+    { "src": "/api/(.*)", "dest": "/api/index" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
