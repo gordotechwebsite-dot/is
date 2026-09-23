@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Tag, Gift, Percent, Clock, Zap, Star } from 'lucide-react'
 import { ScrollReveal, WhatsAppIcon, WHATSAPP_LINK, API_URL } from '../shared'
+import { useSeo } from '../seo'
 
 type Offer = {
   id: number; title: string; description: string; badge?: string | null
@@ -22,6 +23,11 @@ const defaultOffers: Offer[] = [
 ]
 
 export default function Ofertas() {
+  useSeo({
+    title: 'Ofertas en celulares y accesorios',
+    description: 'Promociones y descuentos en iPhone, Samsung, iPad y accesorios en iSphone. Ofertas vigentes con garantía y contra entrega en Tunja, Boyacá y Bogotá.',
+    path: '/ofertas',
+  })
   const [offers, setOffers] = useState<Offer[]>(defaultOffers)
 
   useEffect(() => {

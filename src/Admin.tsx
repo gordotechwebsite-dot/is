@@ -1293,9 +1293,9 @@ function Admin() {
               <div>
                 <h3 className="text-lg font-semibold mb-3 text-purple-400">Enlaces del sitio</h3>
                 <div className="space-y-2 text-sm text-gray-400">
-                  <p><span className="text-gray-300 font-medium">Sitio público:</span> <a href="https://isphone.vercel.app" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">https://isphone.vercel.app</a></p>
+                  <p><span className="text-gray-300 font-medium">Sitio público:</span> <a href="https://isphone.co" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">https://isphone.co</a></p>
                   <p><span className="text-gray-300 font-medium">API:</span> <a href="https://isphone-api.vercel.app" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">https://isphone-api.vercel.app</a></p>
-                  <p><span className="text-gray-300 font-medium">Admin:</span> <a href="https://isphone.vercel.app/admin" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">https://isphone.vercel.app/admin</a></p>
+                  <p><span className="text-gray-300 font-medium">Admin:</span> <a href="https://isphone.co/admin" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">https://isphone.co/admin</a></p>
                 </div>
               </div>
               <div>

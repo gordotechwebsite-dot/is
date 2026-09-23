@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ScrollReveal, API_URL, Category } from '../shared'
+import { useSeo } from '../seo'
 
 export default function Catalogo() {
+  useSeo({
+    title: 'Catálogo: iPhone, Samsung, iPad, Mac y accesorios en Tunja y Boyacá',
+    description: 'Todas las categorías de iSphone: iPhone, Samsung y Android, iPad, MacBook, computadores y accesorios, nuevos y de exhibición con garantía. Tunja, Boyacá, Bogotá, Chía y Cajicá.',
+    path: '/catalogo',
+  })
   const [categories, setCategories] = useState<Category[]>([])
 
   useEffect(() => {

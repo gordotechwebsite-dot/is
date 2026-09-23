@@ -1,6 +1,31 @@
 {
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index" },
-    { "source": "/((?!api).*)", "destination": "/index.html" }
+  "routes": [
+    {
+      "src": "/(.*)",
+      "has": [{ "type": "host", "value": "isphone.vercel.app" }],
+      "status": 308,
+      "headers": { "Location": "https://isphone.co/$1" }
+    },
+    {
+      "src": "/(.*)",
+      "has": [{ "type": "host", "value": "www.isphone.co" }],
+      "status": 308,
+      "headers": { "Location": "https://isphone.co/$1" }
+    },
+    { "src": "/sitemap.xml", "dest": "https://isphone-api.vercel.app/api/sitemap.xml" },
+    {
+      "src": "/((?!api/|assets/|images/|videos/|admin|.*\\.[a-zA-Z0-9]+$).*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Googlebot|Google-InspectionTool|Storebot-Google|bingbot|BingPreview|Applebot|DuckDuckBot|YandexBot|Baiduspider|PetalBot|facebookexternalhit|Facebot|Twitterbot|WhatsApp|TelegramBot|LinkedInBot|Slackbot|Discordbot|Pinterestbot|redditbot|Embedly|ia_archiver).*"
+        }
+      ],
+      "dest": "https://isphone-api.vercel.app/api/prerender/$1"
+    },
+    { "handle": "filesystem" },
+    { "src": "/api/(.*)", "dest": "/api/index" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }

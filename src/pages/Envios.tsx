@@ -1,7 +1,13 @@
 import { Truck, MapPin, Send, Clock, Shield } from 'lucide-react'
 import { ScrollReveal, coverageTowns } from '../shared'
+import { useSeo } from '../seo'
 
 export default function Envios() {
+  useSeo({
+    title: 'Envíos y pago contra entrega en Tunja, Boyacá, Bogotá, Chía y Cajicá',
+    description: 'Compra iPhone, Samsung, iPad, MacBook y accesorios con envío y pago contra entrega en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Paipa, Bogotá, Chía y Cajicá. Envíos a todo Boyacá y Colombia.',
+    path: '/envios',
+  })
   return (
     <section className="py-12 lg:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -11,7 +17,7 @@ export default function Envios() {
               Envíos y Contra Entrega
             </h1>
             <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-              Llevamos tu equipo hasta tu puerta en todo Boyacá. Paga al recibir.
+              Llevamos tu equipo hasta tu puerta en Tunja, Boyacá, Bogotá y la Sabana. Paga al recibir.
             </p>
           </div>
         </ScrollReveal>
@@ -24,7 +30,7 @@ export default function Envios() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Contra Entrega</h3>
               <p className="text-gray-600 leading-relaxed mb-4">
-                Recibes tu equipo primero, lo revisas y pagas. Sin riesgos. Disponible en Ramiriquí y pueblos aledaños.
+                Recibes tu equipo primero, lo revisas y pagas. Sin riesgos. Disponible en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Paipa, Bogotá, Chía y Cajicá.
               </p>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-center gap-2"><Shield className="w-4 h-4 text-purple-600" /> Revisas antes de pagar</li>
@@ -40,7 +46,7 @@ export default function Envios() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Envíos a Todo Boyacá</h3>
               <p className="text-gray-600 leading-relaxed mb-4">
-                Hacemos envíos a todo el departamento de Boyacá. Empaque seguro y entrega rápida.
+                Hacemos envíos a todo el departamento de Boyacá y al resto de Colombia. Empaque seguro y entrega rápida.
               </p>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-center gap-2"><Shield className="w-4 h-4 text-purple-600" /> Empaque protegido</li>

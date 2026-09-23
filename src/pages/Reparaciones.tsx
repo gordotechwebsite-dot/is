@@ -6,7 +6,9 @@ import {
   Keyboard, Cpu, HelpCircle, Wrench, Droplets, RefreshCw, ToggleLeft,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import { ScrollReveal, WHATSAPP_LINK } from '../shared'
+import { Link } from 'react-router-dom'
+import { ScrollReveal, WHATSAPP_LINK, serviceCities } from '../shared'
+import { useSeo, SITE_URL } from '../seo'
 
 type Device = {
   id: string
@@ -125,6 +127,39 @@ function optionIcon(option: string): LucideIcon {
 }
 
 export default function Reparaciones() {
+  useSeo({
+    title: 'Reparación de iPhone, iPad, MacBook, Apple Watch y Android en Tunja y Boyacá',
+    description: 'Servicio técnico Apple y Android en Tunja, Boyacá y Bogotá: cambio de pantalla, batería, puerto de carga, cámara, daño por agua y software. Repuestos originales y garantía. Cotiza por WhatsApp.',
+    path: '/reparaciones',
+    jsonLd: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${SITE_URL}/` },
+          { '@type': 'ListItem', position: 2, name: 'Reparaciones' },
+        ],
+      },
+      ...DEVICES.map(d => ({
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        serviceType: `Reparación de ${d.name}`,
+        name: `Reparación y servicio técnico de ${d.name}`,
+        description: `${d.options.join(', ')}. Repuestos originales y garantía.`,
+        provider: { '@id': `${SITE_URL}/#negocio` },
+        areaServed: serviceCities.map(c => ({ '@type': 'City', name: c })),
+        url: `${SITE_URL}/reparaciones`,
+        hasOfferCatalog: {
+          '@type': 'OfferCatalog',
+          name: `Reparaciones de ${d.name}`,
+          itemListElement: d.options.map(o => ({
+            '@type': 'Offer',
+            itemOffered: { '@type': 'Service', name: `${o} ${d.name}` },
+          })),
+        },
+      })),
+    ],
+  })
   const [selected, setSelected] = useState<Device>(DEVICES[0]!)
   const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -147,6 +182,9 @@ export default function Reparaciones() {
             </h1>
             <p className="text-lg text-gray-600 leading-relaxed">
               Selecciona tu dispositivo y elige el tipo de reparación.
+            </p>
+            <p className="text-sm text-gray-500 mt-3">
+              Servicio técnico Apple y Android en Tunja, Boyacá, Bogotá, Chía y Cajicá · repuestos originales · garantía
             </p>
           </div>
         </ScrollReveal>
@@ -232,6 +270,37 @@ export default function Reparaciones() {
               </a>
             )
           })}
+        </div>
+
+        <div className="mt-14 grid md:grid-cols-2 gap-8 border-t border-gray-100 pt-10">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Servicio técnico Apple y Android en Tunja y Boyacá</h2>
+            <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
+              Arreglamos iPhone, iPad, MacBook y laptops, Apple Watch y celulares Android (Samsung y más): cambio de pantalla, reemplazo de batería,
+              puerto de carga, cámara, altavoz y micrófono, daños por agua o humedad, restauración de software y reparación de placa.
+              Usamos repuestos originales, entregamos con garantía y te damos el diagnóstico y la cotización por WhatsApp antes de intervenir tu equipo.
+            </p>
+            <p className="text-gray-600 leading-relaxed text-sm sm:text-base mt-3">
+              Atendemos en {serviceCities.join(', ')}. Si tu equipo ya no tiene arreglo, con nuestro{' '}
+              <Link to="/trade-in" className="text-purple-700 font-medium hover:underline">Trade-In</Link> lo recibimos como parte de pago por uno nuevo o de exhibición.
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-3xl p-6 sm:p-8">
+            <h3 className="font-bold text-gray-900 mb-3">¿Cómo funciona?</h3>
+            <ol className="space-y-3 text-sm text-gray-700">
+              {[
+                'Eliges tu dispositivo y la falla, y nos escribes por WhatsApp.',
+                'Te damos diagnóstico y cotización sin costo.',
+                'Reparamos con repuestos originales y probamos el equipo.',
+                'Te lo entregamos con garantía en Tunja, Boyacá o Bogotá.',
+              ].map((t, i) => (
+                <li key={t} className="flex gap-3">
+                  <span className="w-6 h-6 rounded-full bg-purple-700 text-white text-xs font-bold flex items-center justify-center shrink-0">{i + 1}</span>
+                  {t}
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       </div>
     </section>

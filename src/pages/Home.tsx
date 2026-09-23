@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ShieldCheck, Truck, RefreshCw, BadgeCheck, ArrowRight } from 'lucide-react'
+import { ShieldCheck, Truck, RefreshCw, BadgeCheck, ArrowRight, ChevronDown } from 'lucide-react'
 import HeroVideo from '../components/HeroVideo'
-import { ScrollReveal, API_URL, Category, Product, fetchList, readCache } from '../shared'
+import { ScrollReveal, API_URL, Category, Product, fetchList, readCache, productPath, faqs, serviceCities } from '../shared'
+import { useSeo } from '../seo'
 
 const BRAND_LABELS: Record<string, string> = {
   apple: 'Apple',
@@ -30,12 +31,26 @@ function mapProducts(data: RawProduct[]): Product[] {
 
 const TRUST_ITEMS = [
   { icon: ShieldCheck, title: 'Garantía incluida', text: 'Todos nuestros equipos con garantía' },
-  { icon: Truck, title: 'Contra entrega', text: 'Envíos a Ramiriquí y todo Boyacá' },
+  { icon: Truck, title: 'Contra entrega', text: 'Tunja, Boyacá, Bogotá, Chía y Cajicá' },
   { icon: RefreshCw, title: 'Trade-In', text: 'Entrega tu equipo y actualiza' },
   { icon: BadgeCheck, title: 'Exhibición como nuevo', text: 'Revisados y al mejor precio' },
 ]
 
 export default function Home() {
+  useSeo({
+    title: 'iSphone | iPhone, Samsung, iPad y Mac en Tunja, Boyacá y Bogotá',
+    description: 'Tienda de tecnología Apple y Android en Tunja y Boyacá: iPhone, Samsung, iPad, MacBook y accesorios nuevos y de exhibición con garantía. Precios en Colombia, Trade-In, servicio técnico y contra entrega en Bogotá, Chía y Cajicá.',
+    path: '/',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqs.map(f => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  })
   const [categories, setCategories] = useState<Category[]>(() => readCache<Category[]>('/api/categories') || [])
   const [products, setProducts] = useState<Product[]>(() => mapProducts(readCache<RawProduct[]>('/api/products') || []))
 
@@ -149,7 +164,7 @@ export default function Home() {
               {featured.map((product, i) => (
                 <ScrollReveal key={product.id} delay={i * 0.05}>
                   <Link
-                    to={`/producto/${product.id}`}
+                    to={productPath(product)}
                     className="group bg-white rounded-2xl border border-gray-100 overflow-hidden card-hover cursor-pointer block h-full"
                   >
                     <div className="relative bg-gray-50 p-5 sm:p-6 aspect-square flex items-center justify-center overflow-hidden">
@@ -247,6 +262,67 @@ export default function Home() {
               </div>
             </div>
           </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Texto SEO + cobertura */}
+      <section className="py-14 lg:py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-5 gap-10">
+          <ScrollReveal className="lg:col-span-3">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+              Tienda de tecnología Apple y Android en Tunja, Boyacá y Bogotá
+            </h2>
+            <div className="space-y-4 text-gray-600 leading-relaxed text-sm sm:text-base">
+              <p>
+                En iSphone vendemos <Link to="/categoria/iphone" className="text-purple-700 font-medium hover:underline">iPhone</Link>,{' '}
+                <Link to="/categoria/android" className="text-purple-700 font-medium hover:underline">celulares Samsung y Android</Link>, iPad, MacBook,
+                computadores portátiles y <Link to="/categoria/accesorios" className="text-purple-700 font-medium hover:underline">accesorios</Link>,
+                nuevos y de exhibición, siempre con garantía y con el precio en pesos colombianos visible por capacidad y color.
+              </p>
+              <p>
+                Un equipo de exhibición es un dispositivo 100% original que estuvo en vitrina: prácticamente nuevo, revisado por nuestros técnicos
+                y a un precio menor que uno sellado. Es la alternativa inteligente a comprar un celular de segunda.
+              </p>
+              <p>
+                Además ofrecemos <Link to="/trade-in" className="text-purple-700 font-medium hover:underline">Trade-In</Link> (tu equipo usado como parte de pago),{' '}
+                <Link to="/reparaciones" className="text-purple-700 font-medium hover:underline">servicio técnico</Link> para iPhone, iPad, Laptop, Apple Watch y Android, y{' '}
+                <Link to="/envios" className="text-purple-700 font-medium hover:underline">envíos con pago contra entrega</Link>.
+              </p>
+            </div>
+          </ScrollReveal>
+          <ScrollReveal delay={0.1} className="lg:col-span-2">
+            <div className="bg-white rounded-3xl border border-gray-100 p-6 sm:p-8 h-full">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Dónde atendemos</h3>
+              <ul className="grid grid-cols-2 gap-2 text-sm text-gray-700">
+                {serviceCities.map(c => (
+                  <li key={c} className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-purple-600" />{c}</li>
+                ))}
+              </ul>
+              <p className="text-xs text-gray-500 mt-4">Y envíos a todo Boyacá y Colombia.</p>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Preguntas frecuentes */}
+      <section className="py-14 lg:py-20 bg-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ScrollReveal>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8 text-center">Preguntas frecuentes</h2>
+          </ScrollReveal>
+          <div className="divide-y divide-gray-100">
+            {faqs.map((f, i) => (
+              <ScrollReveal key={f.q} delay={i * 0.03}>
+                <details className="group py-4">
+                  <summary className="flex items-center justify-between cursor-pointer list-none font-semibold text-gray-900 text-sm sm:text-base">
+                    {f.q}
+                    <ChevronDown className="w-5 h-5 text-gray-400 transition-transform group-open:rotate-180 shrink-0 ml-4" />
+                  </summary>
+                  <p className="text-gray-600 text-sm sm:text-base leading-relaxed mt-3">{f.a}</p>
+                </details>
+              </ScrollReveal>
+            ))}
+          </div>
         </div>
       </section>
     </>
