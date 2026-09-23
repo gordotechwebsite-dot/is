@@ -537,6 +537,32 @@ def delete_banner(banner_id: int, _username: str = Depends(verify_token)):
     return {"ok": True}
 
 
+# --- SEO ---
+
+SITE_URL = "https://isphone.co"
+STATIC_PAGES = ["", "/catalogo", "/destacados", "/ofertas", "/reparaciones", "/trade-in", "/envios", "/contacto"]
+
+def _xml_escape(text: str) -> str:
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+
+@app.get("/api/sitemap.xml")
+def get_sitemap():
+    today = time.strftime("%Y-%m-%d")
+    urls: list[tuple[str, str, str]] = [(f"{SITE_URL}{p}", "1.0" if p == "" else "0.8", "weekly") for p in STATIC_PAGES]
+    for cat in _ec_load("categories", INITIAL_CATEGORIES):
+        urls.append((f"{SITE_URL}/categoria/{cat['slug']}", "0.9", "daily"))
+    for prod in _ec_load("products", INITIAL_PRODUCTS):
+        urls.append((f"{SITE_URL}/producto/{prod['id']}", "0.7", "weekly"))
+    body = "".join(
+        f"<url><loc>{_xml_escape(loc)}</loc><lastmod>{today}</lastmod>"
+        f"<changefreq>{freq}</changefreq><priority>{prio}</priority></url>"
+        for loc, prio, freq in urls
+    )
+    xml = f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{body}</urlset>'
+    return Response(content=xml, media_type="application/xml",
+                    headers={"Cache-Control": "public, max-age=3600"})
+
+
 # --- Site Content ---
 
 @app.get("/api/site-content")

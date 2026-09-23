@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Package } from 'lucide-react'
 import { ScrollReveal, WHATSAPP_LINK, API_URL, Product, ColorOption } from '../shared'
+import { useSeo, absoluteUrl, SITE_URL } from '../seo'
+
+const formatCOP = (n: number) => `$${n.toLocaleString('es-CO')}`
 
 const HEX_RE = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i
 const isAutoName = (name: string) => /^Color \d+$/.test(name)
@@ -57,6 +60,47 @@ export default function ProductoDetail() {
       })
       .catch(() => setLoaded(true))
   }, [id])
+
+  const prices = (product?.variants ?? [])
+    .map(v => parseInt(v.price.replace(/[^\d]/g, ''), 10))
+    .filter(n => n > 0)
+  const basePrice = parseInt((product?.priceRange ?? '').replace(/[^\d]/g, ''), 10)
+  const lowPrice = prices.length ? Math.min(...prices) : basePrice
+  const highPrice = prices.length ? Math.max(...prices) : basePrice
+  const productImages = product ? [product.image, ...(product.images ?? [])].filter(Boolean) : []
+
+  useSeo({
+    title: product
+      ? `${product.name} ${product.condition === 'Exhibición' ? 'de exhibición' : 'nuevo'} en Boyacá${lowPrice ? ` — desde ${formatCOP(lowPrice)}` : ''}`
+      : 'Producto',
+    description: product
+      ? `${product.name} (${product.condition})${product.storage?.length ? ` en ${product.storage.join(', ')}` : ''}. Garantía, envíos a todo Boyacá y contra entrega en Ramiriquí. Consulta disponibilidad por WhatsApp en iSphone.`
+      : 'Ficha de producto en iSphone.',
+    path: `/producto/${id ?? ''}`,
+    image: product?.image,
+    type: 'product',
+    jsonLd: product && lowPrice
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: product.name,
+          image: productImages.map(absoluteUrl),
+          description: `${product.name} ${product.condition.toLowerCase()} con garantía en iSphone, Boyacá.`,
+          brand: { '@type': 'Brand', name: product.brand },
+          itemCondition: product.condition === 'Exhibición' ? 'https://schema.org/RefurbishedCondition' : 'https://schema.org/NewCondition',
+          offers: {
+            '@type': 'AggregateOffer',
+            priceCurrency: 'COP',
+            lowPrice,
+            highPrice,
+            offerCount: Math.max(prices.length, 1),
+            availability: 'https://schema.org/InStock',
+            url: `${SITE_URL}/producto/${id ?? ''}`,
+            seller: { '@type': 'Organization', name: 'iSphone' },
+          },
+        }
+      : null,
+  })
 
   if (!loaded) {
     return (

@@ -1,7 +1,13 @@
 import { Phone, MapPin } from 'lucide-react'
 import { ScrollReveal, WhatsAppIcon, WHATSAPP_LINK } from '../shared'
+import { useSeo } from '../seo'
 
 export default function Contacto() {
+  useSeo({
+    title: 'Contacto',
+    description: 'Escríbenos por WhatsApp o visítanos en Ramiriquí, Boyacá. Asesoría para comprar iPhone, Android, accesorios y servicio técnico.',
+    path: '/contacto',
+  })
   return (
     <section className="py-12 lg:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ShieldCheck, Truck, RefreshCw, BadgeCheck, ArrowRight } from 'lucide-react'
 import HeroVideo from '../components/HeroVideo'
 import { ScrollReveal, API_URL, Category, Product, fetchList, readCache } from '../shared'
+import { useSeo } from '../seo'
 
 const BRAND_LABELS: Record<string, string> = {
   apple: 'Apple',
@@ -36,6 +37,11 @@ const TRUST_ITEMS = [
 ]
 
 export default function Home() {
+  useSeo({
+    title: 'iSphone - Smartphones Nuevos y de Exhibición en Boyacá | iPhone y Android',
+    description: 'iSphone: Tu tienda de smartphones en Boyacá. iPhone y Android nuevos y de exhibición con garantía. Trade-In, reparaciones y envíos contra entrega en Ramiriquí y todo Boyacá.',
+    path: '/',
+  })
   const [categories, setCategories] = useState<Category[]>(() => readCache<Category[]>('/api/categories') || [])
   const [products, setProducts] = useState<Product[]>(() => mapProducts(readCache<RawProduct[]>('/api/products') || []))
 

@@ -1,5 +1,20 @@
 {
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "isphone.vercel.app" }],
+      "destination": "https://isphone.co/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.isphone.co" }],
+      "destination": "https://isphone.co/$1",
+      "permanent": true
+    }
+  ],
   "rewrites": [
+    { "source": "/sitemap.xml", "destination": "https://isphone-api.vercel.app/api/sitemap.xml" },
     { "source": "/api/(.*)", "destination": "/api/index" },
     { "source": "/((?!api).*)", "destination": "/index.html" }
   ]

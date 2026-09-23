@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Smartphone } from 'lucide-react'
 import { ScrollReveal, API_URL, Product } from '../shared'
+import { useSeo } from '../seo'
 
 const BRAND_LABELS: Record<string, string> = {
   apple: 'Apple',
@@ -18,6 +19,11 @@ function resolveImage(img: string): string {
 }
 
 export default function Destacados() {
+  useSeo({
+    title: 'Productos destacados',
+    description: 'Los celulares y accesorios más buscados en iSphone. iPhone y Android nuevos y de exhibición con garantía en Boyacá.',
+    path: '/destacados',
+  })
   const [products, setProducts] = useState<Product[]>([])
   const [loaded, setLoaded] = useState(false)
 

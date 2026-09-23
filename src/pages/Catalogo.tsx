@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ScrollReveal, API_URL, Category } from '../shared'
+import { useSeo } from '../seo'
 
 export default function Catalogo() {
+  useSeo({
+    title: 'Catálogo de celulares y accesorios en Boyacá',
+    description: 'Explora todas las categorías de iSphone: iPhone, Android, accesorios y más. Equipos nuevos y de exhibición con garantía en Boyacá.',
+    path: '/catalogo',
+  })
   const [categories, setCategories] = useState<Category[]>([])
 
   useEffect(() => {

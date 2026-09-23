@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Smartphone } from 'lucide-react'
 import { ScrollReveal, API_URL, Product, Category } from '../shared'
+import { useSeo } from '../seo'
 
 function resolveImage(img: string): string {
   if (!img) return img
@@ -79,6 +80,14 @@ export default function CategoriaDetail() {
       })
       .catch(() => setLoaded(true))
   }, [slug])
+
+  const catName = category?.name || (slug ? slug.charAt(0).toUpperCase() + slug.slice(1) : 'Categoría')
+  useSeo({
+    title: `${catName} nuevos y de exhibición en Boyacá`,
+    description: `Compra ${catName} en iSphone: ${products.length > 0 ? `${products.length} modelos disponibles, ` : ''}equipos nuevos y de exhibición con garantía. Envíos a todo Boyacá y contra entrega en Ramiriquí.`,
+    path: `/categoria/${slug ?? ''}`,
+    image: category?.cover_image,
+  })
 
   const hasMixedConditions = new Set(products.map((p) => p.condition)).size > 1
 

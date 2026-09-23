@@ -1,7 +1,13 @@
 import { RefreshCw } from 'lucide-react'
 import { ScrollReveal, WHATSAPP_LINK } from '../shared'
+import { useSeo } from '../seo'
 
 export default function TradeIn() {
+  useSeo({
+    title: 'Trade-In: entrega tu celular usado y estrena',
+    description: 'Trae tu iPhone o Android actual, lo evaluamos y te damos un descuento sobre tu nuevo equipo. Trade-In en Ramiriquí y Boyacá.',
+    path: '/trade-in',
+  })
   return (
     <section className="py-12 lg:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

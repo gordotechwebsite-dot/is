@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { ScrollReveal, WHATSAPP_LINK } from '../shared'
+import { useSeo } from '../seo'
 
 type Device = {
   id: string
@@ -125,6 +126,11 @@ function optionIcon(option: string): LucideIcon {
 }
 
 export default function Reparaciones() {
+  useSeo({
+    title: 'Reparación de iPhone, iPad, Laptop, Watch y Android en Boyacá',
+    description: 'Servicio técnico especializado: cambio de pantalla, batería, puerto de carga, cámara y más. Repuestos originales y garantía en iSphone.',
+    path: '/reparaciones',
+  })
   const [selected, setSelected] = useState<Device>(DEVICES[0]!)
   const scrollRef = useRef<HTMLDivElement>(null)
 

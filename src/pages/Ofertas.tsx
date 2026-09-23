@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Tag, Gift, Percent, Clock, Zap, Star } from 'lucide-react'
 import { ScrollReveal, WhatsAppIcon, WHATSAPP_LINK, API_URL } from '../shared'
+import { useSeo } from '../seo'
 
 type Offer = {
   id: number; title: string; description: string; badge?: string | null
@@ -22,6 +23,11 @@ const defaultOffers: Offer[] = [
 ]
 
 export default function Ofertas() {
+  useSeo({
+    title: 'Ofertas en celulares y accesorios',
+    description: 'Promociones y descuentos en iPhone, Android y accesorios en iSphone Boyacá. Aprovecha las ofertas vigentes.',
+    path: '/ofertas',
+  })
   const [offers, setOffers] = useState<Offer[]>(defaultOffers)
 
   useEffect(() => {

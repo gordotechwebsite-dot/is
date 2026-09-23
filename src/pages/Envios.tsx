@@ -1,7 +1,13 @@
 import { Truck, MapPin, Send, Clock, Shield } from 'lucide-react'
 import { ScrollReveal, coverageTowns } from '../shared'
+import { useSeo } from '../seo'
 
 export default function Envios() {
+  useSeo({
+    title: 'Envíos y contra entrega en Boyacá',
+    description: 'Enviamos celulares y accesorios a todo Boyacá. Contra entrega en Ramiriquí, Tunja, Jenesano, Tibaná y municipios cercanos.',
+    path: '/envios',
+  })
   return (
     <section className="py-12 lg:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
