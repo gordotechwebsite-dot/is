@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Trash2, Edit, Plus, LogOut, Save, X, FolderOpen, Package, Home, Zap, Settings, ChevronLeft, Eye, Upload, Image, GalleryHorizontalEnd, Menu, Video } from 'lucide-react'
+import { Trash2, Edit, Plus, LogOut, Save, X, FolderOpen, Package, Home, Zap, Settings, ChevronLeft, ChevronUp, ChevronDown, Eye, Upload, Image, GalleryHorizontalEnd, Menu, Video } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://isphone-api.vercel.app'
 
@@ -24,6 +24,7 @@ type SiteContent = {
   cta_title: string; cta_description: string; cta_button_text: string
   banner_text: string; banner_active: boolean
   hero_video: string; hero_video_poster: string
+  hero_videos?: string[]
 }
 
 type Section = 'products' | 'categories' | 'banners' | 'landing' | 'offers' | 'video' | 'settings'
@@ -1201,8 +1202,8 @@ function Admin() {
           <>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-bold">Video del inicio</h2>
-                <p className="text-gray-500 text-sm mt-1">El video que se reproduce arriba en la página principal</p>
+                <h2 className="text-2xl font-bold">Videos del inicio</h2>
+                <p className="text-gray-500 text-sm mt-1">Se reproducen en orden, uno tras otro, arriba en la página principal</p>
               </div>
               <button onClick={saveSiteContent} disabled={loading}
                 className="flex items-center justify-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-xl hover:bg-purple-600 disabled:opacity-50 transition-colors w-full sm:w-auto">
@@ -1216,15 +1217,56 @@ function Admin() {
                 <p>Formato: MP4 (H.264) o WebM</p>
                 <p>Dimensiones: 1920×1080 px recomendado (mínimo 1280×720), formato horizontal 16:9</p>
                 <p>Peso máximo: {MAX_VIDEO_MB} MB — entre 5 y 15 MB carga más rápido</p>
-                <p>Duración recomendada: 10 a 30 segundos (se reproduce en bucle)</p>
+                <p>Duración recomendada: 10 a 60 segundos por video (al terminar el último vuelve al primero)</p>
                 <p>El video se reproduce sin sonido, así que el audio no se escucha</p>
               </div>
 
-              <VideoUpload
-                value={siteContent.hero_video}
-                onChange={v => setSiteContent({ ...siteContent, hero_video: v })}
-                token={token}
-              />
+              {(() => {
+                const videos = siteContent.hero_videos && siteContent.hero_videos.length > 0
+                  ? siteContent.hero_videos
+                  : siteContent.hero_video ? [siteContent.hero_video] : []
+                const setVideos = (next: string[]) =>
+                  setSiteContent({ ...siteContent, hero_videos: next, hero_video: next[0] ?? '' })
+                const move = (i: number, dir: -1 | 1) => {
+                  const j = i + dir
+                  if (j < 0 || j >= videos.length) return
+                  const next = [...videos]
+                  next.splice(j, 0, next.splice(i, 1)[0] ?? '')
+                  setVideos(next.filter(Boolean))
+                }
+                return (
+                  <div className="space-y-4">
+                    {videos.map((v, i) => (
+                      <div key={`${i}-${v}`} className="bg-gray-800/40 border border-gray-700 rounded-xl p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-300">Video {i + 1}{i === 0 ? ' (primero)' : ''}</span>
+                          <div className="flex gap-1">
+                            <button type="button" onClick={() => move(i, -1)} disabled={i === 0} title="Subir" aria-label="Subir"
+                              className="w-8 h-8 rounded-lg bg-gray-700 text-gray-200 flex items-center justify-center hover:bg-gray-600 disabled:opacity-30">
+                              <ChevronUp className="w-4 h-4" />
+                            </button>
+                            <button type="button" onClick={() => move(i, 1)} disabled={i === videos.length - 1} title="Bajar" aria-label="Bajar"
+                              className="w-8 h-8 rounded-lg bg-gray-700 text-gray-200 flex items-center justify-center hover:bg-gray-600 disabled:opacity-30">
+                              <ChevronDown className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                        <VideoUpload
+                          value={v}
+                          onChange={nv => setVideos(nv ? videos.map((x, k) => (k === i ? nv : x)) : videos.filter((_, k) => k !== i))}
+                          token={token}
+                        />
+                      </div>
+                    ))}
+                    <VideoUpload
+                      key={`new-${videos.length}`}
+                      value=""
+                      onChange={nv => { if (nv) setVideos([...videos, nv]) }}
+                      token={token}
+                    />
+                  </div>
+                )
+              })()}
 
               <ImageUpload
                 value={siteContent.hero_video_poster}
@@ -1234,7 +1276,7 @@ function Admin() {
               />
 
               <p className="text-xs text-gray-500">
-                Si dejas el video vacío se usa el video que viene por defecto. Recuerda dar "Guardar cambios" después de subirlo o eliminarlo.
+                Si no hay ningún video se usan los dos que vienen por defecto (iPhone 18 Pro y luego iPhone 17 Pro). Usa las flechas para cambiar el orden. Recuerda dar "Guardar cambios" después de subir, ordenar o eliminar.
               </p>
             </div>
           </>
