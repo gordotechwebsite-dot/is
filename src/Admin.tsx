@@ -934,7 +934,7 @@ function Admin() {
                   <ImageUpload value={catCoverImage} onChange={setCatCoverImage} label="Imagen de portada (tarjeta del catálogo)"
                     hint="Cuadrada, 800×800 px recomendado" maxSize={800} aspect="aspect-square" />
                   <ImageUpload value={catHeaderImage} onChange={setCatHeaderImage} label="Imagen del encabezado (fondo del título dentro de la categoría)"
-                    hint="Horizontal 1600×600 px (proporción 8:3). Se muestra completa, sin recorte; el título va abajo a la izquierda" maxSize={1600} />
+                    hint="Horizontal 1600×600 px (proporción 8:3). Se muestra completa, sin recorte ni capa oscura; incluye el nombre de la categoría en el diseño" maxSize={1600} />
                   <div>
                     <label className="block text-sm text-gray-400 mb-1">Posición (orden en catálogo)</label>
                     <input type="number" min={0} value={catPosition} onChange={e => setCatPosition(Number(e.target.value))}
