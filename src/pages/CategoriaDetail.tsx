@@ -187,19 +187,25 @@ export default function CategoriaDetail() {
                 alt={category.name}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-              <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10">
-                <Link
-                  to="/catalogo"
-                  className="inline-flex items-center gap-1 text-white/80 text-sm mb-3 hover:text-white transition-colors"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Volver al catálogo
-                </Link>
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
-                  {category.name}
-                </h1>
-              </div>
+              {category.header_image ? (
+                <h1 className="sr-only">{category.name}</h1>
+              ) : (
+                <>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                  <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10">
+                    <Link
+                      to="/catalogo"
+                      className="inline-flex items-center gap-1 text-white/80 text-sm mb-3 hover:text-white transition-colors"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      Volver al catálogo
+                    </Link>
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
+                      {category.name}
+                    </h1>
+                  </div>
+                </>
+              )}
             </div>
           </ScrollReveal>
         )}
