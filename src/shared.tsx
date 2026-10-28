@@ -135,16 +135,44 @@ export const testimonials = [
 
 // Ciudades donde operamos con atención directa (aparecen en textos y datos de negocio).
 export const serviceCities = [
-  'Tunja', 'Ramiriquí', 'Jenesano', 'Tibaná', 'Soracá', 'Ciénega', 'Paipa',
+  'Tunja', 'Ramiriquí', 'Jenesano', 'Tibaná', 'Soracá', 'Ciénega',
   'Bogotá', 'Chía', 'Cajicá',
 ]
 
 export const coverageTowns = [
-  'Tunja', 'Ramiriquí', 'Jenesano', 'Tibaná', 'Soracá', 'Ciénega', 'Paipa',
+  'Tunja', 'Ramiriquí', 'Jenesano', 'Tibaná', 'Soracá', 'Ciénega',
   'Bogotá', 'Chía', 'Cajicá', 'Boyacá', 'Viracachá', 'Zetaquira', 'Miraflores',
   'Ventaquemada', 'Nuevo Colón', 'Úmbita', 'Chinavita', 'Garagoa', 'Tenza',
-  'Duitama', 'Sogamoso', 'Chiquinquirá', 'Villa de Leyva',
+  'Chiquinquirá', 'Villa de Leyva',
 ]
+
+// Municipios de Boyacá con página propia (/celulares/:slug) para SEO local.
+export type Town = { name: string; slug: string; province: string; direct: boolean }
+export const boyacaTowns: Town[] = [
+  { name: 'Tunja', slug: 'tunja', province: 'Centro', direct: true },
+  { name: 'Ramiriquí', slug: 'ramiriqui', province: 'Márquez', direct: true },
+  { name: 'Jenesano', slug: 'jenesano', province: 'Márquez', direct: true },
+  { name: 'Tibaná', slug: 'tibana', province: 'Márquez', direct: true },
+  { name: 'Soracá', slug: 'soraca', province: 'Centro', direct: true },
+  { name: 'Ciénega', slug: 'cienega', province: 'Márquez', direct: true },
+  { name: 'Boyacá', slug: 'boyaca', province: 'Márquez', direct: false },
+  { name: 'Viracachá', slug: 'viracacha', province: 'Márquez', direct: false },
+  { name: 'Nuevo Colón', slug: 'nuevo-colon', province: 'Márquez', direct: false },
+  { name: 'Úmbita', slug: 'umbita', province: 'Márquez', direct: false },
+  { name: 'Ventaquemada', slug: 'ventaquemada', province: 'Centro', direct: false },
+  { name: 'Zetaquira', slug: 'zetaquira', province: 'Lengupá', direct: false },
+  { name: 'Miraflores', slug: 'miraflores', province: 'Lengupá', direct: false },
+  { name: 'Garagoa', slug: 'garagoa', province: 'Neira', direct: false },
+  { name: 'Chinavita', slug: 'chinavita', province: 'Neira', direct: false },
+  { name: 'Tenza', slug: 'tenza', province: 'Oriente', direct: false },
+  { name: 'Chiquinquirá', slug: 'chiquinquira', province: 'Occidente', direct: false },
+  { name: 'Villa de Leyva', slug: 'villa-de-leyva', province: 'Ricaurte', direct: false },
+]
+
+export function townPath(name: string): string | null {
+  const t = boyacaTowns.find(x => x.name === name)
+  return t ? `/celulares/${t.slug}` : null
+}
 
 export function slugify(text: string): string {
   return text
@@ -185,7 +213,7 @@ export const faqs = [
   },
   {
     q: '¿Hacen envíos y pago contra entrega?',
-    a: 'Sí. Atendemos en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Paipa, Bogotá, Chía y Cajicá, y enviamos a todo Boyacá y Colombia. En varias zonas puedes recibir el equipo, revisarlo y pagar al recibir.',
+    a: 'Sí. Atendemos en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Bogotá, Chía y Cajicá, y enviamos a todo Boyacá y Colombia. En varias zonas puedes recibir el equipo, revisarlo y pagar al recibir.',
   },
   {
     q: '¿Reparan iPhone, iPad, MacBook, Apple Watch y Android?',
