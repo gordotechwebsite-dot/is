@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ShieldCheck, Truck, RefreshCw, BadgeCheck, ArrowRight, ChevronDown } from 'lucide-react'
 import HeroVideo from '../components/HeroVideo'
-import { ScrollReveal, API_URL, Category, Product, fetchList, readCache, productPath, faqs, serviceCities } from '../shared'
+import { ScrollReveal, API_URL, Category, Product, fetchList, readCache, productPath, faqs, serviceCities, townPath } from '../shared'
 import { useSeo } from '../seo'
 
 const BRAND_LABELS: Record<string, string> = {
@@ -38,8 +38,8 @@ const TRUST_ITEMS = [
 
 export default function Home() {
   useSeo({
-    title: 'iSphone | iPhone, Samsung, iPad y Mac en Tunja, Boyacá y Bogotá',
-    description: 'Tienda de tecnología Apple y Android en Tunja y Boyacá: iPhone, Samsung, iPad, MacBook y accesorios nuevos y de exhibición con garantía. Precios en Colombia, Trade-In, servicio técnico y contra entrega en Bogotá, Chía y Cajicá.',
+    title: 'iSphone | iPhone y celulares en Tunja, Ramiriquí y todo Boyacá',
+    description: 'Tienda de iPhone, Samsung, iPad y MacBook en Boyacá: equipos nuevos y de exhibición con garantía en Tunja, Ramiriquí, Jenesano, Tibaná y toda la provincia de Márquez. Trade-In, servicio técnico y contra entrega.',
     path: '/',
     jsonLd: {
       '@context': 'https://schema.org',
@@ -295,7 +295,7 @@ export default function Home() {
               <h3 className="text-lg font-bold text-gray-900 mb-4">Dónde atendemos</h3>
               <ul className="grid grid-cols-2 gap-2 text-sm text-gray-700">
                 {serviceCities.map(c => (
-                  <li key={c} className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-purple-600" />{c}</li>
+                  <li key={c} className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-purple-600" />{townPath(c) ? <Link to={townPath(c)!} className="hover:text-purple-700">{c}</Link> : c}</li>
                 ))}
               </ul>
               <p className="text-xs text-gray-500 mt-4">Y envíos a todo Boyacá y Colombia.</p>

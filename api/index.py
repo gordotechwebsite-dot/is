@@ -542,6 +542,17 @@ def delete_banner(banner_id: int, _username: str = Depends(verify_token)):
 # --- SEO ---
 
 SITE_URL = "https://isphone.co"
+BOYACA_TOWNS = [
+    ("Tunja", "tunja", "Centro", True), ("Ramiriquí", "ramiriqui", "Márquez", True),
+    ("Jenesano", "jenesano", "Márquez", True), ("Tibaná", "tibana", "Márquez", True),
+    ("Soracá", "soraca", "Centro", True), ("Ciénega", "cienega", "Márquez", True),
+    ("Boyacá", "boyaca", "Márquez", False), ("Viracachá", "viracacha", "Márquez", False),
+    ("Nuevo Colón", "nuevo-colon", "Márquez", False), ("Úmbita", "umbita", "Márquez", False),
+    ("Ventaquemada", "ventaquemada", "Centro", False), ("Zetaquira", "zetaquira", "Lengupá", False),
+    ("Miraflores", "miraflores", "Lengupá", False), ("Garagoa", "garagoa", "Neira", False),
+    ("Chinavita", "chinavita", "Neira", False), ("Tenza", "tenza", "Oriente", False),
+    ("Chiquinquirá", "chiquinquira", "Occidente", False), ("Villa de Leyva", "villa-de-leyva", "Ricaurte", False),
+]
 STATIC_PAGES = ["", "/catalogo", "/destacados", "/ofertas", "/reparaciones", "/trade-in", "/envios", "/contacto"]
 
 def slugify(text: str) -> str:
@@ -565,6 +576,8 @@ def get_sitemap():
         urls.append((f"{SITE_URL}/categoria/{cat['slug']}", "0.9", "daily"))
     for prod in _ec_load("products", INITIAL_PRODUCTS):
         urls.append((f"{SITE_URL}{product_path(prod)}", "0.7", "weekly"))
+    for _, slug, _, _ in BOYACA_TOWNS:
+        urls.append((f"{SITE_URL}/celulares/{slug}", "0.8", "weekly"))
     body = "".join(
         f"<url><loc>{_xml_escape(loc)}</loc><lastmod>{today}</lastmod>"
         f"<changefreq>{freq}</changefreq><priority>{prio}</priority></url>"
@@ -577,12 +590,12 @@ def get_sitemap():
 
 # --- Prerender (HTML para crawlers: Google, Bing, WhatsApp, Facebook, etc.) ---
 
-SERVICE_CITIES = ["Tunja", "Ramiriquí", "Jenesano", "Tibaná", "Soracá", "Ciénega", "Paipa", "Bogotá", "Chía", "Cajicá"]
+SERVICE_CITIES = ["Tunja", "Ramiriquí", "Jenesano", "Tibaná", "Soracá", "Ciénega", "Bogotá", "Chía", "Cajicá"]
 _CITIES_TEXT = ", ".join(SERVICE_CITIES[:-1]) + " y " + SERVICE_CITIES[-1]
 
 _STATIC_META = {
-    "": ("iSphone | iPhone, Samsung, iPad y Mac en Tunja, Boyacá y Bogotá",
-         "Tienda de tecnología Apple y Android en Tunja y Boyacá: iPhone, Samsung, iPad, MacBook y accesorios nuevos y de exhibición con garantía. Precios en Colombia, Trade-In, servicio técnico y contra entrega en Bogotá, Chía y Cajicá.",
+    "": ("iSphone | iPhone y celulares en Tunja, Ramiriquí y todo Boyacá",
+         "Tienda de iPhone, Samsung, iPad y MacBook en Boyacá: equipos nuevos y de exhibición con garantía en Tunja, Ramiriquí, Jenesano, Tibaná y toda la provincia de Márquez. Trade-In, servicio técnico y contra entrega.",
          "Tienda de tecnología Apple y Android en Tunja, Boyacá y Bogotá"),
     "/catalogo": ("Catálogo: iPhone, Samsung, iPad, Mac y accesorios en Tunja y Boyacá",
                   "Todas las categorías de iSphone: iPhone, Samsung y Android, iPad, MacBook, computadores y accesorios, nuevos y de exhibición con garantía. Tunja, Boyacá, Bogotá, Chía y Cajicá.",
@@ -596,10 +609,10 @@ _STATIC_META = {
                   "Recibimos tu iPhone, Samsung o Android usado como parte de pago por un equipo nuevo o de exhibición. Valoración en 15 minutos en Tunja, Ramiriquí, Boyacá, Bogotá, Chía y Cajicá.",
                   "Trade-In: entrega tu equipo usado y estrena"),
     "/envios": ("Envíos y pago contra entrega en Tunja, Boyacá, Bogotá, Chía y Cajicá",
-                "Compra iPhone, Samsung, iPad, MacBook y accesorios con envío y pago contra entrega en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Paipa, Bogotá, Chía y Cajicá. Envíos a todo Boyacá y Colombia.",
+                "Compra iPhone, Samsung, iPad, MacBook y accesorios con envío y pago contra entrega en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Bogotá, Chía y Cajicá. Envíos a todo Boyacá y Colombia.",
                 "Envíos y pago contra entrega"),
     "/contacto": ("Contacto: tienda iPhone y tecnología en Tunja, Boyacá y Bogotá",
-                  "Escríbenos por WhatsApp (+57 318 682 3290). Atendemos en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Paipa, Bogotá, Chía y Cajicá: iPhone, Samsung, iPad, MacBook, accesorios y servicio técnico.",
+                  "Escríbenos por WhatsApp (+57 318 682 3290). Atendemos en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Bogotá, Chía y Cajicá: iPhone, Samsung, iPad, MacBook, accesorios y servicio técnico.",
                   "Contacto"),
 }
 
@@ -645,7 +658,9 @@ def _html_page(path: str, title: str, description: str, body: str, image: str = 
     full_title = title if "iSphone" in title else f"{title} | iSphone"
     url = f"{SITE_URL}{path}"
     ld = "".join(f'<script type="application/ld+json">{json.dumps(o, ensure_ascii=False)}</script>' for o in (json_ld or []))
-    cities = "".join(f"<li>{_h(c)}</li>" for c in SERVICE_CITIES)
+    town_slugs = {n: s_ for n, s_, _, _ in BOYACA_TOWNS}
+    cities = "".join(f'<li><a href="{SITE_URL}/celulares/{town_slugs[c]}">{_h(c)}</a></li>' if c in town_slugs else f"<li>{_h(c)}</li>"
+                     for c in SERVICE_CITIES)
     return f"""<!doctype html><html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{_h(full_title)}</title>
@@ -774,6 +789,43 @@ def _render_static(path: str, categories: list, products: list) -> str:
     return _html_page(path, title, desc, body, json_ld=[_breadcrumb_ld([("Inicio", "/"), (h1, None)])])
 
 
+def _render_town(slug: str) -> Optional[str]:
+    town = next((t for t in BOYACA_TOWNS if t[1] == slug), None)
+    if not town:
+        return None
+    name, slug, province, direct = town
+    delivery = (f"entrega con pago contra entrega en {name} en 1 a 2 días" if direct
+                else f"envío a domicilio en {name} en 2 a 4 días")
+    title = f"iPhone y celulares en {name}, Boyacá — nuevos y de exhibición"
+    desc = (f"Compra iPhone, Samsung, iPad y MacBook en {name}, Boyacá: equipos nuevos y de exhibición con garantía, "
+            f"Trade-In, servicio técnico y {delivery}.")
+    intro = ("Nuestra tienda está en Ramiriquí: iPhone, Samsung, iPad, MacBook y accesorios nuevos y de exhibición, "
+             "con garantía y entrega sin costo en el casco urbano." if slug == "ramiriqui" else
+             f"Llevamos iPhone, Samsung, iPad, MacBook y accesorios nuevos y de exhibición a {name}, con garantía y {delivery}.")
+    faqs = [
+        (f"¿Venden iPhone en {name}?", f"Sí. Vendemos iPhone nuevos y de exhibición con garantía y precio en pesos por capacidad, con {delivery}."),
+        (f"¿Puedo pagar contra entrega en {name}?", f"Sí. En {name} recibes el equipo, lo revisas y pagas al recibir." if direct
+         else f"Escríbenos por WhatsApp y te confirmamos las opciones de pago y envío a {name}."),
+        (f"¿Reciben mi celular usado en {name}?", "Sí. Con el Trade-In valoramos tu iPhone, Samsung o Android y lo descontamos del equipo nuevo."),
+    ]
+    path = f"/celulares/{slug}"
+    others = "".join(f'<li><a href="{SITE_URL}/celulares/{s_}">{_h(n)}</a></li>' for n, s_, _, _ in BOYACA_TOWNS if s_ != slug)
+    body = f"""<nav aria-label="Ruta"><a href="{SITE_URL}/">Inicio</a> › <a href="{SITE_URL}/envios">Envíos</a> › {_h(name)}</nav>
+<p>{_h(name)}, provincia de {_h(province)}, Boyacá</p>
+<h1>iPhone y celulares en {_h(name)}</h1><p>{_h(intro)}</p>
+<p><a href="{SITE_URL}/categoria/iphone">iPhone</a> · <a href="{SITE_URL}/categoria/android">Samsung y Android</a> · <a href="{SITE_URL}/trade-in">Trade-In</a> · <a href="{SITE_URL}/reparaciones">Servicio técnico</a> · <a href="{SITE_URL}/envios">Envíos</a></p>
+<h2>Preguntas frecuentes en {_h(name)}</h2>{"".join(f"<h3>{_h(q)}</h3><p>{_h(a)}</p>" for q, a in faqs)}
+<h2>Otros municipios de Boyacá</h2><ul>{others}</ul>"""
+    ld = [_breadcrumb_ld([("Inicio", "/"), ("Envíos", "/envios"), (name, None)]),
+          {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+              {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs]},
+          {"@context": "https://schema.org", "@type": "Store", "@id": f"{SITE_URL}/#negocio", "name": "iSphone", "url": SITE_URL,
+           "telephone": "+573186823290",
+           "address": {"@type": "PostalAddress", "addressLocality": "Ramiriquí", "addressRegion": "Boyacá", "addressCountry": "CO"},
+           "areaServed": {"@type": "City", "name": f"{name}, Boyacá"}}]
+    return _html_page(path, title, desc, body, json_ld=ld)
+
+
 @app.get("/api/prerender/{path:path}")
 def prerender(path: str = ""):
     route = "/" + path.strip("/")
@@ -787,6 +839,8 @@ def prerender(path: str = ""):
         html = _render_home(categories, products) if route == "" else _render_static(route, categories, products)
     elif route.startswith("/categoria/"):
         html = _render_category(route.split("/", 2)[2], categories, products)
+    elif route.startswith("/celulares/"):
+        html = _render_town(route.split("/", 2)[2])
     elif route.startswith("/producto/"):
         m = re.search(r"(\d+)$", route)
         html = _render_product(int(m.group(1)), categories, products) if m else None
