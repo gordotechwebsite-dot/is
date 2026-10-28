@@ -232,7 +232,7 @@ export default function Layout() {
       )}
 
       {/* Floating WhatsApp button */}
-      <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
+      <a href="https://wa.me/573112260769" target="_blank" rel="noopener noreferrer"
         className="fixed bottom-10 md:bottom-6 right-6 z-50 hover:scale-110 transition-all">
         <WhatsAppIcon className="w-14 h-14 md:w-20 md:h-20" />
       </a>
