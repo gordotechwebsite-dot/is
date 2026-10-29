@@ -5,7 +5,7 @@ import { useSeo } from '../seo'
 export default function Contacto() {
   useSeo({
     title: 'Contacto: tienda iPhone y tecnología en Tunja, Boyacá y Bogotá',
-    description: 'Escríbenos por WhatsApp (+57 318 682 3290). Atendemos en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Paipa, Bogotá, Chía y Cajicá: iPhone, Samsung, iPad, MacBook, accesorios y servicio técnico.',
+    description: 'Escríbenos por WhatsApp (+57 318 682 3290). Atendemos en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Bogotá, Chía y Cajicá: iPhone, Samsung, iPad, MacBook, accesorios y servicio técnico.',
     path: '/contacto',
   })
   return (

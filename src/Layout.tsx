@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Phone, MapPin, Menu, X, Instagram, Search, Zap } from 'lucide-react'
-import { WhatsAppIcon, WHATSAPP_LINK, API_URL, Product, productPath, serviceCities } from './shared'
+import { WhatsAppIcon, WHATSAPP_LINK, API_URL, Product, productPath, serviceCities, townPath } from './shared'
+import { useAnalytics } from './analytics'
 
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -14,6 +15,7 @@ export default function Layout() {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const location = useLocation()
   const navigate = useNavigate()
+  useAnalytics()
 
   useEffect(() => {
     if (searchOpen && searchInputRef.current) searchInputRef.current.focus()
@@ -163,7 +165,10 @@ export default function Layout() {
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">Dónde atendemos</h4>
-              <p className="text-sm leading-relaxed">{serviceCities.join(' · ')}</p>
+              <p className="text-sm leading-relaxed">{serviceCities.map((c, i) => {
+                const to = townPath(c)
+                return <span key={c}>{i > 0 && ' · '}{to ? <Link to={to} className="hover:text-white transition-colors">{c}</Link> : c}</span>
+              })}</p>
               <p className="text-xs text-gray-600 mt-2">Envíos a todo Boyacá y Colombia</p>
             </div>
             <div>

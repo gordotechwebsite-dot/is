@@ -1,11 +1,12 @@
 import { Truck, MapPin, Send, Clock, Shield } from 'lucide-react'
-import { ScrollReveal, coverageTowns } from '../shared'
+import { Link } from 'react-router-dom'
+import { ScrollReveal, coverageTowns, townPath } from '../shared'
 import { useSeo } from '../seo'
 
 export default function Envios() {
   useSeo({
     title: 'Envíos y pago contra entrega en Tunja, Boyacá, Bogotá, Chía y Cajicá',
-    description: 'Compra iPhone, Samsung, iPad, MacBook y accesorios con envío y pago contra entrega en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Paipa, Bogotá, Chía y Cajicá. Envíos a todo Boyacá y Colombia.',
+    description: 'Compra iPhone, Samsung, iPad, MacBook y accesorios con envío y pago contra entrega en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Bogotá, Chía y Cajicá. Envíos a todo Boyacá y Colombia.',
     path: '/envios',
   })
   return (
@@ -30,7 +31,7 @@ export default function Envios() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Contra Entrega</h3>
               <p className="text-gray-600 leading-relaxed mb-4">
-                Recibes tu equipo primero, lo revisas y pagas. Sin riesgos. Disponible en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Paipa, Bogotá, Chía y Cajicá.
+                Recibes tu equipo primero, lo revisas y pagas. Sin riesgos. Disponible en Tunja, Ramiriquí, Jenesano, Tibaná, Soracá, Ciénega, Bogotá, Chía y Cajicá.
               </p>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-center gap-2"><Shield className="w-4 h-4 text-purple-600" /> Revisas antes de pagar</li>
@@ -64,11 +65,13 @@ export default function Envios() {
               Cobertura contra entrega
             </h3>
             <div className="flex flex-wrap gap-2">
-              {coverageTowns.map(town => (
-                <span key={town} className="bg-white px-4 py-2 rounded-full text-sm text-gray-700 border border-gray-200">
-                  {town}
-                </span>
-              ))}
+              {coverageTowns.map(town => {
+                const to = townPath(town)
+                const cls = 'bg-white px-4 py-2 rounded-full text-sm text-gray-700 border border-gray-200'
+                return to
+                  ? <Link key={town} to={to} className={`${cls} hover:border-purple-700`}>{town}</Link>
+                  : <span key={town} className={cls}>{town}</span>
+              })}
               <span className="bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium">
                 Y más...
               </span>

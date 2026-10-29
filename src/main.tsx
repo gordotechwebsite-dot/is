@@ -14,6 +14,7 @@ const Ofertas = lazy(() => import('./pages/Ofertas.tsx'))
 const Contacto = lazy(() => import('./pages/Contacto.tsx'))
 const CategoriaDetail = lazy(() => import('./pages/CategoriaDetail.tsx'))
 const ProductoDetail = lazy(() => import('./pages/ProductoDetail.tsx'))
+const Municipio = lazy(() => import('./pages/Municipio.tsx'))
 const Admin = lazy(() => import('./Admin.tsx'))
 
 function PageLoader() {
@@ -49,6 +50,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <Route path="/contacto" element={<Contacto />} />
             <Route path="/categoria/:slug" element={<CategoriaDetail />} />
             <Route path="/producto/:id" element={<ProductoDetail />} />
+            <Route path="/celulares/:slug" element={<Municipio />} />
           </Route>
           <Route path="/admin" element={<Admin />} />
         </Routes>
