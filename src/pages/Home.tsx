@@ -100,13 +100,13 @@ export default function Home() {
                 </div>
               ))}
               {categories.map((cat, i) => (
-                <ScrollReveal key={cat.id} delay={i * 0.05} className={i === 0 ? 'lg:col-span-2 lg:row-span-2' : ''}>
+                <ScrollReveal key={cat.id} delay={i * 0.05} className={i === 0 ? 'lg:col-span-2 lg:row-span-2' : i === 1 ? 'lg:row-span-2' : ''}>
                   <Link
                     to={cat.slug === 'ofertas' ? '/ofertas' : `/categoria/${cat.slug}`}
                     className="group flex flex-col h-full"
                   >
                     {i < 2 ? (
-                      <div className={`flex flex-col rounded-2xl overflow-hidden aspect-square bg-white ${i === 0 ? 'lg:aspect-auto lg:flex-1 lg:rounded-3xl' : ''}`}>
+                      <div className={`flex flex-col rounded-2xl overflow-hidden aspect-[3/4] lg:aspect-auto lg:flex-1 bg-white ${i === 0 ? 'lg:rounded-3xl' : ''}`}>
                         <div className={`text-center px-3 ${i === 0 ? 'pt-4 sm:pt-8 lg:pt-12' : 'pt-4 sm:pt-6'}`}>
                           <h3 className={`font-semibold tracking-tight text-gray-900 text-xl sm:text-3xl ${i === 0 ? 'lg:text-5xl' : 'lg:text-2xl'}`}>
                             {cat.name}
