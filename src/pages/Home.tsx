@@ -105,6 +105,26 @@ export default function Home() {
                     to={cat.slug === 'ofertas' ? '/ofertas' : `/categoria/${cat.slug}`}
                     className="group flex flex-col h-full"
                   >
+                    {i < 2 ? (
+                      <div className={`flex flex-col rounded-2xl overflow-hidden aspect-square bg-white ${i === 0 ? 'lg:aspect-auto lg:flex-1 lg:rounded-3xl' : ''}`}>
+                        <div className={`text-center px-3 ${i === 0 ? 'pt-4 sm:pt-8 lg:pt-12' : 'pt-4 sm:pt-6'}`}>
+                          <h3 className={`font-semibold tracking-tight text-gray-900 text-xl sm:text-3xl ${i === 0 ? 'lg:text-5xl' : 'lg:text-2xl'}`}>
+                            {cat.name}
+                          </h3>
+                          <span className={`inline-block mt-2 rounded-full bg-[#0071e3] group-hover:bg-[#0077ed] text-white font-medium transition-colors ${i === 0 ? 'px-4 py-1.5 text-sm lg:mt-5 lg:px-7 lg:py-2.5 lg:text-lg' : 'px-4 py-1.5 text-sm'}`}>
+                            Comprar
+                          </span>
+                        </div>
+                        <div className="flex-1 min-h-0 mt-3 lg:mt-6">
+                          <img
+                            src={cat.cover_image}
+                            alt={cat.name}
+                            loading="lazy"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+                      </div>
+                    ) : (<>
                     <div className={`relative rounded-2xl overflow-hidden aspect-square bg-gradient-to-br from-purple-100 via-pink-50 to-orange-100 group-hover:shadow-lg transition-shadow ${i === 0 ? 'lg:aspect-auto lg:flex-1 lg:rounded-3xl' : ''}`}>
                       <img
                         src={cat.cover_image}
@@ -116,6 +136,7 @@ export default function Home() {
                     <h3 className={`mt-3 text-base sm:text-lg font-bold text-gray-900 group-hover:text-purple-700 transition-colors lg:text-center ${i === 0 ? 'lg:text-xl' : 'lg:text-base'}`}>
                       {cat.name}
                     </h3>
+                    </>)}
                   </Link>
                 </ScrollReveal>
               ))}
